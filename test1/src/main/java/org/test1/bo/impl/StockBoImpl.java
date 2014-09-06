@@ -14,7 +14,6 @@ public class StockBoImpl implements StockBo{
 	@Autowired
 	private StockDao stockDao;
 	
-	@Transactional
 	public void setStockDao(StockDao stockDao) {
 		this.stockDao = stockDao;
 	}

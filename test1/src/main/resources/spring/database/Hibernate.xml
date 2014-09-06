@@ -30,6 +30,11 @@
 		<property name="annotatedClasses">
 			<list>
 				<value>org.test1.model.Stock</value>
+				<value>org.test1.model.Picture</value>
+				<value>org.test1.model.Shop</value>
+				<value>org.test1.model.Tag</value>
+				<value>org.test1.model.Meeting</value>
+				<value>org.test1.model.User</value>
 			</list>
 		</property>
 	</bean>

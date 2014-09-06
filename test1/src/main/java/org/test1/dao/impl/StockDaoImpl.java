@@ -15,25 +15,20 @@ public class StockDaoImpl implements StockDao{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private Session session;
-	
 	public void save(Stock stock){
-		session = sessionFactory.getCurrentSession();
-		session.save(stock);
+		sessionFactory.getCurrentSession().save(stock);
 	}
 	
 	public void update(Stock stock){
-		session = sessionFactory.getCurrentSession();
-		session.update(stock);
+		sessionFactory.getCurrentSession().update(stock);
 	}
 	
 	public void delete(Stock stock){
-		session = sessionFactory.getCurrentSession();
-		session.delete(stock);
+		sessionFactory.getCurrentSession().delete(stock);
 	}
 	
 	public Stock findByStockCode(String stockCode){
-		session = sessionFactory.getCurrentSession();
+		Session session = sessionFactory.getCurrentSession();
 		Query query = session.createQuery("from Stock where stockCode= :stockCode");
 		query.setString("stockCode", stockCode);
 		List list = query.list();
