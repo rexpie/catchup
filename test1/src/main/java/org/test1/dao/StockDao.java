@@ -1,5 +1,7 @@
 package org.test1.dao;
 
+import java.util.List;
+
 import org.test1.model.Stock;
 
 public interface StockDao {
@@ -12,4 +14,5 @@ public interface StockDao {
 	
 	Stock findByStockCode(String stockCode);
 
+	List<Stock> getAllStocks();
 }

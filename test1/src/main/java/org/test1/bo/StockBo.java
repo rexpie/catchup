@@ -1,5 +1,7 @@
 package org.test1.bo;
 
+import java.util.List;
+
 import org.test1.model.Stock;
 
 public interface StockBo {
@@ -12,4 +14,5 @@ public interface StockBo {
 	
 	Stock findByStockCode(String stockCode);
 
+	List<Stock> getAllStocks();
 }

@@ -17,7 +17,7 @@ public class Stock implements java.io.Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 394936732755993089L;
+//	private static final long serialVersionUID = 394936732755993089L;
 	private Integer stockId;
 	private String stockCode;
 	private String stockName;
