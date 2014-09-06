@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-<<<<<<< HEAD
-	<classpathentry including="**/*.java" kind="src" path="src/main/resources"/>
-=======
 	<classpathentry including="**/*.java" kind="src" path="src/test/resources"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
->>>>>>> 961dc987d4d80d7d1a38a7ed5344f3cd87873b8b
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
 		</attributes>
 	</classpathentry>
-<<<<<<< HEAD
-	<classpathentry kind="src" output="target/classes" path="src/main/java">
-=======
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
->>>>>>> 961dc987d4d80d7d1a38a7ed5344f3cd87873b8b
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
