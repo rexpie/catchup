@@ -6,6 +6,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.test1.bo.StockBo;
 import org.test1.model.Stock;
@@ -14,7 +15,7 @@ import org.test1.model.Stock;
 public class HelloController {
 
 	@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
-	public ModelAndView welcomePage() {
+	public @ResponseBody Stock welcomePage() {
 		ApplicationContext appContext = 
 	    		new ClassPathXmlApplicationContext("spring/config/BeanLocations.xml");
 		
@@ -24,22 +25,10 @@ public class HelloController {
 	    	Stock stock = new Stock();
 	    	stock.setStockCode("7668");
 	    	stock.setStockName("HAIO");
-	    	stockBo.save(stock);
+	    	stock.setStockId(3);
+//	    	stockBo.save(stock);
 	    	
-	    	/** select **/
-	    	Stock stock2 = stockBo.findByStockCode("7668");
-	    	System.out.println(stock2);
-	    	
-	    	/** update **/
-	    	stock2.setStockName("HAIO-1");
-	    	stockBo.update(stock2);
-	    	
-		ModelAndView model = new ModelAndView();
-		model.addObject("title", "Spring Security Hello World");
-		model.addObject("message", stock2.getStockName());
-		model.setViewName("hello");
-		return model;
-
+	    	return stock;
 	}
 
 	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
@@ -65,6 +54,5 @@ public class HelloController {
 		return model;
 
 	}
-
 
 }
