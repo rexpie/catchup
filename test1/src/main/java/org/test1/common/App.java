@@ -46,7 +46,7 @@ public class App {
 		 */
 
 		PictureBo pictureBo = (PictureBo) appContext.getBean("pictureBo");
-		Picture picture = new Picture(new Date(), "a picture", "bob");
+		Picture picture = new Picture(new Date(), "peach photo", "peach");
 		pictureBo.save(picture);
 
 		ShopBo shopBo = (ShopBo) appContext.getBean("shopBo");
@@ -58,18 +58,18 @@ public class App {
 		shopBo.save(shop);
 		
 		
-		/*TagBo tagBo = (TagBo) appContext.getBean("tagBo");
-		Tag tag = new Tag("文艺小清新");
+		TagBo tagBo = (TagBo) appContext.getBean("tagBo");
+		Tag tag = new Tag("办室达人");
 		tagBo.save(tag);
-		tagBo.save(new Tag("抠鼻大叔"));
+		/*tagBo.save(new Tag("抠鼻大叔"));
 		tagBo.save(new Tag("抠脚大汉"));
 		tagBo.save(new Tag("office达人"));*/
 		
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
 		User user = new User("123456", "peach", "M", "data center", "ccb", new Date(), 100, "18918760155", "tpeng915@gmail.com");
-		user.setPic(new Picture(new Date(), "peach photo", "peach"));
+		user.setPic(picture);
 		HashSet<Tag> tagSet = new HashSet<Tag>();
-		tagSet.add(new Tag("办公室达人"));
+		tagSet.add(tag);
 		user.setTags(tagSet);
 		userBo.save(user);
 		
