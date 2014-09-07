@@ -20,6 +20,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.google.common.collect.Sets;
+
 @Entity
 @Table(name = "user")
 public class User implements Serializable {
@@ -40,9 +42,11 @@ public class User implements Serializable {
 	private long zan_count;
 	private String phone_number;
 	private String email_address;
+	private int status;
 
 	private Set<User> followings;
 	private Set<Tag> tags;
+	private Set<Role> roles;
 
 	public User() {
 		super();
@@ -62,6 +66,8 @@ public class User implements Serializable {
 		this.zan_count = zan_count;
 		this.phone_number = phone_number;
 		this.email_address = email_address;
+		this.status = 1;
+		this.roles = Sets.newHashSet(new Role());
 	}
 
 	@GenericGenerator(name = "generator", strategy = "increment")
@@ -187,6 +193,15 @@ public class User implements Serializable {
 	public void setEmail_address(String email_address) {
 		this.email_address = email_address;
 	}
+	
+	@Column
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "friend_id") })
@@ -207,5 +222,17 @@ public class User implements Serializable {
 	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
+	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "role_id") })
+	public Set<Role> getRoles(){
+		return roles;
+	}
+
+	public void setRoles(Set<Role> roles) {
+		this.roles = roles;
+	}
+	
+	
 
 }

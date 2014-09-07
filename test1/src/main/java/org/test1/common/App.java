@@ -55,18 +55,18 @@ public class App {
 		shop.setCity("上海");
 		shop.setType("中餐");
 		shop.setPrice(99.99);
-		shopBo.save(shop);
+//		shopBo.save(shop);
 		
 		
 		TagBo tagBo = (TagBo) appContext.getBean("tagBo");
-		Tag tag = new Tag("办室达人");
-		tagBo.save(tag);
+		Tag tag = new Tag("ds");
+//		tagBo.save(tag);
 		/*tagBo.save(new Tag("抠鼻大叔"));
 		tagBo.save(new Tag("抠脚大汉"));
 		tagBo.save(new Tag("office达人"));*/
 		
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
-		User user = new User("123456", "peach", "M", "data center", "ccb", new Date(), 100, "18918760155", "tpeng915@gmail.com");
+		User user = new User("123456", "rexpie", "M", "IT", "ms", new Date(), 100, "13818860403", "rexpie@gmail.com");
 		user.setPic(picture);
 		HashSet<Tag> tagSet = new HashSet<Tag>();
 		tagSet.add(tag);
@@ -76,7 +76,7 @@ public class App {
 		
 		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
 		Meeting meeting = new Meeting(user, new Date(), 2, 2, 5, 30, "一起喝茶");
-		meetingBo.save(meeting);
+//		meetingBo.save(meeting);
 
 		System.out.println("Done");
 	}
