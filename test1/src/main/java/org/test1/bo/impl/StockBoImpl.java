@@ -1,5 +1,7 @@
 package org.test1.bo.impl;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +38,10 @@ public class StockBoImpl implements StockBo{
 	@Transactional
 	public Stock findByStockCode(String stockCode){
 		return stockDao.findByStockCode(stockCode);
+	}
+
+	@Transactional
+	public List<Stock> getAllStocks() {
+		return stockDao.getAllStocks();
 	}
 }

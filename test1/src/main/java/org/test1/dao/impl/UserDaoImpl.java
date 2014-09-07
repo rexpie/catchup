@@ -11,6 +11,8 @@ import org.test1.dao.UserDao;
 import org.test1.model.Stock;
 import org.test1.model.User;
 
+import com.google.common.collect.Lists;
+
 @Repository("userDao")
 public class UserDaoImpl implements UserDao {
 	@Autowired
@@ -41,7 +43,9 @@ public class UserDaoImpl implements UserDao {
 		Query query = session.createQuery("from Stock where nickName= :nickName");
 		query.setString("nickName", nickName);
 		List list = query.list();
+		if (list.size() > 0)
 		return (User)list.get(0);
+		else return null;
 	}
 
 }

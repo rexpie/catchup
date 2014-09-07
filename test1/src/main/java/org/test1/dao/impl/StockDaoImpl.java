@@ -10,29 +10,49 @@ import org.springframework.stereotype.Repository;
 import org.test1.dao.StockDao;
 import org.test1.model.Stock;
 
+import com.google.common.collect.Lists;
+
 @Repository("stockDao")
-public class StockDaoImpl implements StockDao{
+public class StockDaoImpl implements StockDao {
 	@Autowired
 	private SessionFactory sessionFactory;
-	
-	public void save(Stock stock){
-		sessionFactory.getCurrentSession().save(stock);
+
+	private Session session;
+
+	public void save(Stock stock) {
+		session = sessionFactory.getCurrentSession();
+		session.save(stock);
 	}
-	
-	public void update(Stock stock){
-		sessionFactory.getCurrentSession().update(stock);
+
+	public void update(Stock stock) {
+		session = sessionFactory.getCurrentSession();
+		session.update(stock);
 	}
-	
-	public void delete(Stock stock){
-		sessionFactory.getCurrentSession().delete(stock);
+
+	public void delete(Stock stock) {
+		session = sessionFactory.getCurrentSession();
+		session.delete(stock);
 	}
-	
-	public Stock findByStockCode(String stockCode){
-		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Stock where stockCode= :stockCode");
+
+	public Stock findByStockCode(String stockCode) {
+		session = sessionFactory.getCurrentSession();
+		Query query = session
+				.createQuery("from Stock where stockCode= :stockCode");
 		query.setString("stockCode", stockCode);
-		List list = query.list();
-		return (Stock)list.get(0);
+		List<Stock> list = query.list();
+		if (list.size() > 0)
+			return list.get(0);
+		else
+			return null;
+	}
+
+	@Override
+	public List<Stock> getAllStocks() {
+		session = sessionFactory.getCurrentSession();
+		Query query = session
+				.createQuery("from Stock");
+		List<Stock> list = query.list();
+		return list;
 	}
 
 }
