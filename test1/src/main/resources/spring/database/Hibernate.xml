@@ -35,6 +35,7 @@
 				<value>org.test1.model.Tag</value>
 				<value>org.test1.model.Meeting</value>
 				<value>org.test1.model.User</value>
+				<value>org.test1.model.Role</value>
 			</list>
 		</property>
 	</bean>
