@@ -2,6 +2,7 @@ package tokenTest.response;
 
 import java.util.Date;
 
+import tokenTest.Util.Status;
 import tokenTest.model.User;
 
 public class UserDetailResponse {
@@ -13,6 +14,7 @@ public class UserDetailResponse {
 	private long zan_count;
 	private String phone_number;
 	private String email_address;
+	private int status = 0;
 
 	public UserDetailResponse(User user) {
 		this.nickname = user.getNickname();
@@ -49,6 +51,14 @@ public class UserDetailResponse {
 		this.email_address = email_address;
 	}
 
+	private UserDetailResponse(int status) {
+		setStatus(status);
+	}
+
+	private UserDetailResponse(Status status) {
+		this(status.ordinal());
+	}
+	
 	public String getNickname() {
 		return nickname;
 	}
@@ -111,5 +121,21 @@ public class UserDetailResponse {
 
 	public void setEmail_address(String email_address) {
 		this.email_address = email_address;
+	}
+	
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+	
+	public static UserDetailResponse getError(Status status) {
+		if (status!=Status.OK)
+			return new UserDetailResponse(status);
+		else {
+			return new UserDetailResponse(Status.ERROR_GENERIC);
+		}
 	}
 }

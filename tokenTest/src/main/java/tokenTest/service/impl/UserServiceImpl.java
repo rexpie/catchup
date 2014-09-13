@@ -6,12 +6,14 @@ package tokenTest.service.impl;
 import java.util.Date;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import tokenTest.Util.Status;
 import tokenTest.bo.UserBo;
 import tokenTest.model.User;
 import tokenTest.response.UserDetailResponse;
@@ -161,8 +163,12 @@ public class UserServiceImpl implements UserServiceInterface {
 		}
 
 		/* 用户不存在或者令牌不正确 */
-		if (user == null || !user.getToken().equals(token))
-			return null;
+		if (user == null)
+			return UserDetailResponse.getError(Status.ERROR_USER_NOT_FOUND);
+		
+		if (!StringUtils.equals(user.getToken(),token)) {
+			return UserDetailResponse.getError(Status.ERROR_WRONG_TOKEN);
+		}
 
 		/* queriedid==null表示查看自己信息，否则为查看别人信息 */
 		if (queriedid == null) {
