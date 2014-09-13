@@ -22,7 +22,7 @@ import tokenTest.service.UserServiceInterface;
  * 
  */
 @RestController
-@RequestMapping("/uesr")
+@RequestMapping("/user")
 public class UserServiceImpl implements UserServiceInterface {
 	@Autowired
 	private UserBo userBo;

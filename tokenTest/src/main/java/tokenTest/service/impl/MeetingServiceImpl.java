@@ -11,7 +11,7 @@ import tokenTest.service.MeetingServiceInterface;
  * @author pengtao
  *
  */
-public class MeetingService implements MeetingServiceInterface {
+public class MeetingServiceImpl implements MeetingServiceInterface {
 
 	/* (non-Javadoc)
 	 * @see tokenTest.service.MeetingServiceInterface#getMeetingList(java.lang.String, java.lang.String, java.lang.String)
