@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * @see tokenTest.service.UserServiceInterface#getUserDetail(java.lang.Long,
 	 * java.lang.String, java.lang.Long) 查找用户信息，queriedid为空表示查找自己的信息，显示内容更多。
 	 */
-	@RequestMapping(value = { "/UserDetailResponse**" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/getUserDetail**" }, method = RequestMethod.GET)
 	public UserDetailResponse getUserDetail(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,

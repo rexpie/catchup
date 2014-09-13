@@ -1,13 +1,7 @@
 package tokenTest.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import javassist.expr.NewArray;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -25,6 +19,7 @@ import tokenTest.model.User;
 
 public class App {
 	public static void main(String[] args) {
+		@SuppressWarnings("resource")
 		ApplicationContext appContext = new ClassPathXmlApplicationContext(
 				"spring/config/BeanLocations.xml");
 

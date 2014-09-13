@@ -30,13 +30,13 @@
 
 		<property name="annotatedClasses">
 			<list>
-				<value>tokenTest.model.Stock</value>
+				<value>tokenTest.model.FriendApply</value>
+				<value>tokenTest.model.Meeting</value>
+				<value>tokenTest.model.MeetingApply</value>
 				<value>tokenTest.model.Picture</value>
 				<value>tokenTest.model.Shop</value>
 				<value>tokenTest.model.Tag</value>
-				<value>tokenTest.model.Meeting</value>
 				<value>tokenTest.model.User</value>
-				<value>tokenTest.model.Role</value>
 			</list>
 		</property>
 	</bean>
