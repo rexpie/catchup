@@ -12,4 +12,6 @@ public interface PictureBo {
 	void delete(Picture picture);
 	
 	void deleteById(Long id);
+	
+	Picture findById(Long id);
 }

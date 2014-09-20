@@ -73,7 +73,13 @@ public class PictureBoImpl implements PictureBo {
 		File pictureFile = new File(System.getProperty("user.dir")
 				+ File.pathSeparator + DIR + File.pathSeparator
 				+ picture.getFilename());
-		pictureFile.deleteOnExit();
+		if(pictureFile.exists())pictureFile.delete();
 		pictureDao.delete(picture);
+	}
+	
+	@Transactional
+	public Picture findById(Long id) {
+		// TODO Auto-generated method stub
+		return pictureDao.findPictureById(id);
 	}
 }

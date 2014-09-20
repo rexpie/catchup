@@ -24,7 +24,7 @@ public interface UserServiceInterface {
 
 	UserDetailResponse getUserDetail(Long id, String token, Long targetId);
 
-	void addPhoto(Long id, String token, MultipartFile picture,
+	Enum<Status> addPhoto(Long id, String token, MultipartFile picture,
 			String description, Boolean isProfile);
 
 	Enum<Status> deletePhoto(Long id, String token, Long picId);

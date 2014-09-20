@@ -361,7 +361,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	/* 默认增的不是头像 */
 	@RequestMapping(value = { "/addPhoto**" }, method = RequestMethod.POST)
-	public void addPhoto(@RequestParam(required = true) Long id,
+	public Enum<Status> addPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) MultipartFile picture,
 			@RequestParam(required = false) String description,
@@ -372,15 +372,15 @@ public class UserServiceImpl implements UserServiceInterface {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return;
+			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null)
-			return;
+			return Status.ERROR_USER_NOT_FOUND;
 
 		if (!StringUtils.equals(user.getToken(), token)) {
-			return;
+			return Status.ERROR_WRONG_TOKEN;
 		}
 
 		/* 保存图片文件 */
@@ -391,6 +391,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			pictureBo.save(picture, pic);
 		} catch (Exception e) {
 			// TODO: handle exception
+			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
 		/* 将图片添加到用户 */
@@ -407,8 +408,10 @@ public class UserServiceImpl implements UserServiceInterface {
 			} catch (Exception e) {
 				// TODO: handle exception
 				// 保存失败，没做处理
+				return Status.SERVICE_NOT_AVAILABLE;
 			}
 		}
+		return Status.OK;
 	}
 
 	public Enum<Status> deletePhoto(Long id, String token, Long picId) {
@@ -429,9 +432,40 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (!StringUtils.equals(user.getToken(), token)) {
 			return Status.ERROR_WRONG_TOKEN;
 		}
-		pictureBo.deleteById(picId);
 		
+		/*查找图片*/
+		Picture picture = null;
+		try {
+			picture = pictureBo.findById(picId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return Status.SERVICE_NOT_AVAILABLE;
+		}
+		if(picture==null){
+			//图片不存在
+			return Status.ERROR_GENERIC;
+		}
 		
-		return null;
+		Set<Picture> pictures = user.getPicture();
+		if (pictures == null)
+			return Status.ERROR_GENERIC;
+		pictures.remove(picture);
+		user.setPicture(pictures);
+		try {
+			userBo.update(user);
+		} catch (Exception e) {
+			// TODO: handle exception
+			// 保存失败，没做处理
+			return Status.SERVICE_NOT_AVAILABLE;
+		}
+		
+		try {
+			/*删除图片数据和文件*/
+			pictureBo.deleteById(picId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return Status.SERVICE_NOT_AVAILABLE;
+		}
+		return Status.OK;
 	}
 }
