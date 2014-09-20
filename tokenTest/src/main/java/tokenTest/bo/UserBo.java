@@ -11,5 +11,7 @@ void save(User user);
 	
 	User findByUserNickName(String nickName);
 	
+	User findByUserPhoneNum(String phoneNum);
+	
 	User findByUserId(Long id);
 }

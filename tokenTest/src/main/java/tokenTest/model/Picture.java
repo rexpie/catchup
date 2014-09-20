@@ -23,19 +23,18 @@ public class Picture implements Serializable {
 /*	private User owner;*/
 	private String description;
 	private String name;
-	
 	private Date create_time;
+	private String filename;
 
 	public Picture() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Picture(Date create_time, String description, String name) {
+	public Picture(Date create_time, String description) {
 		super();
 		this.create_time = create_time;
 		this.description = description;
-		this.name = name;
 	}
 
 	@GenericGenerator(name = "generator", strategy = "increment")
@@ -85,5 +84,14 @@ public class Picture implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Column(name = "filename", length = 140)
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 }

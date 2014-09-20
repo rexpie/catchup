@@ -3,6 +3,7 @@ package tokenTest.response;
 import java.util.Date;
 
 import tokenTest.Util.Status;
+import tokenTest.model.Picture;
 import tokenTest.model.User;
 
 public class UserDetailResponse {
@@ -14,27 +15,21 @@ public class UserDetailResponse {
 	private long zan_count;
 	private String phone_number;
 	private String email_address;
+	//private Picture pic;
 	private int status = 0;
 
-	public UserDetailResponse(User user) {
+	public UserDetailResponse(User user, boolean isSelf) {
 		this.nickname = user.getNickname();
 		this.sex = user.getSex();
 		this.building = user.getBuilding();
 		this.company = user.getCompany();
 		this.birthday = user.getBirthday();
 		this.zan_count = user.getZan_count();
-		this.phone_number = user.getPhone_number();
-		this.email_address = user.getEmail_address();
-	}
-
-	public UserDetailResponse(String nickname, String sex, String building,
-			long zan_count, Date birthday) {
-		super();
-		this.nickname = nickname;
-		this.sex = sex;
-		this.building = building;
-		this.zan_count = zan_count;
-		this.birthday = birthday;
+		//this.pic=user.getPic();
+		if(isSelf){
+			this.phone_number = user.getPhone_number();
+			this.email_address = user.getEmail_address();
+		}
 	}
 
 	public UserDetailResponse(String nickname, String sex, String building,
@@ -138,4 +133,12 @@ public class UserDetailResponse {
 			return new UserDetailResponse(Status.ERROR_GENERIC);
 		}
 	}
+
+	/*public Picture getPic() {
+		return pic;
+	}
+
+	public void setPic(Picture pic) {
+		this.pic = pic;
+	}*/
 }

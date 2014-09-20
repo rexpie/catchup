@@ -11,5 +11,7 @@ public interface UserDao {
 
 	User findByUserNickName(String nickName);
 	
+	User findByUserPhoneNum(String phoneNum);
+	
 	User findById(Long id);
 }

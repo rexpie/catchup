@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -27,34 +29,33 @@ public class User implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -6970201418868427060L;
-	
-	/*登录相关信息*/
+
+	/* 登录相关信息 */
 	private Long id;
 	private String token;
 	private String password;
-	
-	/*必填信息*/
+
+	/* 必填信息 */
 	private String nickname;
 	private String phone_number;
 	private Date birthday;
 	private String sex;
 	private String building;
-	private Picture pic;	//头像
+	private Picture pic; // 头像
 	private Set<Tag> tags;
-	
-	/*非必填信息*/
+
+	/* 非必填信息 */
 	private String company;
 	private String role;
 	private String email_address;
-	
-	/*系统信息*/
+
+	/* 系统信息 */
+	private Set<Picture> picture; // 非头像照片
 	private long zan_count;
 	private Date update_time;
 	private Date create_time;
 	private int status;
 	private Set<User> followings;
-	
-	
 
 	public User() {
 		super();
@@ -62,13 +63,12 @@ public class User implements Serializable {
 	}
 
 	public User(String password, String nickname, String sex, String building,
-			Date birthday, String phone_number) {
+			String phone_number) {
 		super();
 		this.password = password;
 		this.nickname = nickname;
 		this.sex = sex;
 		this.building = building;
-		this.birthday = birthday;
 		this.phone_number = phone_number;
 	}
 
@@ -127,7 +127,7 @@ public class User implements Serializable {
 		this.sex = sex;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pic_id", unique = true)
 	public Picture getPic() {
 		return pic;
@@ -155,7 +155,7 @@ public class User implements Serializable {
 		this.company = company;
 	}
 
-	@Column(name = "birthday", nullable = false)
+	@Column(name = "birthday")
 	@Temporal(TemporalType.DATE)
 	public Date getBirthday() {
 		return birthday;
@@ -258,30 +258,40 @@ public class User implements Serializable {
 	public void setRole(String role) {
 		this.role = role;
 	}
-	
-	@Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final User other = (User) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!this.id.equals(other.id))
-            return false;
-        return true;
-    }
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
+	public Set<Picture> getPicture() {
+		return picture;
+	}
+
+	public void setPicture(Set<Picture> picture) {
+		this.picture = picture;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final User other = (User) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!this.id.equals(other.id))
+			return false;
+		return true;
+	}
 
 }

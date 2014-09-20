@@ -57,4 +57,17 @@ public class UserDaoImpl implements UserDao {
 			return null;
 	}
 
+	public User findByUserPhoneNum(String phoneNum) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session
+				.createQuery("from User where phone_number= :phone_number");
+		query.setString("phone_number", phoneNum);
+		List list = query.list();
+		if (list.size() > 0)
+			return (User) list.get(0);
+		else
+			return null;
+	}
+
 }

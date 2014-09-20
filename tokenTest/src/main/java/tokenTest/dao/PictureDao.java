@@ -8,4 +8,6 @@ public interface PictureDao {
 	void update(Picture picture);
 
 	void delete(Picture picture);
+	
+	Picture findPictureById(Long id);
 }

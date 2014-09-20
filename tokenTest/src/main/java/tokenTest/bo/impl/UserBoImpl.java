@@ -48,4 +48,10 @@ public class UserBoImpl implements UserBo {
 		return userDao.findById(id);
 	}
 
+	@Transactional
+	public User findByUserPhoneNum(String phoneNum) {
+		// TODO Auto-generated method stub
+		return userDao.findByUserPhoneNum(phoneNum);
+	}
+
 }
