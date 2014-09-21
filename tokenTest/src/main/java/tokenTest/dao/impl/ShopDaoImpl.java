@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import tokenTest.dao.ShopDao;
 import tokenTest.model.Shop;
+import tokenTest.model.User;
 
 @Repository("shopDao")
 public class ShopDaoImpl implements ShopDao {
@@ -37,7 +38,22 @@ public class ShopDaoImpl implements ShopDao {
 		Query query = session.createQuery("from Shop where name= :name");
 		query.setString("name", name);
 		List list = query.list();
-		return (Shop) list.get(0);
+		if (list.size() > 0)
+			return (Shop) list.get(0);
+		else
+			return null;
+	}
+
+	public Shop findByShopId(Long id) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Shop where id= :id");
+		query.setLong("id", id);
+		List list = query.list();
+		if (list.size() > 0)
+			return (Shop) list.get(0);
+		else
+			return null;
 	}
 
 }

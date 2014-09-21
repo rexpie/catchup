@@ -42,4 +42,10 @@ public class ShopBoImpl implements ShopBo {
 		return shopDao.findByShopName(name);
 	}
 
+	@Transactional
+	public Shop findByShopId(Long id) {
+		// TODO Auto-generated method stub
+		return shopDao.findByShopId(id);
+	}
+
 }

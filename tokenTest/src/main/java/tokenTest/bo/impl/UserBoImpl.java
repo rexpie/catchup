@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import tokenTest.bo.UserBo;
 import tokenTest.dao.UserDao;
 import tokenTest.model.User;
+import org.apache.commons.lang3.StringUtils;
 
 @Service("userBo")
 public class UserBoImpl implements UserBo {
@@ -52,6 +53,15 @@ public class UserBoImpl implements UserBo {
 	public User findByUserPhoneNum(String phoneNum) {
 		// TODO Auto-generated method stub
 		return userDao.findByUserPhoneNum(phoneNum);
+	}
+
+	@Transactional
+	public User validateUser(Long id, String token) {
+		// TODO Auto-generated method stub
+		User user = findByUserId(id);
+		if (user == null || !StringUtils.equals(user.getToken(), token))
+			return null;
+		return user;
 	}
 
 }

@@ -7,6 +7,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +19,8 @@ import tokenTest.model.Picture;
 public class PictureBoImpl implements PictureBo {
 	@Autowired
 	private PictureDao pictureDao;
+	
+	private static String TYPE=".png";
 
 	public void setPictureDao(PictureDao pictureDao) {
 		this.pictureDao = pictureDao;
@@ -34,10 +37,10 @@ public class PictureBoImpl implements PictureBo {
 		if (!picturePath.exists())
 			picturePath.mkdirs();
 
-		String filename = path + RandomStringUtils.randomAlphanumeric(30);
+		String filename = path + RandomStringUtils.randomAlphanumeric(30)+TYPE;
 		File destination = new File(filename);
 		while (destination.exists()) {
-			filename = path + RandomStringUtils.randomAlphanumeric(30);
+			filename = path + RandomStringUtils.randomAlphanumeric(30)+TYPE;
 			destination = new File(filename);
 		}
 		destination.createNewFile();

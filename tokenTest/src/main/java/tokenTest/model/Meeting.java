@@ -26,10 +26,7 @@ public class Meeting {
 	private Long id;
 	private User owner;
 	private Date create_time;
-	private Date start_time;
-	private int man_limit;
-	private int woman_limit;
-	private String sex_preference;
+	private String genderConstraint;
 	private int seen_count;
 	private int apply_count;
 	private Shop shop;
@@ -44,16 +41,13 @@ public class Meeting {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Meeting(User owner, Date create_time, int man_limit,
-			int woman_limit, String sex_preference, int time_limit,
+	public Meeting(User owner, Date create_time, Shop shop, String genderConstraint,
 			String description) {
 		super();
 		this.owner = owner;
 		this.create_time = create_time;
-		this.man_limit = man_limit;
-		this.woman_limit = woman_limit;
-		this.sex_preference = sex_preference;
-		this.time_limit = time_limit;
+		this.shop = shop;
+		this.genderConstraint=genderConstraint;
 		this.description = description;
 	}
 
@@ -65,8 +59,17 @@ public class Meeting {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
+	}
+
+	@Column(name = "genderConstraint", length = 1)
+	public String getGenderConstraint() {
+		return genderConstraint;
+	}
+
+	public void setGenderConstraint(String genderConstraint) {
+		this.genderConstraint = genderConstraint;
 	}
 
 	@ManyToOne(targetEntity = User.class)
@@ -87,43 +90,6 @@ public class Meeting {
 
 	public void setCreate_time(Date create_time) {
 		this.create_time = create_time;
-	}
-
-	@Column(name = "start_time")
-	@Temporal(TemporalType.TIMESTAMP)
-	public Date getStart_time() {
-		return start_time;
-	}
-
-	public void setStart_time(Date start_time) {
-		this.start_time = start_time;
-	}
-
-	@Column(name = "man_limit")
-	public int getMan_limit() {
-		return man_limit;
-	}
-
-	public void setMan_limit(int man_limit) {
-		this.man_limit = man_limit;
-	}
-
-	@Column(name = "woman_limit")
-	public int getWoman_limit() {
-		return woman_limit;
-	}
-
-	public void setWoman_limit(int woman_limit) {
-		this.woman_limit = woman_limit;
-	}
-
-	@Column(name = "sex_preference")
-	public String getSex_preference() {
-		return sex_preference;
-	}
-
-	public void setSex_preference(String sex_preference) {
-		this.sex_preference = sex_preference;
 	}
 
 	@Column(name = "seen_count")

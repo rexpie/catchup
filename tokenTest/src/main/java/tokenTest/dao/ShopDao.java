@@ -11,4 +11,6 @@ public interface ShopDao {
 	void delete(Shop shop);
 	
 	Shop findByShopName(String name);
+	
+	Shop findByShopId(Long id);
 }

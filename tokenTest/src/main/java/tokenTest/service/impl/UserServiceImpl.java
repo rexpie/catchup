@@ -4,13 +4,11 @@
 package tokenTest.service.impl;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +45,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Autowired
 	private ServletContext servletContext = null;
-	
+
 	private static String DIR = "picture";
 
 	/*
@@ -392,6 +390,12 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (!StringUtils.equals(user.getToken(), token)) {
 			return Status.ERROR_WRONG_TOKEN;
 		}
+		
+		/*验证图片*/
+		if(!StringUtils.equals(picture.getContentType(), "image/png")){
+			/*文件格式错误*/
+			return Status.ERROR_GENERIC;
+		}
 
 		/* 保存图片文件 */
 		Picture pic = new Picture(new Date(), description);
@@ -473,7 +477,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		try {
 			/* 删除图片数据和文件 */
-			pictureBo.delete(picture,path);
+			pictureBo.delete(picture, path);
 		} catch (Exception e) {
 			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
