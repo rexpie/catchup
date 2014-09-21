@@ -36,6 +36,6 @@ public interface UserServiceInterface {
 			String building, Date birthday, String sex, String emailaddress,
 			String company);
 
-	String changePassWord(Long id, String oldpassword, String newpassword);
+	LoginResponse changePassWord(Long id, String oldpassword, String newpassword);
 
 }

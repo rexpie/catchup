@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import tokenTest.Util.Constants;
 import tokenTest.Util.Status;
 import tokenTest.bo.PictureBo;
 import tokenTest.bo.UserBo;
@@ -141,15 +142,32 @@ public class UserServiceImpl implements UserServiceInterface {
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 		}
 
+		int attempts = 0;
+		attempts = user.getLogin_attempts();
+		// 用户存在密码不对
+		if (user !=null && !password.equals(user.getPassword())){
+			// password wrong
+			attempts++;
+			user.setLogin_attempts(attempts);
+			userBo.update(user);
+		}
+		
+		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS){
+			return new LoginResponse(Status.ERROR_MAX_LOGIN_ATTEMPTS, "密码输入错误过多，请重置密码");
+		}			
+
 		/* 用昵称查找用户不存在 */
 		if (user == null || !password.equals(user.getPassword())) {
 			try {
-				user = userBo.findByUserPhoneNum(nickorphone);
+				if (user == null) {
+					user = userBo.findByUserPhoneNum(nickorphone);
+				}
 			} catch (Exception e) {
 				// TODO: handle exception
 				// 不知道啥错
 				return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 			}
+			
 
 			if (user == null || !password.equals(user.getPassword()))
 				return new LoginResponse(Status.ERROR_USER_NOT_FOUND,
@@ -158,6 +176,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		/* 生产、更新令牌 */
 		user.setToken(RandomStringUtils.randomAlphanumeric(30));
+		user.setLogin_attempts(0); // clear login attempts
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
@@ -313,7 +332,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String, java.lang.String)
 	 */
 	@RequestMapping(value = { "/changePassWord**" }, method = RequestMethod.GET)
-	public String changePassWord(@RequestParam(required = true) Long id,
+	public LoginResponse changePassWord(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String oldpassword,
 			@RequestParam(required = true) String newpassword) {
 		// TODO Auto-generated method stub
@@ -333,6 +352,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		/* 设置新的 用户密码 */
 		user.setPassword(newpassword);
+		user.setLogin_attempts(0);
 
 		/* 更新用户密码 */
 		try {
@@ -342,7 +362,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return null;
 		}
 
-		return "Successed";
+		return new LoginResponse(Status.OK);
 	}
 
 	@RequestMapping(value = { "/validatePhone**" }, method = RequestMethod.GET)
