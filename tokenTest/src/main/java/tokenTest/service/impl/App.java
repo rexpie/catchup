@@ -41,39 +41,41 @@ public class App {
 		 * stockBo.delete(stock2);
 		 */
 
-		/*PictureBo pictureBo = (PictureBo) appContext.getBean("pictureBo");
-		Picture picture = new Picture(new Date(), "peach's photo", "peach");
-		pictureBo.save(picture);
+		/*
+		 * PictureBo pictureBo = (PictureBo) appContext.getBean("pictureBo");
+		 * Picture picture = new Picture(new Date(), "peach's photo", "peach");
+		 * pictureBo.save(picture);
+		 * 
+		 * ShopBo shopBo = (ShopBo) appContext.getBean("shopBo"); Shop shop =
+		 * new Shop(); shop.setArea("徐家汇"); shop.setCity("上海");
+		 * shop.setType("中餐"); shop.setPrice(99.99);
+		 */
+		// shopBo.save(shop);
 
-		ShopBo shopBo = (ShopBo) appContext.getBean("shopBo");
-		Shop shop = new Shop();
-		shop.setArea("徐家汇");
-		shop.setCity("上海");
-		shop.setType("中餐");
-		shop.setPrice(99.99);*/
-//		shopBo.save(shop);
-		
-		
-		/*TagBo tagBo = (TagBo) appContext.getBean("tagBo");
-		Tag tag = new Tag("抠脚大汉");
-		tagBo.save(tag);*/
-		/*tagBo.save(new Tag("抠鼻大叔"));
-		tagBo.save(new Tag("抠脚大汉"));
-		tagBo.save(new Tag("office达人"));*/
-		
-		UserBo userBo = (UserBo) appContext.getBean("userBo");
-		User user = new User("123456", "peac1h", "M", "CCB", "ccb", new Date(), 10086, "18918760155", "tpeng915@gmail.com");
-		/*user.setPic(picture);
-		HashSet<Tag> tagSet = new HashSet<Tag>();
-		tagSet.add(tag);
-		user.setTags(tagSet);*/
-		userBo.save(user);
-		
-		
-		/*MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
-		Meeting meeting = new Meeting(user, new Date(), 2, 2, "F", 30, "一起喝茶");*/
-//		meetingBo.save(meeting);
+		/*
+		 * TagBo tagBo = (TagBo) appContext.getBean("tagBo"); Tag tag = new
+		 * Tag("抠脚大汉"); tagBo.save(tag);
+		 */
+		/*
+		 * tagBo.save(new Tag("抠鼻大叔")); tagBo.save(new Tag("抠脚大汉"));
+		 * tagBo.save(new Tag("office达人"));
+		 */
 
+		/*
+		 * UserBo userBo = (UserBo) appContext.getBean("userBo"); User user =
+		 * new User("123456", "peac1h", "M", "CCB", "ccb", new Date(), 10086,
+		 * "18918760155", "tpeng915@gmail.com"); user.setPic(picture);
+		 * HashSet<Tag> tagSet = new HashSet<Tag>(); tagSet.add(tag);
+		 * user.setTags(tagSet); userBo.save(user);
+		 */
+
+		/*
+		 * MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
+		 * Meeting meeting = new Meeting(user, new Date(), 2, 2, "F", 30,
+		 * "一起喝茶");
+		 */
+		// meetingBo.save(meeting);
+		System.out.println(System.getProperty("user.dir"));
 		System.out.println("Done");
 	}
 }

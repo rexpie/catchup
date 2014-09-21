@@ -2,6 +2,8 @@ package tokenTest.service;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import tokenTest.Util.Status;

@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,11 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Autowired
 	private PictureBo pictureBo;
+
+	@Autowired
+	private ServletContext servletContext = null;
+	
+	private static String DIR = "picture";
 
 	/*
 	 * (non-Javadoc)
@@ -132,7 +140,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			// TODO: handle exception
 			// 不知道啥错
-			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用1");
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 		}
 
 		/* 用昵称查找用户不存在 */
@@ -142,7 +150,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			} catch (Exception e) {
 				// TODO: handle exception
 				// 不知道啥错
-				return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用2");
+				return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 			}
 
 			if (user == null || !password.equals(user.getPassword()))
@@ -156,7 +164,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			userBo.update(user);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用3");
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 		}
 		return new LoginResponse(Status.OK, user.getId(), user.getToken());
 	}
@@ -366,6 +374,8 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) MultipartFile picture,
 			@RequestParam(required = false) String description,
 			@RequestParam(required = false) Boolean isProfile) {
+		String path = servletContext.getRealPath("/") + File.pathSeparator
+				+ DIR;
 		User user = null;
 		/* 查找用户 */
 		try {
@@ -388,7 +398,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			// TODO Auto-generated method stub
 			/* 保存文件 */
-			pictureBo.save(picture, pic);
+			pictureBo.save(picture, pic, path);
 		} catch (Exception e) {
 			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
@@ -416,6 +426,8 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	public Enum<Status> deletePhoto(Long id, String token, Long picId) {
 		// TODO Auto-generated method stub
+		String path = servletContext.getRealPath("/") + File.pathSeparator
+				+ DIR;
 		User user = null;
 		/* 查找用户 */
 		try {
@@ -432,8 +444,8 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (!StringUtils.equals(user.getToken(), token)) {
 			return Status.ERROR_WRONG_TOKEN;
 		}
-		
-		/*查找图片*/
+
+		/* 查找图片 */
 		Picture picture = null;
 		try {
 			picture = pictureBo.findById(picId);
@@ -441,11 +453,11 @@ public class UserServiceImpl implements UserServiceInterface {
 			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
-		if(picture==null){
-			//图片不存在
+		if (picture == null) {
+			// 图片不存在
 			return Status.ERROR_GENERIC;
 		}
-		
+
 		Set<Picture> pictures = user.getPicture();
 		if (pictures == null)
 			return Status.ERROR_GENERIC;
@@ -458,10 +470,10 @@ public class UserServiceImpl implements UserServiceInterface {
 			// 保存失败，没做处理
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
-		
+
 		try {
-			/*删除图片数据和文件*/
-			pictureBo.deleteById(picId);
+			/* 删除图片数据和文件 */
+			pictureBo.delete(picture,path);
 		} catch (Exception e) {
 			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;

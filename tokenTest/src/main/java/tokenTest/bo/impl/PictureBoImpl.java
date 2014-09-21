@@ -19,25 +19,25 @@ public class PictureBoImpl implements PictureBo {
 	@Autowired
 	private PictureDao pictureDao;
 
-	private static String DIR = "picture";
-
 	public void setPictureDao(PictureDao pictureDao) {
 		this.pictureDao = pictureDao;
 	}
 
 	@Transactional
-	public void save(MultipartFile file, Picture picture) throws Exception {
+	public void save(MultipartFile file, Picture picture, String path)
+			throws Exception {
 		// TODO Auto-generated method stub
-		if (picture == null || file == null)
+		if (picture == null || file == null || path == null)
 			return;
-		String filename = System.getProperty("user.dir") + File.pathSeparator
-				+ DIR + File.pathSeparator
-				+ RandomStringUtils.randomAlphanumeric(30);
+
+		File picturePath = new File(path);
+		if (!picturePath.exists())
+			picturePath.mkdirs();
+
+		String filename = path + RandomStringUtils.randomAlphanumeric(30);
 		File destination = new File(filename);
 		while (destination.exists()) {
-			filename = System.getProperty("user.dir") + File.pathSeparator
-					+ DIR + File.pathSeparator
-					+ RandomStringUtils.randomAlphanumeric(30);
+			filename = path + RandomStringUtils.randomAlphanumeric(30);
 			destination = new File(filename);
 		}
 		destination.createNewFile();
@@ -57,26 +57,29 @@ public class PictureBoImpl implements PictureBo {
 	}
 
 	@Transactional
-	public void delete(Picture picture) {
+	public void delete(Picture picture, String path) {
 		// TODO Auto-generated method stub
-		if (picture == null)
+		if (picture == null || path == null)
 			return;
+
+		File pictureFile = new File(path + picture.getFilename());
+		if (pictureFile.exists())
+			pictureFile.delete();
 		pictureDao.delete(picture);
 	}
 
 	@Transactional
-	public void deleteById(Long id) {
+	public void deleteById(Long id, String path) {
 		// TODO Auto-generated method stub
-		if (id == null)
+		if (id == null || path == null)
 			return;
 		Picture picture = pictureDao.findPictureById(id);
-		File pictureFile = new File(System.getProperty("user.dir")
-				+ File.pathSeparator + DIR + File.pathSeparator
-				+ picture.getFilename());
-		if(pictureFile.exists())pictureFile.delete();
+		File pictureFile = new File(path + picture.getFilename());
+		if (pictureFile.exists())
+			pictureFile.delete();
 		pictureDao.delete(picture);
 	}
-	
+
 	@Transactional
 	public Picture findById(Long id) {
 		// TODO Auto-generated method stub
