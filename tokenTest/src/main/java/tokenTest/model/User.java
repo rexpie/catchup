@@ -34,6 +34,8 @@ public class User implements Serializable {
 	private Long id;
 	private String token;
 	private String password;
+	private Integer login_attempts;
+
 
 	/* ±ÿÃÓ–≈œ¢ */
 	private String nickname;
@@ -269,6 +271,16 @@ public class User implements Serializable {
 		this.picture = picture;
 	}
 
+	
+	@Column(name = "login_attempts")
+	public Integer getLogin_attempts() {
+		return login_attempts;
+	}
+
+	public void setLogin_attempts(Integer login_attempts) {
+		this.login_attempts = login_attempts;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
