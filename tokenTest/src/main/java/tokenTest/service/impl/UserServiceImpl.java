@@ -67,7 +67,6 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) Date birthday,
 			@RequestParam(required = false) String emailaddress,
 			@RequestParam(required = false) String company) {
-		// TODO Auto-generated method stub
 		/* 必填信息 */
 		User user = new User(password, nickName, gender, building, phoneNum);
 
@@ -86,7 +85,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.save(user);
 		} catch (DataIntegrityViolationException e) {
-			// TODO: handle exception
 			// 不满足唯一性约束，phonenum或nickname重复,占用token做错误信息。
 			return new LoginResponse(Status.ERROR_GENERIC,
 					"phonenum或nickname重复");
@@ -130,14 +128,12 @@ public class UserServiceImpl implements UserServiceInterface {
 	public LoginResponse userLogin(
 			@RequestParam(required = true) String nickorphone,
 			@RequestParam(required = true) String password) {
-		// TODO Auto-generated method stub
 		User user = null;
 
 		/* 查找用户 */
 		try {
 			user = userBo.findByUserNickName(nickorphone);
 		} catch (Exception e) {
-			// TODO: handle exception
 			// 不知道啥错
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 		}
@@ -157,22 +153,9 @@ public class UserServiceImpl implements UserServiceInterface {
 		}			
 
 		/* 用昵称查找用户不存在 */
-		if (user == null || !password.equals(user.getPassword())) {
-			try {
-				if (user == null) {
-					user = userBo.findByUserPhoneNum(nickorphone);
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-				// 不知道啥错
-				return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
-			}
-			
 
-			if (user == null || !password.equals(user.getPassword()))
-				return new LoginResponse(Status.ERROR_USER_NOT_FOUND,
-						"用户不存在或者密码错误");
-		}
+		if (user == null || !password.equals(user.getPassword()))
+			return new LoginResponse(Status.ERROR_USER_NOT_FOUND, "用户不存在或者密码错误");
 
 		/* 生产、更新令牌 */
 		user.setToken(RandomStringUtils.randomAlphanumeric(30));
@@ -180,7 +163,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 		}
 		return new LoginResponse(Status.OK, user.getId(), user.getToken());
@@ -195,14 +177,12 @@ public class UserServiceImpl implements UserServiceInterface {
 	@RequestMapping(value = { "/userLogout**" }, method = RequestMethod.GET)
 	public Enum<Status> userLogout(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token) {
-		// TODO Auto-generated method stub
 		User user = null;
 
 		/* 查找用户 */
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			// TODO: handle exception
 			// 不管什么错，用户不用知道。
 			return Status.OK;
 		}
@@ -216,7 +196,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			// TODO: handle exception
 			// 不管什么错，用户不用知道。
 			return Status.OK;
 		}
@@ -234,14 +213,12 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) Long targetId) {
-		// TODO Auto-generated method stub
 		User user = null;
 
 		/* 查找用户 */
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -254,7 +231,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		}
 
 		/* targetId==null表示查看自己信息，否则为查看别人信息 */
-		if (targetId == null) {
+		if (targetId == null || targetId == user.getId()) {
 			return new UserDetailResponse(user, true);
 		} else {
 			try {
@@ -277,7 +254,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String, java.lang.String, java.lang.String) 修改用户信息
 	 */
 	@RequestMapping(value = { "/updateUserProfile**" }, method = RequestMethod.GET)
-	public String updateUserProfile(@RequestParam(required = true) Long id,
+	public Enum<Status> updateUserProfile(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) String nickname,
 			@RequestParam(required = false) String building,
@@ -285,15 +262,13 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) String sex,
 			@RequestParam(required = false) String emailaddress,
 			@RequestParam(required = false) String company) {
-		// TODO Auto-generated method stub
 		User user = null;
 
 		/* 查找用户 */
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			// TODO: handle exception
-			return null;
+			return Status.ERROR_USER_NOT_FOUND;
 		}
 
 		/* 用户不存在或者令牌不正确 */
@@ -318,10 +293,9 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			// TODO: handle exception
-			return null;
+			return Status.ERROR_GENERIC;
 		}
-		return "Successed";
+		return Status.OK;
 	}
 
 	/*
@@ -331,24 +305,22 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * tokenTest.service.UserServiceInterface#changePassWord(java.lang.Long,
 	 * java.lang.String, java.lang.String)
 	 */
-	@RequestMapping(value = { "/changePassWord**" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/changePassword**" }, method = RequestMethod.GET)
 	public LoginResponse changePassWord(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String oldpassword,
 			@RequestParam(required = true) String newpassword) {
-		// TODO Auto-generated method stub
 		User user = null;
 
 		/* 查找用户 */
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			// TODO: handle exception
-			return null;
+			return new LoginResponse(Status.ERROR_USER_NOT_FOUND);
 		}
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null || !user.getPassword().equals(oldpassword))
-			return null;
+			return new LoginResponse(Status.ERROR_USER_NOT_FOUND);
 
 		/* 设置新的 用户密码 */
 		user.setPassword(newpassword);
@@ -358,8 +330,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			// TODO: handle exception
-			return null;
+			return new LoginResponse(Status.ERROR_GENERIC);
 		}
 
 		return new LoginResponse(Status.OK);
@@ -368,7 +339,6 @@ public class UserServiceImpl implements UserServiceInterface {
 	@RequestMapping(value = { "/validatePhone**" }, method = RequestMethod.GET)
 	public ValidatePhoneResponse validatePhone(
 			@RequestParam(required = true) String phoneNum) {
-		// TODO Auto-generated method stub
 		/*
 		 * User user = null; 查找用户 try { user =
 		 * userBo.findByUserPhoneNum(phoneNum); } catch (Exception e) { // TODO:
@@ -399,7 +369,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
@@ -420,11 +389,9 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 保存图片文件 */
 		Picture pic = new Picture(new Date(), description);
 		try {
-			// TODO Auto-generated method stub
 			/* 保存文件 */
 			pictureBo.save(picture, pic, path);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
@@ -440,7 +407,6 @@ public class UserServiceImpl implements UserServiceInterface {
 			try {
 				userBo.update(user);
 			} catch (Exception e) {
-				// TODO: handle exception
 				// 保存失败，没做处理
 				return Status.SERVICE_NOT_AVAILABLE;
 			}
@@ -449,7 +415,6 @@ public class UserServiceImpl implements UserServiceInterface {
 	}
 
 	public Enum<Status> deletePhoto(Long id, String token, Long picId) {
-		// TODO Auto-generated method stub
 		String path = servletContext.getRealPath("/") + File.pathSeparator
 				+ DIR;
 		User user = null;
@@ -457,7 +422,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
@@ -474,7 +438,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			picture = pictureBo.findById(picId);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 		if (picture == null) {
@@ -490,7 +453,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			// TODO: handle exception
 			// 保存失败，没做处理
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
@@ -499,9 +461,16 @@ public class UserServiceImpl implements UserServiceInterface {
 			/* 删除图片数据和文件 */
 			pictureBo.delete(picture, path);
 		} catch (Exception e) {
-			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 		return Status.OK;
+	}
+
+	@Override
+	@RequestMapping(value = { "/resetPassword**" }, method = RequestMethod.POST)
+	public LoginResponse resetPassword(Long id, String newPassword,
+			String validationCode) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

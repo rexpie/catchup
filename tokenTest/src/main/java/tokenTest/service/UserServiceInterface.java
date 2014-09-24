@@ -32,10 +32,13 @@ public interface UserServiceInterface {
 	Enum<Status> deletePhoto(Long id, String token, Long picId);
 
 	// 后面的还没改
-	String updateUserProfile(Long id, String token, String nickname,
+	Enum<Status> updateUserProfile(Long id, String token, String nickname,
 			String building, Date birthday, String sex, String emailaddress,
 			String company);
 
 	LoginResponse changePassWord(Long id, String oldpassword, String newpassword);
+	
+	
+	LoginResponse resetPassword(Long id, String newPassword, String validationCode);
 
 }
