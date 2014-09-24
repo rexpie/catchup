@@ -145,29 +145,27 @@ public class UserServiceImpl implements UserServiceInterface {
 		int attempts = 0;
 		attempts = user.getLogin_attempts();
 		// 用户存在密码不对
-		if (user !=null && !password.equals(user.getPassword())){
+		if (user != null && !password.equals(user.getPassword())) {
 			// password wrong
 			attempts++;
 			user.setLogin_attempts(attempts);
 			userBo.update(user);
 		}
-		
-		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS){
-			return new LoginResponse(Status.ERROR_MAX_LOGIN_ATTEMPTS, "密码输入错误过多，请重置密码");
-		}			
+
+		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS) {
+			return new LoginResponse(Status.ERROR_MAX_LOGIN_ATTEMPTS,
+					"密码输入错误过多，请重置密码");
+		}
 
 		/* 用昵称查找用户不存在 */
 		if (user == null || !password.equals(user.getPassword())) {
 			try {
-				if (user == null) {
-					user = userBo.findByUserPhoneNum(nickorphone);
-				}
+				user = userBo.findByUserPhoneNum(nickorphone);
 			} catch (Exception e) {
 				// TODO: handle exception
 				// 不知道啥错
 				return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
 			}
-			
 
 			if (user == null || !password.equals(user.getPassword()))
 				return new LoginResponse(Status.ERROR_USER_NOT_FOUND,
@@ -392,8 +390,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) MultipartFile picture,
 			@RequestParam(required = false) String description,
 			@RequestParam(required = false) Boolean isProfile) {
-		String path = servletContext.getRealPath("/") + File.pathSeparator
-				+ DIR;
+		String path = servletContext.getRealPath("/") + File.separator + DIR;
 		User user = null;
 		/* 查找用户 */
 		try {
@@ -410,10 +407,10 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (!StringUtils.equals(user.getToken(), token)) {
 			return Status.ERROR_WRONG_TOKEN;
 		}
-		
-		/*验证图片*/
-		if(!StringUtils.equals(picture.getContentType(), "image/png")){
-			/*文件格式错误*/
+
+		/* 验证图片 */
+		if (!StringUtils.equals(picture.getContentType(), "image/png")) {
+			/* 文件格式错误 */
 			return Status.ERROR_GENERIC;
 		}
 
@@ -448,10 +445,10 @@ public class UserServiceImpl implements UserServiceInterface {
 		return Status.OK;
 	}
 
+	@RequestMapping(value = { "/deletePhoto**" }, method = RequestMethod.GET)
 	public Enum<Status> deletePhoto(Long id, String token, Long picId) {
 		// TODO Auto-generated method stub
-		String path = servletContext.getRealPath("/") + File.pathSeparator
-				+ DIR;
+		String path = servletContext.getRealPath("/") + File.separator + DIR;
 		User user = null;
 		/* 查找用户 */
 		try {
@@ -479,12 +476,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		}
 		if (picture == null) {
 			// 图片不存在
-			return Status.ERROR_GENERIC;
+			return Status.ERROR_PIC_NOT_FOUND;
 		}
-
 		Set<Picture> pictures = user.getPicture();
 		if (pictures == null)
-			return Status.ERROR_GENERIC;
+			return Status.ERROR_PIC_NOT_FOUND;
 		pictures.remove(picture);
 		user.setPicture(pictures);
 		try {
