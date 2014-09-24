@@ -19,9 +19,7 @@ import com.google.common.collect.Lists;
 
 public class SMSUtil {
 	
-	private static String Url = "http://106.ihuyi.cn/webservice/sms.php?method=Submit";
-	
-	
+	private static final String Url = "http://106.ihuyi.cn/webservice/sms.php?method=Submit";
 	
 	public static void send(String mobile_code) {
 		
