@@ -89,4 +89,10 @@ public class SMSUtil {
 	
 	private static Random ran = new Random();
 	
+	
+	public static String doValidate(){
+		String code = genCode();
+		send(code);
+		return code;
+	}
 }

@@ -21,11 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import tokenTest.Util.Constants;
+import tokenTest.Util.SMSUtil;
 import tokenTest.Util.Status;
 import tokenTest.bo.PictureBo;
 import tokenTest.bo.UserBo;
+import tokenTest.bo.ValidationCodeBo;
 import tokenTest.model.Picture;
 import tokenTest.model.User;
+import tokenTest.model.ValidationCode;
 import tokenTest.response.LoginResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
@@ -43,6 +46,9 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Autowired
 	private PictureBo pictureBo;
+
+	@Autowired
+	private ValidationCodeBo validationCodeBo;
 
 	@Autowired
 	private ServletContext servletContext = null;
@@ -86,8 +92,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			userBo.save(user);
 		} catch (DataIntegrityViolationException e) {
 			// 不满足唯一性约束，phonenum或nickname重复,占用token做错误信息。
-			return new LoginResponse(Status.ERROR_GENERIC,
-					"phonenum或nickname重复");
+			return new LoginResponse(Status.ERR_GENERIC, "phonenum或nickname重复");
 		}
 		return new LoginResponse(Status.OK, user.getToken());
 	}
@@ -141,21 +146,22 @@ public class UserServiceImpl implements UserServiceInterface {
 		int attempts = 0;
 		attempts = user.getLogin_attempts();
 		// 用户存在密码不对
-		if (user !=null && !password.equals(user.getPassword())){
+		if (user != null && !password.equals(user.getPassword())) {
 			// password wrong
 			attempts++;
 			user.setLogin_attempts(attempts);
 			userBo.update(user);
 		}
-		
-		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS){
-			return new LoginResponse(Status.ERROR_MAX_LOGIN_ATTEMPTS, "密码输入错误过多，请重置密码");
-		}			
+
+		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS) {
+			return new LoginResponse(Status.ERR_MAX_LOGIN_ATTEMPTS,
+					"密码输入错误过多，请重置密码");
+		}
 
 		/* 用昵称查找用户不存在 */
 
 		if (user == null || !password.equals(user.getPassword()))
-			return new LoginResponse(Status.ERROR_USER_NOT_FOUND, "用户不存在或者密码错误");
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND, "用户不存在或者密码错误");
 
 		/* 生产、更新令牌 */
 		user.setToken(RandomStringUtils.randomAlphanumeric(30));
@@ -224,10 +230,10 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null)
-			return UserDetailResponse.getError(Status.ERROR_USER_NOT_FOUND);
+			return UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
 
 		if (!StringUtils.equals(user.getToken(), token)) {
-			return UserDetailResponse.getError(Status.ERROR_WRONG_TOKEN);
+			return UserDetailResponse.getError(Status.ERR_WRONG_TOKEN);
 		}
 
 		/* targetId==null表示查看自己信息，否则为查看别人信息 */
@@ -240,7 +246,7 @@ public class UserServiceImpl implements UserServiceInterface {
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
 			if (user == null)
-				UserDetailResponse.getError(Status.ERROR_USER_NOT_FOUND);
+				UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
 			return new UserDetailResponse(user, false);
 		}
 	}
@@ -254,7 +260,8 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String, java.lang.String, java.lang.String) 修改用户信息
 	 */
 	@RequestMapping(value = { "/updateUserProfile**" }, method = RequestMethod.GET)
-	public Enum<Status> updateUserProfile(@RequestParam(required = true) Long id,
+	public Enum<Status> updateUserProfile(
+			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) String nickname,
 			@RequestParam(required = false) String building,
@@ -268,7 +275,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			return Status.ERROR_USER_NOT_FOUND;
+			return Status.ERR_USER_NOT_FOUND;
 		}
 
 		/* 用户不存在或者令牌不正确 */
@@ -293,7 +300,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			return Status.ERROR_GENERIC;
+			return Status.ERR_GENERIC;
 		}
 		return Status.OK;
 	}
@@ -315,12 +322,12 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			return new LoginResponse(Status.ERROR_USER_NOT_FOUND);
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND);
 		}
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null || !user.getPassword().equals(oldpassword))
-			return new LoginResponse(Status.ERROR_USER_NOT_FOUND);
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND);
 
 		/* 设置新的 用户密码 */
 		user.setPassword(newpassword);
@@ -330,7 +337,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			return new LoginResponse(Status.ERROR_GENERIC);
+			return new LoginResponse(Status.ERR_GENERIC);
 		}
 
 		return new LoginResponse(Status.OK);
@@ -339,20 +346,69 @@ public class UserServiceImpl implements UserServiceInterface {
 	@RequestMapping(value = { "/validatePhone**" }, method = RequestMethod.GET)
 	public ValidatePhoneResponse validatePhone(
 			@RequestParam(required = true) String phoneNum) {
-		/*
-		 * User user = null; 查找用户 try { user =
-		 * userBo.findByUserPhoneNum(phoneNum); } catch (Exception e) { // TODO:
-		 * handle exception // 不知道啥错 return new
-		 * ValidatePhoneResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用"); }
-		 * 
-		 * 手机号码已经被注册,不做控制 if (user != null) { // TODO }
-		 */
 
+		return _doValidate(phoneNum, ValidationCodeStatus.NEW);
+
+	}
+
+	@RequestMapping(value = { "/validateReset**" }, method = RequestMethod.GET)
+	public ValidatePhoneResponse validateReset(
+			@RequestParam(required = true) String phoneNum) {
+
+		return _doValidate(phoneNum, ValidationCodeStatus.PASSWD_RESET);
+
+	}
+
+	private ValidatePhoneResponse _doValidate(String phoneNum,
+			ValidationCodeStatus inputStatus) {
 		/* 随机验证码 */
-		String code = RandomStringUtils.randomNumeric(6);
-		// TODO 发送验证码
+		ValidationCode validationCode = null;
+		try {
+			validationCode = validationCodeBo.findByPhoneNum(phoneNum);
+		} catch (Exception e) {
+			return new ValidatePhoneResponse(Status.ERR_GENERIC);
+		}
 
-		return new ValidatePhoneResponse(Status.OK, code);
+		Date time = new Date();
+		boolean isNewNumber = false;
+		if (validationCode == null) {
+			if (inputStatus == ValidationCodeStatus.NEW) {
+				isNewNumber = true;
+				validationCode = new ValidationCode();
+				validationCode.setPhoneNum(phoneNum);
+				validationCode.setCreateTime(time);
+			} else {
+				// no valid phone num, cannot reset password
+				return new ValidatePhoneResponse(Status.ERR_PHONE_NUM_NOT_FOUND);
+			}
+		}
+
+		if (inputStatus == ValidationCodeStatus.NEW
+				&& validationCode.getStatus() == inputStatus.getValue()) {
+			// no need to validate twice? Or maybe not getting the SMS so doing
+			// it again
+		}
+
+		if (inputStatus == ValidationCodeStatus.NEW
+				&& validationCode.getStatus() == ValidationCodeStatus.PASSWD_RESET
+						.getValue()) {
+			// why validate the new phone num after reset?
+			return new ValidatePhoneResponse(Status.ERR_PHONE_VALIDATION_FAIL);
+		}
+
+		String secret = SMSUtil.doValidate();
+		validationCode.setCode(secret);
+		validationCode.setUpdateTime(time);
+		validationCode.setStatus(inputStatus);
+
+		if (isNewNumber) {
+			validationCodeBo.save(validationCode);
+		} else {
+			validationCodeBo.update(validationCode);
+		}
+
+		return new ValidatePhoneResponse(Status.OK);
+
 	}
 
 	/* 默认增的不是头像 */
@@ -374,16 +430,16 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null)
-			return Status.ERROR_USER_NOT_FOUND;
+			return Status.ERR_USER_NOT_FOUND;
 
 		if (!StringUtils.equals(user.getToken(), token)) {
-			return Status.ERROR_WRONG_TOKEN;
+			return Status.ERR_WRONG_TOKEN;
 		}
-		
-		/*验证图片*/
-		if(!StringUtils.equals(picture.getContentType(), "image/png")){
-			/*文件格式错误*/
-			return Status.ERROR_GENERIC;
+
+		/* 验证图片 */
+		if (!StringUtils.equals(picture.getContentType(), "image/png")) {
+			/* 文件格式错误 */
+			return Status.ERR_GENERIC;
 		}
 
 		/* 保存图片文件 */
@@ -427,10 +483,10 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null)
-			return Status.ERROR_USER_NOT_FOUND;
+			return Status.ERR_USER_NOT_FOUND;
 
 		if (!StringUtils.equals(user.getToken(), token)) {
-			return Status.ERROR_WRONG_TOKEN;
+			return Status.ERR_WRONG_TOKEN;
 		}
 
 		/* 查找图片 */
@@ -442,12 +498,12 @@ public class UserServiceImpl implements UserServiceInterface {
 		}
 		if (picture == null) {
 			// 图片不存在
-			return Status.ERROR_GENERIC;
+			return Status.ERR_GENERIC;
 		}
 
 		Set<Picture> pictures = user.getPicture();
 		if (pictures == null)
-			return Status.ERROR_GENERIC;
+			return Status.ERR_GENERIC;
 		pictures.remove(picture);
 		user.setPicture(pictures);
 		try {
@@ -466,11 +522,57 @@ public class UserServiceImpl implements UserServiceInterface {
 		return Status.OK;
 	}
 
-	@Override
-	@RequestMapping(value = { "/resetPassword**" }, method = RequestMethod.POST)
-	public LoginResponse resetPassword(Long id, String newPassword,
-			String validationCode) {
-		// TODO Auto-generated method stub
-		return null;
+	@RequestMapping(value = { "/resetPassword**" }, method = RequestMethod.GET)
+	public LoginResponse resetPassword(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String newPassword,
+			@RequestParam(required = true) String code) {
+		User user = null;
+
+		/* 查找用户 */
+		try {
+			user = userBo.findByUserId(id);
+		} catch (Exception e) {
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		/* 用户不存在或者令牌不正确 */
+		if (user == null)
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND);
+
+		String phoneNum = user.getPhone_number();
+
+		ValidationCode validationCode = null;
+		try {
+			validationCode = validationCodeBo.findByPhoneNum(phoneNum);
+		} catch (Exception e) {
+			return new LoginResponse(Status.ERR_GENERIC);
+		}
+
+		if (validationCode == null) {
+			// no validation code found, notify to validate code first
+			return new LoginResponse(Status.ERR_WRONG_VALIDATION_CODE);
+		}
+
+		// code found, check status
+		if (validationCode.getStatus() == ValidationCodeStatus.PASSWD_RESET
+				.getValue()) {
+			// valid status
+			if (StringUtils.equals(validationCode.getCode(), code)) {
+				// matching code, clear validatino status
+				validationCode.setStatus(ValidationCodeStatus.INVALID);
+				validationCodeBo.update(validationCode);
+
+				// reset password
+				user.setPassword(newPassword);
+				// get user new token
+				user.setToken(RandomStringUtils.randomAlphanumeric(30));
+				userBo.update(user);
+				return new LoginResponse(Status.OK, user.getId(),
+						user.getToken());
+
+			}
+		}
+		return new LoginResponse(Status.ERR_PHONE_VALIDATION_FAIL);
+
 	}
 }

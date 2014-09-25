@@ -1,36 +1,38 @@
 package tokenTest.bo.impl;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tokenTest.bo.ValidationCodeBo;
-import tokenTest.dao.UserDao;
+import tokenTest.dao.ValidationCodeDao;
 import tokenTest.model.ValidationCode;
 
 @Service("validationCodeBo")
 public class ValidationCodeBoImpl implements ValidationCodeBo {
 
 	@Autowired
-	private ValidationCodeBo validationCodeBo;
+	private ValidationCodeDao validationCodeDao;
 	
-	@Override
+	@Transactional
 	public void save(ValidationCode code) {
-		validationCodeBo.save(code);
+		validationCodeDao.save(code);
 	}
 
-	@Override
+	@Transactional
 	public void update(ValidationCode code) {
-		validationCodeBo.update(code);
+		validationCodeDao.update(code);
 	}
 
-	@Override
+	@Transactional
 	public void delete(ValidationCode code) {
-		validationCodeBo.delete(code);
+		validationCodeDao.delete(code);
 	}
 
-	@Override
+	@Transactional
 	public ValidationCode findByPhoneNum(String phoneNum) {
-		return validationCodeBo.findByPhoneNum(phoneNum);
+		return validationCodeDao.findByPhoneNum(phoneNum);
 	}
 
 }

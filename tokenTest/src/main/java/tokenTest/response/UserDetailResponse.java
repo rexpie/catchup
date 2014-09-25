@@ -130,7 +130,7 @@ public class UserDetailResponse {
 		if (status!=Status.OK)
 			return new UserDetailResponse(status);
 		else {
-			return new UserDetailResponse(Status.ERROR_GENERIC);
+			return new UserDetailResponse(Status.ERR_GENERIC);
 		}
 	}
 

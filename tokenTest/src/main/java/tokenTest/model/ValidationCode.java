@@ -4,7 +4,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
+
+import tokenTest.service.impl.ValidationCodeStatus;
 
 @Entity
 @Table(name = "ValidationCode")
@@ -27,6 +30,7 @@ public class ValidationCode {
 	}
 
 	@Column(name = "phoneNum", unique = true, nullable = false)
+	@Id
 	public String getPhoneNum() {
 		return phoneNum;
 	}
@@ -55,6 +59,10 @@ public class ValidationCode {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	
+	public void setStatus(ValidationCodeStatus status){
+		setStatus(status.getValue());
 	}
 
 	public void setUpdateTime(Date updateTime) {

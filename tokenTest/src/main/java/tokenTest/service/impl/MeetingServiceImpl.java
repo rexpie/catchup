@@ -58,7 +58,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null) {
-			return new MeetingResponse(Status.ERROR_USER_NOT_FOUND);
+			return new MeetingResponse(Status.ERR_USER_NOT_FOUND);
 		}
 
 		Shop shop = null;
@@ -70,7 +70,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		}
 		if (shop == null) {
 			// 没有这家店，id为-1的店需要预埋
-			return new MeetingResponse(Status.ERROR_GENERIC);
+			return new MeetingResponse(Status.ERR_GENERIC);
 		}
 
 		Meeting meeting = new Meeting(user, new Date(), shop, genderConstraint,

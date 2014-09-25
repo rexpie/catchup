@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import tokenTest.dao.ValidationCodeDao;
-import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
 
 @Repository("validationCodeDao")
@@ -41,8 +40,8 @@ public class ValidationCodeDaoImpl implements ValidationCodeDao {
 	public ValidationCode findByPhoneNum(String phoneNum) {
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session
-				.createQuery("from ValidationCode where phone_number= :phone_number");
-		query.setString("phone_number", phoneNum);
+				.createQuery("from ValidationCode where phoneNum = :phoneNum");
+		query.setString("phoneNum", phoneNum);
 		List list = query.list();
 		if (list.size() > 0)
 			return (ValidationCode) list.get(0);
