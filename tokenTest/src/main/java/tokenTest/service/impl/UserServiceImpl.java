@@ -41,6 +41,7 @@ import tokenTest.service.UserServiceInterface;
 @RestController
 @RequestMapping("/user")
 public class UserServiceImpl implements UserServiceInterface {
+
 	@Autowired
 	private UserBo userBo;
 
@@ -85,7 +86,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			user.setCompany(company);
 
 		/* 生成令牌 */
-		user.setToken(RandomStringUtils.randomAlphanumeric(30));
+		user.setToken(RandomStringUtils.randomAlphanumeric(Constants.TOKEN_LENGTH));
 
 		/* 注册用户 */
 		try {
@@ -565,7 +566,7 @@ public class UserServiceImpl implements UserServiceInterface {
 				// reset password
 				user.setPassword(newPassword);
 				// get user new token
-				user.setToken(RandomStringUtils.randomAlphanumeric(30));
+				user.setToken(RandomStringUtils.randomAlphanumeric(Constants.TOKEN_LENGTH));
 				userBo.update(user);
 				return new LoginResponse(Status.OK, user.getId(),
 						user.getToken());
