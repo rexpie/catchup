@@ -2,6 +2,8 @@ package tokenTest.Util;
 
 public enum Status {
 	OK(0),
+
+	SERVICE_NOT_AVAILABLE(-999),
 	
 	ERR_GENERIC(-10086),
 	ERR_USER_NOT_FOUND(-2),
@@ -42,7 +44,11 @@ public enum Status {
 	
 	ERR_NOT_BANNED(-21),
 	
-	SERVICE_NOT_AVAILABLE(-999);
+	ERROR_NOT_BLACKLISTED(-22),
+	
+	ERR_PIC_FORMAT(-23),
+	
+	ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD(-24);
 	
 	int value;
 	public int getValue() {

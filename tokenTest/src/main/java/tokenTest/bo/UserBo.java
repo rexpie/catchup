@@ -1,5 +1,7 @@
 package tokenTest.bo;
 
+import tokenTest.exception.UserNotFoundException;
+import tokenTest.exception.WrongTokenException;
 import tokenTest.model.User;
 
 public interface UserBo {
@@ -9,7 +11,7 @@ public interface UserBo {
 
 	void delete(User user);
 
-	User validateUser(Long id, String token);
+	User validateUser(Long id, String token) throws UserNotFoundException, WrongTokenException;
 
 	User findByUserNickName(String nickName);
 

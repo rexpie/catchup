@@ -14,13 +14,14 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "picture")
 public class Picture implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -9000760920068463356L;
-	
-	private long id;
-/*	private User owner;*/
+
+	private Long id;
+	/* private User owner; */
 	private String description;
 	private String name;
 	private Date create_time;
@@ -29,6 +30,11 @@ public class Picture implements Serializable {
 	public Picture() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	
+	public Picture(Date create_time) {
+		super();
+		this.create_time = create_time;
 	}
 
 	public Picture(Date create_time, String description) {
@@ -41,23 +47,22 @@ public class Picture implements Serializable {
 	@Id
 	@GeneratedValue(generator = "generator")
 	@Column(name = "id", unique = true, nullable = false)
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	/*@ManyToOne(targetEntity = User.class)
-	@JoinColumn(name = "owner_id", nullable = false)
-	public User getOwner() {
-		return owner;
-	}
-
-	public void setOwner(User owner) {
-		this.owner = owner;
-	}*/
+	/*
+	 * @ManyToOne(targetEntity = User.class)
+	 * 
+	 * @JoinColumn(name = "owner_id", nullable = false) public User getOwner() {
+	 * return owner; }
+	 * 
+	 * public void setOwner(User owner) { this.owner = owner; }
+	 */
 
 	@Column(name = "create_time")
 	public Date getCreate_time() {
@@ -93,5 +98,32 @@ public class Picture implements Serializable {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		final int prime = 37;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Picture other = (Picture) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!this.id.equals(other.id))
+			return false;
+		return true;
 	}
 }

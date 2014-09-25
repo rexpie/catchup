@@ -3,6 +3,7 @@ package tokenTest.service;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,10 +27,12 @@ public interface UserServiceInterface {
 
 	UserDetailResponse getUserDetail(Long id, String token, Long targetId);
 
-	Enum<Status> addPhoto(Long id, String token, MultipartFile picture,
+	Enum<Status> addPhoto(Long id, String token, MultipartFile file,
 			String description, Boolean isProfile);
 
 	Enum<Status> deletePhoto(Long id, String token, Long picId);
+
+	void getPhoto(Long id, String token, Long picId, Integer size, HttpServletResponse response);
 
 	// 后面的还没改
 	Enum<Status> updateUserProfile(Long id, String token, String nickname,

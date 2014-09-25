@@ -2,6 +2,7 @@ package tokenTest.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -13,13 +14,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
@@ -31,33 +32,103 @@ public class User implements Serializable {
 	private static final long serialVersionUID = -6970201418868427060L;
 
 	/* 登录相关信息 */
+	@GenericGenerator(name = "generator", strategy = "increment")
+	@Id
+	@GeneratedValue(generator = "generator")
+	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
+	
+	@Column(name = "token", length = 30)
 	private String token;
+	
+	@Column(name = "password", nullable = false, length = 128)
 	private String password;
+	
+	@Column(name = "login_attempts")
 	private Integer login_attempts;
 
-
 	/* 必填信息 */
+	@Column(name = "nickname", unique = true, nullable = false, length = 128)
 	private String nickname;
+	
+	@Column(name = "phone_number", unique = true, nullable = false, length = 128)
 	private String phone_number;
+	
+	@Column(name = "birthday")
+	@Temporal(TemporalType.DATE)
 	private Date birthday;
+	
+	@Column(name = "sex", length = 1)
 	private String sex;
+	
+	@Column(name = "building", nullable = false, length = 128)
 	private String building;
+	
+	@OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "pic_id", unique = true)
 	private Picture pic; // 头像
+	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	private Set<Tag> tags;
 
 	/* 非必填信息 */
+	@Column(name = "company", length = 128)
 	private String company;
+	
+	@Column(name = "role", length = 30)
 	private String role;
+	
+	@Column(name = "email_address", length = 128)
 	private String email_address;
 
 	/* 系统信息 */
-	private Set<Picture> picture; // 非头像照片
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
+	private Set<Picture> picture = new HashSet<>(); // 非头像照片
+	
+	@Column(name = "zan_count")
 	private long zan_count;
+	
+	@Column(name = "update_time")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date update_time;
+	
+	@Column(name = "create_time")
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date create_time;
+	
+	@Column(name = "status")
 	private int status;
+	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "friend_id") })
 	private Set<User> followings;
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final User other = (User) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!this.id.equals(other.id))
+			return false;
+		return true;
+	}
 
 	public User() {
 		super();
@@ -90,10 +161,6 @@ public class User implements Serializable {
 		this.status = 1;
 	}
 
-	@GenericGenerator(name = "generator", strategy = "increment")
-	@Id
-	@GeneratedValue(generator = "generator")
-	@Column(name = "id", unique = true, nullable = false)
 	public Long getId() {
 		return id;
 	}
@@ -101,8 +168,7 @@ public class User implements Serializable {
 	public void setId(long id) {
 		this.id = id;
 	}
-
-	@Column(name = "password", nullable = false, length = 128)
+	
 	public String getPassword() {
 		return password;
 	}
@@ -111,7 +177,6 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	@Column(name = "nickname", unique = true, nullable = false, length = 128)
 	public String getNickname() {
 		return nickname;
 	}
@@ -120,7 +185,6 @@ public class User implements Serializable {
 		this.nickname = nickname;
 	}
 
-	@Column(name = "sex", length = 1)
 	public String getSex() {
 		return sex;
 	}
@@ -129,8 +193,6 @@ public class User implements Serializable {
 		this.sex = sex;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "pic_id", unique = true)
 	public Picture getPic() {
 		return pic;
 	}
@@ -139,7 +201,6 @@ public class User implements Serializable {
 		this.pic = pic;
 	}
 
-	@Column(name = "building", nullable = false, length = 128)
 	public String getBuilding() {
 		return building;
 	}
@@ -148,7 +209,6 @@ public class User implements Serializable {
 		this.building = building;
 	}
 
-	@Column(name = "company", length = 128)
 	public String getCompany() {
 		return company;
 	}
@@ -157,8 +217,6 @@ public class User implements Serializable {
 		this.company = company;
 	}
 
-	@Column(name = "birthday")
-	@Temporal(TemporalType.DATE)
 	public Date getBirthday() {
 		return birthday;
 	}
@@ -167,8 +225,6 @@ public class User implements Serializable {
 		this.birthday = birthday;
 	}
 
-	@Column(name = "update_time")
-	@Temporal(TemporalType.TIMESTAMP)
 	public Date getUpdate_time() {
 		return update_time;
 	}
@@ -177,8 +233,6 @@ public class User implements Serializable {
 		this.update_time = update_time;
 	}
 
-	@Column(name = "create_time")
-	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreate_time() {
 		return create_time;
 	}
@@ -187,7 +241,6 @@ public class User implements Serializable {
 		this.create_time = create_time;
 	}
 
-	@Column(name = "zan_count")
 	public long getZan_count() {
 		return zan_count;
 	}
@@ -196,7 +249,6 @@ public class User implements Serializable {
 		this.zan_count = zan_count;
 	}
 
-	@Column(name = "phone_number", unique = true, nullable = false, length = 128)
 	public String getPhone_number() {
 		return phone_number;
 	}
@@ -205,7 +257,6 @@ public class User implements Serializable {
 		this.phone_number = phone_number;
 	}
 
-	@Column(name = "email_address", length = 128)
 	public String getEmail_address() {
 		return email_address;
 	}
@@ -214,7 +265,6 @@ public class User implements Serializable {
 		this.email_address = email_address;
 	}
 
-	@Column(name = "status")
 	public int getStatus() {
 		return status;
 	}
@@ -223,8 +273,6 @@ public class User implements Serializable {
 		this.status = status;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "friend_id") })
 	public Set<User> getFollowings() {
 		return followings;
 	}
@@ -233,8 +281,6 @@ public class User implements Serializable {
 		this.followings = followings;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	public Set<Tag> getTags() {
 		return tags;
 	}
@@ -243,7 +289,6 @@ public class User implements Serializable {
 		this.tags = tags;
 	}
 
-	@Column(name = "token", length = 30)
 	public String getToken() {
 		return token;
 	}
@@ -252,7 +297,6 @@ public class User implements Serializable {
 		this.token = token;
 	}
 
-	@Column(name = "role", length = 30)
 	public String getRole() {
 		return role;
 	}
@@ -261,8 +305,6 @@ public class User implements Serializable {
 		this.role = role;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
 	public Set<Picture> getPicture() {
 		return picture;
 	}
@@ -271,8 +313,6 @@ public class User implements Serializable {
 		this.picture = picture;
 	}
 
-	
-	@Column(name = "login_attempts")
 	public Integer getLogin_attempts() {
 		return login_attempts;
 	}
@@ -280,30 +320,4 @@ public class User implements Serializable {
 	public void setLogin_attempts(Integer login_attempts) {
 		this.login_attempts = login_attempts;
 	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final User other = (User) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!this.id.equals(other.id))
-			return false;
-		return true;
-	}
-
 }

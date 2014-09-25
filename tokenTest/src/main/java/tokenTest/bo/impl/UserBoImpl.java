@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 
 import tokenTest.bo.UserBo;
 import tokenTest.dao.UserDao;
+import tokenTest.exception.UserNotFoundException;
+import tokenTest.exception.WrongTokenException;
 import tokenTest.model.User;
+
 import org.apache.commons.lang3.StringUtils;
 
 @Service("userBo")
@@ -56,11 +59,15 @@ public class UserBoImpl implements UserBo {
 	}
 
 	@Transactional
-	public User validateUser(Long id, String token) {
+	public User validateUser(Long id, String token) throws UserNotFoundException, WrongTokenException{
 		// TODO Auto-generated method stub
 		User user = findByUserId(id);
-		if (user == null || !StringUtils.equals(user.getToken(), token))
-			return null;
+		if (user == null )
+			throw new UserNotFoundException();
+		
+		if (!StringUtils.equals(user.getToken(), token))
+			throw new WrongTokenException();
+		
 		return user;
 	}
 
