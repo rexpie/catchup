@@ -129,7 +129,7 @@ public class User implements Serializable {
 		this.sex = sex;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "pic_id", unique = true)
 	public Picture getPic() {
 		return pic;
@@ -223,7 +223,7 @@ public class User implements Serializable {
 		this.status = status;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "friend_id") })
 	public Set<User> getFollowings() {
 		return followings;
@@ -233,7 +233,7 @@ public class User implements Serializable {
 		this.followings = followings;
 	}
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	public Set<Tag> getTags() {
 		return tags;
@@ -261,7 +261,7 @@ public class User implements Serializable {
 		this.role = role;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
 	public Set<Picture> getPicture() {
 		return picture;

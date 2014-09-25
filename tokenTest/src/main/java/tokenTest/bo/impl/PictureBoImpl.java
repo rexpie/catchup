@@ -19,8 +19,8 @@ import tokenTest.model.Picture;
 public class PictureBoImpl implements PictureBo {
 	@Autowired
 	private PictureDao pictureDao;
-	
-	private static String TYPE=".png";
+
+	private static String TYPE = ".png";
 
 	public void setPictureDao(PictureDao pictureDao) {
 		this.pictureDao = pictureDao;
@@ -37,10 +37,12 @@ public class PictureBoImpl implements PictureBo {
 		if (!picturePath.exists())
 			picturePath.mkdirs();
 
-		String filename = path + RandomStringUtils.randomAlphanumeric(30)+TYPE;
+		String filename = path + File.separator
+				+ RandomStringUtils.randomAlphanumeric(30) + TYPE;
 		File destination = new File(filename);
 		while (destination.exists()) {
-			filename = path + RandomStringUtils.randomAlphanumeric(30)+TYPE;
+			filename = path + File.separator
+					+ RandomStringUtils.randomAlphanumeric(30) + TYPE;
 			destination = new File(filename);
 		}
 		destination.createNewFile();

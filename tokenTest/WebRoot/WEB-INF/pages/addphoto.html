@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>addphoto.html</title>
+
+<meta name="keywords" content="keyword1,keyword2,keyword3">
+<meta name="description" content="this is my page">
+<meta name="content-type" content="text/html; charset=UTF-8">
+
+<!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+</head>
+
+<body>
+	This is my HTML page.
+	<br>
+	<form action="user/addPhoto" method="post"
+		enctype="multipart/form-data">
+		<input name="picture" id="picture" type="file" />
+		<input name="id" type="text"   id="id" />
+		<input name="token" type="text"   id="token" >
+		<input type="submit" value="提交" >
+	</form>
+</body>
+</html>
