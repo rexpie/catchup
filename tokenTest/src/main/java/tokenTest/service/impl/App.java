@@ -2,6 +2,7 @@ package tokenTest.service.impl;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -41,9 +42,9 @@ public class App {
 		 * stockBo.delete(stock2);
 		 */
 
+		PictureBo pictureBo = (PictureBo) appContext.getBean("pictureBo");
+		//Picture picture = new Picture(new Date(), "bob photo two");
 		/*
-		 * PictureBo pictureBo = (PictureBo) appContext.getBean("pictureBo");
-		 * Picture picture = new Picture(new Date(), "peach's photo", "peach");
 		 * pictureBo.save(picture);
 		 * 
 		 * ShopBo shopBo = (ShopBo) appContext.getBean("shopBo"); Shop shop =
@@ -61,13 +62,16 @@ public class App {
 		 * tagBo.save(new Tag("office¥Ô»À"));
 		 */
 
-		/*
-		 * UserBo userBo = (UserBo) appContext.getBean("userBo"); User user =
-		 * new User("123456", "peac1h", "M", "CCB", "ccb", new Date(), 10086,
-		 * "18918760155", "tpeng915@gmail.com"); user.setPic(picture);
-		 * HashSet<Tag> tagSet = new HashSet<Tag>(); tagSet.add(tag);
-		 * user.setTags(tagSet); userBo.save(user);
-		 */
+		UserBo userBo = (UserBo) appContext.getBean("userBo");
+		User user = userBo.findByUserId(4L);
+		Picture picture = pictureBo.findById(10L);
+		Set<Picture> pictures = user.getPicture();
+		pictures.remove(picture);
+		user.setPicture(pictures);
+		/*HashSet<Tag> tagSet = new HashSet<Tag>();
+		tagSet.add(tag);
+		user.setTags(tagSet);*/
+		userBo.update(user);
 
 		/*
 		 * MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");

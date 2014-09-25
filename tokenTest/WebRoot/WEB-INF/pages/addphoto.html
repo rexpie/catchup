@@ -14,11 +14,13 @@
 <body>
 	This is my HTML page.
 	<br>
-	<form action="user/addPhoto" method="post"
+	<form action="http://localhost:8080/tokenTest/user/addPhoto" method="post"
 		enctype="multipart/form-data">
-		<input name="picture" id="picture" type="file" />
-		<input name="id" type="text"   id="id" />
-		<input name="token" type="text"   id="token" >
+		增加图片<br><input name="file" id="file" type="file" />
+		<br>ID:<input name="id" type="text"   id="id" /><br>Token:
+		<input name="token" type="text"   id="token" ><br>
+		Description:<input name="description" type="text"   id="token" ><br>
+		isProfile:<input name="isProfile" type="text"   id="token" >
 		<input type="submit" value="提交" >
 	</form>
 </body>

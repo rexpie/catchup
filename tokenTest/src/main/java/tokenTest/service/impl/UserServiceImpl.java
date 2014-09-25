@@ -3,13 +3,20 @@
  */
 package tokenTest.service.impl;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -387,84 +394,66 @@ public class UserServiceImpl implements UserServiceInterface {
 	@RequestMapping(value = { "/addPhoto**" }, method = RequestMethod.POST)
 	public Enum<Status> addPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) MultipartFile picture,
+			@RequestParam(required = true) MultipartFile file,
 			@RequestParam(required = false) String description,
 			@RequestParam(required = false) Boolean isProfile) {
+		/* 验证图片 */
+		if (!StringUtils.equals(file.getContentType(), "image/png")) {
+			/* 文件格式错误 */
+			return Status.ERROR_BANNED;
+		}
+
 		String path = servletContext.getRealPath("/") + File.separator + DIR;
 		User user = null;
-		/* 查找用户 */
+		/* 验证用户 */
 		try {
-			user = userBo.findByUserId(id);
+			user = userBo.validateUser(id, token);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null)
 			return Status.ERROR_USER_NOT_FOUND;
 
-		if (!StringUtils.equals(user.getToken(), token)) {
-			return Status.ERROR_WRONG_TOKEN;
-		}
+		/* 新建图片 */
+		Picture picture = null;
+		if (description != null)
+			picture = new Picture(new Date(), description);
+		else
+			picture = new Picture(new Date());
 
-		/* 验证图片 */
-		if (!StringUtils.equals(picture.getContentType(), "image/png")) {
-			/* 文件格式错误 */
-			return Status.ERROR_GENERIC;
-		}
-
-		/* 保存图片文件 */
-		Picture pic = new Picture(new Date(), description);
 		try {
-			// TODO Auto-generated method stub
-			/* 保存文件 */
-			pictureBo.save(picture, pic, path);
+			if (isProfile != null && isProfile) {
+				pictureBo.save(user, file, picture, path, true);
+			} else {
+				pictureBo.save(user, file, picture, path, false);
+			}
+
 		} catch (Exception e) {
 			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
-		}
-
-		/* 将图片添加到用户 */
-		if (isProfile != null && isProfile) {
-			user.setPic(pic);
-		} else {
-			Set<Picture> pictures = user.getPicture();
-			if (pictures == null)
-				pictures = new HashSet<Picture>();
-			pictures.add(pic);
-			user.setPicture(pictures);
-			try {
-				userBo.update(user);
-			} catch (Exception e) {
-				// TODO: handle exception
-				// 保存失败，没做处理
-				return Status.SERVICE_NOT_AVAILABLE;
-			}
 		}
 		return Status.OK;
 	}
 
 	@RequestMapping(value = { "/deletePhoto**" }, method = RequestMethod.GET)
-	public Enum<Status> deletePhoto(Long id, String token, Long picId) {
+	public Enum<Status> deletePhoto(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long picId) {
 		// TODO Auto-generated method stub
 		String path = servletContext.getRealPath("/") + File.separator + DIR;
 		User user = null;
-		/* 查找用户 */
+		/* 验证用户 */
 		try {
-			user = userBo.findByUserId(id);
+			user = userBo.validateUser(id, token);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null)
 			return Status.ERROR_USER_NOT_FOUND;
-
-		if (!StringUtils.equals(user.getToken(), token)) {
-			return Status.ERROR_WRONG_TOKEN;
-		}
 
 		/* 查找图片 */
 		Picture picture = null;
@@ -478,26 +467,72 @@ public class UserServiceImpl implements UserServiceInterface {
 			// 图片不存在
 			return Status.ERROR_PIC_NOT_FOUND;
 		}
-		Set<Picture> pictures = user.getPicture();
-		if (pictures == null)
-			return Status.ERROR_PIC_NOT_FOUND;
-		pictures.remove(picture);
-		user.setPicture(pictures);
-		try {
-			userBo.update(user);
-		} catch (Exception e) {
-			// TODO: handle exception
-			// 保存失败，没做处理
-			return Status.SERVICE_NOT_AVAILABLE;
+
+		/* 是头像，不能删除 */
+		if (user.getPic().equals(picture)) {
+			return Status.ERROR_CANNOT_DELETE_PROFILE_PHOTO;
 		}
 
+		/* 不是自己的图片，不能删除 */
+		if (!user.getPicture().contains(picture)) {
+			return Status.ERROR_BANNED;
+		}
+
+		/* 删除图片数据和文件,头像不能删除 */
 		try {
 			/* 删除图片数据和文件 */
-			pictureBo.delete(picture, path);
+			pictureBo.delete(user, picture, path);
 		} catch (Exception e) {
 			// TODO: handle exception
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 		return Status.OK;
+	}
+
+	/* 默认原图 */
+	@RequestMapping(value = { "/getPhoto**" }, method = RequestMethod.GET)
+	public void getPhoto(@RequestParam(required = true) Long picId,
+			@RequestParam(required = false) Integer size,
+			HttpServletResponse response) {
+		// TODO Auto-generated method stub
+		String path = servletContext.getRealPath("/") + File.separator + DIR;
+
+		/* 查找图片 */
+		Picture picture = null;
+		try {
+			picture = pictureBo.findById(picId);
+		} catch (Exception e) {
+			// TODO: handle exception
+			return;
+		}
+		if (picture == null)
+			return;
+
+		File file = new File(path + File.separator + picture.getFilename());
+		if (file.exists()) {
+			if (size == null || size == 0) {
+				/* 返回原图 */
+				try {
+					FileInputStream is = new FileInputStream(file);
+					IOUtils.copy(is, response.getOutputStream());
+				} catch (Exception e) {
+					// TODO: handle exception
+					return;
+				}
+			} else {
+				/* 返回小图 */
+				try {
+					BufferedImage originalImage = ImageIO
+							.read(new FileInputStream(file));
+					originalImage = pictureBo.zoomOutImage(originalImage, 100);
+					IOUtils.copy((InputStream) ImageIO
+							.createImageInputStream(originalImage), response
+							.getOutputStream());
+				} catch (Exception e) {
+					// TODO: handle exception
+					return;
+				}
+			}
+		}
 	}
 }
