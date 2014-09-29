@@ -33,13 +33,13 @@ public class SMSUtil {
 		
 		//System.out.println(mobile);
 		
-	    String content = new String("您的验证码是：" + mobile_code + "。请不要把验证码泄露给其他人。"); 
+	    String content = new String(mobile_code + "�������֤��"); 
 
-		NameValuePair[] data = {//提交短信
-			    new BasicNameValuePair("account", "用户名"), 
-			    new BasicNameValuePair("password", "密码"), //密码可以使用明文密码或使用32位MD5加密
-			    //new NameValuePair("password", util.StringUtil.MD5Encode("密码")),
-			    new BasicNameValuePair("mobile", "手机号码"), 
+		NameValuePair[] data = {
+			    new BasicNameValuePair("account", "�û���"), 
+			    new BasicNameValuePair("password", "����"),
+			    //new NameValuePair("password", util.StringUtil.MD5Encode("����")),
+			    new BasicNameValuePair("mobile", "�ֻ���"), 
 			    new BasicNameValuePair("content", content),
 		};
 		
@@ -65,7 +65,7 @@ public class SMSUtil {
 			System.out.println(smsid);
 						
 			if(code == "2"){
-				System.out.println("短信提交成功");
+				System.out.println("�ύ�ɹ�");
 			}
 			
 		} catch (UnsupportedEncodingException e) {
