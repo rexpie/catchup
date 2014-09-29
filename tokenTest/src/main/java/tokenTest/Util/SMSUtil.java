@@ -33,13 +33,13 @@ public class SMSUtil {
 		
 		//System.out.println(mobile);
 		
-	    String content = new String("ÄúµÄÑéÖ¤ÂëÊÇ£º" + mobile_code + "¡£Çë²»Òª°ÑÑéÖ¤ÂëĞ¹Â¶¸øÆäËûÈË¡£"); 
+	    String content = new String("æ‚¨çš„éªŒè¯ç æ˜¯ï¼š" + mobile_code + "ã€‚è¯·ä¸è¦æŠŠéªŒè¯ç æ³„éœ²ç»™å…¶ä»–äººã€‚"); 
 
-		NameValuePair[] data = {//Ìá½»¶ÌĞÅ
-			    new BasicNameValuePair("account", "ÓÃ»§Ãû"), 
-			    new BasicNameValuePair("password", "ÃÜÂë"), //ÃÜÂë¿ÉÒÔÊ¹ÓÃÃ÷ÎÄÃÜÂë»òÊ¹ÓÃ32Î»MD5¼ÓÃÜ
-			    //new NameValuePair("password", util.StringUtil.MD5Encode("ÃÜÂë")),
-			    new BasicNameValuePair("mobile", "ÊÖ»úºÅÂë"), 
+		NameValuePair[] data = {//æäº¤çŸ­ä¿¡
+			    new BasicNameValuePair("account", "ç”¨æˆ·å"), 
+			    new BasicNameValuePair("password", "å¯†ç "), //å¯†ç å¯ä»¥ä½¿ç”¨æ˜æ–‡å¯†ç æˆ–ä½¿ç”¨32ä½MD5åŠ å¯†
+			    //new NameValuePair("password", util.StringUtil.MD5Encode("å¯†ç ")),
+			    new BasicNameValuePair("mobile", "æ‰‹æœºå·ç "), 
 			    new BasicNameValuePair("content", content),
 		};
 		
@@ -65,7 +65,7 @@ public class SMSUtil {
 			System.out.println(smsid);
 						
 			if(code == "2"){
-				System.out.println("¶ÌĞÅÌá½»³É¹¦");
+				System.out.println("çŸ­ä¿¡æäº¤æˆåŠŸ");
 			}
 			
 		} catch (UnsupportedEncodingException e) {

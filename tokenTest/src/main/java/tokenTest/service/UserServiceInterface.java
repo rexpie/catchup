@@ -34,7 +34,7 @@ public interface UserServiceInterface {
 
 	void getPhoto(Long id, String token, Long picId, Integer size, HttpServletResponse response);
 
-	// 后面的还没改
+	// 鍚庨潰鐨勮繕娌℃敼
 	Enum<Status> updateUserProfile(Long id, String token, String nickname,
 			String building, Date birthday, String sex, String emailaddress,
 			String company);

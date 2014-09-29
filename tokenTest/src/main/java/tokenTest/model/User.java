@@ -31,7 +31,7 @@ public class User implements Serializable {
 	 */
 	private static final long serialVersionUID = -6970201418868427060L;
 
-	/* µÇÂ¼Ïà¹ØĞÅÏ¢ */
+	/* ç™»å½•ç›¸å…³ä¿¡æ¯ */
 	@GenericGenerator(name = "generator", strategy = "increment")
 	@Id
 	@GeneratedValue(generator = "generator")
@@ -47,7 +47,7 @@ public class User implements Serializable {
 	@Column(name = "login_attempts")
 	private Integer login_attempts;
 
-	/* ±ØÌîĞÅÏ¢ */
+	/* å¿…å¡«ä¿¡æ¯ */
 	@Column(name = "nickname", unique = true, nullable = false, length = 128)
 	private String nickname;
 	
@@ -66,13 +66,13 @@ public class User implements Serializable {
 	
 	@OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "pic_id", unique = true)
-	private Picture pic; // Í·Ïñ
+	private Picture pic; // å¤´åƒ
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	private Set<Tag> tags;
 
-	/* ·Ç±ØÌîĞÅÏ¢ */
+	/* éå¿…å¡«ä¿¡æ¯ */
 	@Column(name = "company", length = 128)
 	private String company;
 	
@@ -82,10 +82,10 @@ public class User implements Serializable {
 	@Column(name = "email_address", length = 128)
 	private String email_address;
 
-	/* ÏµÍ³ĞÅÏ¢ */
+	/* ç³»ç»Ÿä¿¡æ¯ */
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
-	private Set<Picture> picture = new HashSet<>(); // ·ÇÍ·ÏñÕÕÆ¬
+	private Set<Picture> picture = new HashSet<>(); // éå¤´åƒç…§ç‰‡
 	
 	@Column(name = "zan_count")
 	private long zan_count;

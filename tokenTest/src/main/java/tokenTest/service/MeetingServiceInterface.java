@@ -4,31 +4,31 @@ import tokenTest.response.MeetingResponse;
 import antlr.collections.List;
 
 public interface MeetingServiceInterface {
-	/* Î´µÇÂ¼×´Ì¬£¬Ê¹ÓÃ¿Í»§¶ËÎ»ÖÃ²éÑ¯ */
+	/* æœªç™»å½•çŠ¶æ€ï¼Œä½¿ç”¨å®¢æˆ·ç«¯ä½ç½®æŸ¥è¯¢ */
 	List getMeetingList(String longtitude, String latitude, String pagenum, String sorttype);
 
-	/* µÇÂ¼×´Ì¬£¬Ê¹ÓÃÓÃ»§Î»ÖÃ²éÑ¯£¬½¨ÒéÏÈ¸üĞÂÓÃ»§Î»ÖÃ */
+	/* ç™»å½•çŠ¶æ€ï¼Œä½¿ç”¨ç”¨æˆ·ä½ç½®æŸ¥è¯¢ï¼Œå»ºè®®å…ˆæ›´æ–°ç”¨æˆ·ä½ç½® */
 	List getMeetingList(Long id, String token, String pagenum);
 
-	/* ·¢Æğ·¹Ô¼ */
+	/* å‘èµ·é¥­çº¦ */
 	MeetingResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description);
 
-	/* ·µ»Ø·¹Ô¼ÏêÇé£¬º¬²ÎÓëÕß */
+	/* è¿”å›é¥­çº¦è¯¦æƒ…ï¼Œå«å‚ä¸è€… */
 	MeetingResponse getMeetingDetail(Long meetingid);
 
-	/* ÉêÇë¼ÓÈë·¹Ô¼ */
+	/* ç”³è¯·åŠ å…¥é¥­çº¦ */
 	String applyForMeeting(Long id, String token, Long meetingid);
 
-	/* Í¬Òâ·¹Ô¼ÉêÇë */
+	/* åŒæ„é¥­çº¦ç”³è¯· */
 	String approveMeetingApply(Long id, String token, Long meetingid,
 			Long applyid);
 
-	/* ²»Í¬Òâ·¹Ô¼ÉêÇë */
+	/* ä¸åŒæ„é¥­çº¦ç”³è¯· */
 	String disapproveMeetingApply(Long id, String token, Long meetingid,
 			Long applyid);
 
-	/* ÆÀÂÛ·¹Ô¼£¬ÔİÊ±²»×ö */
+	/* è¯„è®ºé¥­çº¦ï¼Œæš‚æ—¶ä¸åš */
 	String commentOnMeeting(Long id, String token, Long meetingid,
 			String comment);
 }

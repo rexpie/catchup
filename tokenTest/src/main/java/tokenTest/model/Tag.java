@@ -19,7 +19,7 @@ public class Tag implements Serializable {
 	private static final long serialVersionUID = 4723328084800076160L;
 	private long tag;
 	
-	/*±êÇ©ÄÚÈİ*/
+	/*æ ‡ç­¾å†…å®¹*/
 	private String name;
 
 	public Tag() {

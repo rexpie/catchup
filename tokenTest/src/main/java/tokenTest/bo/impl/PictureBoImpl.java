@@ -39,7 +39,7 @@ public class PictureBoImpl implements PictureBo {
 	public void save(User user, MultipartFile file, Picture picture,
 			String path, boolean isProfile) throws Exception {
 		// TODO Auto-generated method stub
-		/* ½¨Á¢ÎÄ¼şÀ´´æ´¢ÉÏ´«µÄÍ¼Æ¬ */
+		/* å»ºç«‹æ–‡ä»¶æ¥å­˜å‚¨ä¸Šä¼ çš„å›¾ç‰‡ */
 		File destination = new File(path);
 		if (!destination.exists())
 			destination.mkdirs();
@@ -58,7 +58,7 @@ public class PictureBoImpl implements PictureBo {
 		if (picture != null)
 			picture.setFilename(destination.getName());
 
-		/* ½«Í¼Æ¬Ìí¼Óµ½ÓÃ»§ */
+		/* å°†å›¾ç‰‡æ·»åŠ åˆ°ç”¨æˆ· */
 		if (isProfile) {
 			user.setPic(picture);
 		} else {
@@ -66,7 +66,7 @@ public class PictureBoImpl implements PictureBo {
 		}
 		userDao.update(user);
 
-		/* ¼¶Áª²Ù×÷£¬²»ĞèÒªÁíÍâ±£´æÍ¼Æ¬ */
+		/* çº§è”æ“ä½œï¼Œä¸éœ€è¦å¦å¤–ä¿å­˜å›¾ç‰‡ */
 		// pictureDao.save(picture);
 	}
 
@@ -86,7 +86,7 @@ public class PictureBoImpl implements PictureBo {
 		File pictureFile = new File(path + picture.getFilename());
 		if (pictureFile.exists())
 			pictureFile.delete();
-		/* ¼¶Áª²Ù×÷£¬²»ĞèÒªÁíÍâÉ¾³ıÍ¼Æ¬ */
+		/* çº§è”æ“ä½œï¼Œä¸éœ€è¦å¦å¤–åˆ é™¤å›¾ç‰‡ */
 		// pictureDao.delete(picture);
 	}
 

@@ -51,9 +51,9 @@ public class App {
 
 		ShopBo shopBo = (ShopBo) appContext.getBean("shopBo");
 		Shop shop = new Shop();
-		shop.setArea("Ğì¼Ò»ã");
-		shop.setCity("ÉÏº£");
-		shop.setType("ÖĞ²Í");
+		shop.setArea("å¾å®¶æ±‡");
+		shop.setCity("ä¸Šæµ·");
+		shop.setType("ä¸­é¤");
 		shop.setPrice(99.99);
 //		shopBo.save(shop);
 		
@@ -61,9 +61,9 @@ public class App {
 		TagBo tagBo = (TagBo) appContext.getBean("tagBo");
 		Tag tag = new Tag("ds");
 //		tagBo.save(tag);
-		/*tagBo.save(new Tag("¿Ù±Ç´óÊå"));
-		tagBo.save(new Tag("¿Ù½Å´óºº"));
-		tagBo.save(new Tag("office´ïÈË"));*/
+		/*tagBo.save(new Tag("æŠ é¼»å¤§å”"));
+		tagBo.save(new Tag("æŠ è„šå¤§æ±‰"));
+		tagBo.save(new Tag("officeè¾¾äºº"));*/
 		
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
 		User user = new User("123456", "rexpie", "M", "IT", "ms", new Date(), 100, "13818860403", "rexpie@gmail.com");
@@ -75,7 +75,7 @@ public class App {
 		
 		
 		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
-		Meeting meeting = new Meeting(user, new Date(), 2, 2, 5, 30, "Ò»ÆğºÈ²è");
+		Meeting meeting = new Meeting(user, new Date(), 2, 2, 5, 30, "ä¸€èµ·å–èŒ¶");
 //		meetingBo.save(meeting);
 
 		System.out.println("Done");

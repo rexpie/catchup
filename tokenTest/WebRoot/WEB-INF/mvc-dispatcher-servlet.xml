@@ -36,16 +36,16 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 		</property>
 	</bean>
 
-	<!--上传组件-->
+	<!--涓娄紶缁勪欢-->
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<!-- 最大上传图片大小1M -->
+		<!-- 链€澶т笂浼犲浘鐗囧ぇ灏?M -->
 		<property name="maxUploadSize">
 				<value>1048576</value>
 		</property>
 	</bean>
 
-	<!-- 避免IE执行AJAX时,返回JSON出现下载文件 -->
+	<!-- 阆垮厤IE镓цAJAX镞?杩斿洖JSON鍑虹幇涓嬭浇鏂囦欢 -->
 	<bean id="mappingJacksonHttpMessageConverter"
 		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
 		<property name="supportedMediaTypes">
@@ -55,12 +55,12 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 		</property>
 	</bean>
 
-	<!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
+	<!-- 鍚姩Spring MVC镄勬敞瑙ｅ姛鑳斤紝瀹屾垚璇锋眰鍜屾敞瑙OJO镄勬椠灏?-->
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
 			<list>
-				<ref bean="mappingJacksonHttpMessageConverter" /><!-- json转换器 -->
+				<ref bean="mappingJacksonHttpMessageConverter" /><!-- json杞崲鍣?-->
 			</list>
 		</property>
 	</bean>

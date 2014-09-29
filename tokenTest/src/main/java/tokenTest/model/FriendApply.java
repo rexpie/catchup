@@ -22,10 +22,10 @@ public class FriendApply implements Serializable {
 	private static final long serialVersionUID = 5769798290600705970L;
 	private long id;
 
-	/* ÉêÇëÕß */
+	/* ç”³è¯·è€… */
 	private User fromUser;
 	private User toUser;
-	/* ÉêÇëÄÚÈİ */
+	/* ç”³è¯·å†…å®¹ */
 	private String applyContent;
 
 	@GenericGenerator(name = "generator", strategy = "increment")

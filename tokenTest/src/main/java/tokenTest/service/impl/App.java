@@ -48,18 +48,18 @@ public class App {
 		 * pictureBo.save(picture);
 		 * 
 		 * ShopBo shopBo = (ShopBo) appContext.getBean("shopBo"); Shop shop =
-		 * new Shop(); shop.setArea("Ğì¼Ò»ã"); shop.setCity("ÉÏº£");
-		 * shop.setType("ÖĞ²Í"); shop.setPrice(99.99);
+		 * new Shop(); shop.setArea("å¾å®¶æ±‡"); shop.setCity("ä¸Šæµ·");
+		 * shop.setType("ä¸­é¤"); shop.setPrice(99.99);
 		 */
 		// shopBo.save(shop);
 
 		/*
 		 * TagBo tagBo = (TagBo) appContext.getBean("tagBo"); Tag tag = new
-		 * Tag("¿Ù½Å´óºº"); tagBo.save(tag);
+		 * Tag("æŠ è„šå¤§æ±‰"); tagBo.save(tag);
 		 */
 		/*
-		 * tagBo.save(new Tag("¿Ù±Ç´óÊå")); tagBo.save(new Tag("¿Ù½Å´óºº"));
-		 * tagBo.save(new Tag("office´ïÈË"));
+		 * tagBo.save(new Tag("æŠ é¼»å¤§å”")); tagBo.save(new Tag("æŠ è„šå¤§æ±‰"));
+		 * tagBo.save(new Tag("officeè¾¾äºº"));
 		 */
 
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
@@ -76,7 +76,7 @@ public class App {
 		/*
 		 * MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
 		 * Meeting meeting = new Meeting(user, new Date(), 2, 2, "F", 30,
-		 * "Ò»ÆğºÈ²è");
+		 * "ä¸€èµ·å–èŒ¶");
 		 */
 		// meetingBo.save(meeting);
 		System.out.println(System.getProperty("user.dir"));

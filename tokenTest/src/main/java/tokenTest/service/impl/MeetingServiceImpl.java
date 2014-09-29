@@ -52,11 +52,11 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (Exception e) {
-			// ²»ÖªµÀÉ¶´í
+			// ä¸çŸ¥é“å•¥é”™
 			return new MeetingResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
-		/* ÓÃ»§²»´æÔÚ»òÕßÁîÅÆ²»ÕıÈ· */
+		/* ç”¨æˆ·ä¸å­˜åœ¨æˆ–è€…ä»¤ç‰Œä¸æ­£ç¡® */
 		if (user == null) {
 			return new MeetingResponse(Status.ERR_USER_NOT_FOUND);
 		}
@@ -69,7 +69,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return new MeetingResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 		if (shop == null) {
-			// Ã»ÓĞÕâ¼Òµê£¬idÎª-1µÄµêĞèÒªÔ¤Âñ
+			// æ²¡æœ‰è¿™å®¶åº—ï¼Œidä¸º-1çš„åº—éœ€è¦é¢„åŸ‹
 			return new MeetingResponse(Status.ERR_GENERIC);
 		}
 
