@@ -82,27 +82,29 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) Date birthday,
 			@RequestParam(required = false) String emailaddress,
 			@RequestParam(required = false) String company) {
-		/* ±ØÌîÐÅÏ¢ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ */
 		User user = new User(password, nickName, gender, building, phoneNum);
 
-		/* ·Ç±ØÌîÐÅÏ¢ */
+		/* ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ */
 		if (birthday != null)
 			user.setBirthday(birthday);
 		if (emailaddress != null)
 			user.setEmail_address(emailaddress);
 		if (company != null)
 			user.setCompany(company);
+		
+		user.setLogin_attempts(0);
 
-		/* Éú³ÉÁîÅÆ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 		user.setToken(RandomStringUtils
 				.randomAlphanumeric(Constants.TOKEN_LENGTH));
 
-		/* ×¢²áÓÃ»§ */
+		/* ×¢ï¿½ï¿½ï¿½Ã»ï¿½ */
 		try {
 			userBo.save(user);
 		} catch (DataIntegrityViolationException e) {
-			// ²»Âú×ãÎ¨Ò»ÐÔÔ¼Êø£¬phonenum»ònicknameÖØ¸´,Õ¼ÓÃtoken×ö´íÎóÐÅÏ¢¡£
-			return new LoginResponse(Status.ERR_GENERIC, "phonenum»ònicknameÖØ¸´");
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¨Ò»ï¿½ï¿½Ô¼ï¿½ï¿½phonenumï¿½ï¿½nicknameï¿½Ø¸ï¿½,Õ¼ï¿½ï¿½tokenï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½
+			return new LoginResponse(Status.ERR_GENERIC, "phonenumï¿½ï¿½nicknameï¿½Ø¸ï¿½");
 		}
 		return new LoginResponse(Status.OK, user.getToken());
 	}
@@ -120,14 +122,14 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * @RequestParam(required = true) String password) { // TODO Auto-generated
 	 * method stub User user = null;
 	 * 
-	 * ²éÕÒÓÃ»§ try { user = userBo.findByUserId(id); } catch (Exception e) { //
-	 * TODO: handle exception // ²»ÖªµÀÉ¶´í return new
-	 * LoginResponse(Status.SERVICE_NOT_AVAILABLE, "·þÎñÆ÷²»¿ÉÓÃ"); }
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ try { user = userBo.findByUserId(id); } catch (Exception e) { //
+	 * TODO: handle exception // ï¿½ï¿½Öªï¿½ï¿½É¶ï¿½ï¿½ return new
+	 * LoginResponse(Status.SERVICE_NOT_AVAILABLE, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"); }
 	 * 
-	 * ÓÃ»§²»´æÔÚ»òÃÜÂë²»¶Ô if (user == null || !password.equals(user.getPassword()))
-	 * return new LoginResponse(Status.ERROR_USER_NOT_FOUND, "ÓÃ»§Ãû»òÃÜÂë´íÎó");
+	 * ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ë²»ï¿½ï¿½ if (user == null || !password.equals(user.getPassword()))
+	 * return new LoginResponse(Status.ERROR_USER_NOT_FOUND, "ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 	 * 
-	 * Éú²ú¡¢¸üÐÂÁîÅÆ user.setToken(RandomStringUtils.randomAlphanumeric(30)); try {
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ user.setToken(RandomStringUtils.randomAlphanumeric(30)); try {
 	 * userBo.update(user); } catch (Exception e) { // TODO: handle exception
 	 * return null; } return new LoginResponse(Status.OK, user.getId(),
 	 * user.getToken()); }
@@ -145,17 +147,22 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) String password) {
 		User user = null;
 
-		/* ²éÕÒÓÃ»§ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.findByUserNickName(nickorphone);
 		} catch (Exception e) {
-			// ²»ÖªµÀÉ¶´í
-			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "·þÎñÆ÷²»¿ÉÓÃ");
+			// ï¿½ï¿½Öªï¿½ï¿½É¶ï¿½ï¿½
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 		}
+
+		// find the user first
+		if (user == null)
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND,
+					"ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
 		int attempts = 0;
 		attempts = user.getLogin_attempts();
-		// ÓÃ»§´æÔÚÃÜÂë²»¶Ô
+		// ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë²»ï¿½ï¿½
 		if (user != null && !password.equals(user.getPassword())) {
 			// password wrong
 			attempts++;
@@ -165,21 +172,21 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS) {
 			return new LoginResponse(Status.ERR_MAX_LOGIN_ATTEMPTS,
-					"ÃÜÂëÊäÈë´íÎó¹ý¶à£¬ÇëÖØÖÃÃÜÂë");
+					"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 		}
 
-		/* ÓÃêÇ³Æ²éÕÒÓÃ»§²»´æÔÚ */
+		/* ï¿½ï¿½ï¿½Ç³Æ²ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 
 		if (user == null || !password.equals(user.getPassword()))
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND, "ÓÃ»§²»´æÔÚ»òÕßÃÜÂë´íÎó");
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND, "ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
-		/* Éú²ú¡¢¸üÐÂÁîÅÆ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 		user.setToken(RandomStringUtils.randomAlphanumeric(30));
 		user.setLogin_attempts(0); // clear login attempts
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "·þÎñÆ÷²»¿ÉÓÃ");
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 		}
 		return new LoginResponse(Status.OK, user.getId(), user.getToken());
 	}
@@ -195,24 +202,24 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) String token) {
 		User user = null;
 
-		/* ²éÕÒÓÃ»§ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			// ²»¹ÜÊ²Ã´´í£¬ÓÃ»§²»ÓÃÖªµÀ¡£
+			// ï¿½ï¿½ï¿½ï¿½Ê²Ã´ï¿½?ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½
 			return Status.OK;
 		}
 
-		/* ÓÃ»§²»´æÔÚ»òÕßÁîÅÆ²»ÕýÈ· £¬²»¹ÜÊ²Ã´´í£¬ÓÃ»§²»ÓÃÖªµÀ¡£ */
+		/* ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ²ï¿½ï¿½ï¿½È· ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê²Ã´ï¿½?ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½ */
 		if (user == null || !user.getToken().equals(token))
 			return Status.OK;
 
-		/* Çå³ýÁîÅÆ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 		user.setToken("");
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			// ²»¹ÜÊ²Ã´´í£¬ÓÃ»§²»ÓÃÖªµÀ¡£
+			// ï¿½ï¿½ï¿½ï¿½Ê²Ã´ï¿½?ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½
 			return Status.OK;
 		}
 		return Status.OK;
@@ -222,7 +229,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * (non-Javadoc)
 	 * 
 	 * @see tokenTest.service.UserServiceInterface#getUserDetail(java.lang.Long,
-	 * java.lang.String, java.lang.Long) ²éÕÒÓÃ»§ÐÅÏ¢£¬queriedidÎª¿Õ±íÊ¾²éÕÒ×Ô¼ºµÄÐÅÏ¢£¬ÏÔÊ¾ÄÚÈÝ¸ü¶à¡£
+	 * java.lang.String, java.lang.Long) ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½queriedidÎªï¿½Õ±ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Ý¸ï¿½à¡£
 	 */
 	@RequestMapping(value = { "/getUserDetail**" }, method = RequestMethod.GET)
 	public UserDetailResponse getUserDetail(
@@ -231,7 +238,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) Long targetId) {
 		User user = null;
 
-		/* ²éÕÒÓÃ»§ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
@@ -242,7 +249,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 		}
 
-		/* targetId==null±íÊ¾²é¿´×Ô¼ºÐÅÏ¢£¬·ñÔòÎª²é¿´±ðÈËÐÅÏ¢ */
+		/* targetId==nullï¿½ï¿½Ê¾ï¿½é¿´ï¿½Ô¼ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½é¿´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ */
 		if (targetId == null || targetId == user.getId()) {
 			return new UserDetailResponse(user, true);
 		} else {
@@ -263,7 +270,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * @see
 	 * tokenTest.service.UserServiceInterface#updateUserProfile(java.lang.Long,
 	 * java.lang.String, java.lang.String, java.lang.String, java.util.Date,
-	 * java.lang.String, java.lang.String, java.lang.String) ÐÞ¸ÄÓÃ»§ÐÅÏ¢
+	 * java.lang.String, java.lang.String, java.lang.String) ï¿½Þ¸ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢
 	 */
 	@RequestMapping(value = { "/updateUserProfile**" }, method = RequestMethod.GET)
 	public Enum<Status> updateUserProfile(
@@ -277,7 +284,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) String company) {
 		User user = null;
 
-		/* ²éÕÒÓÃ»§ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
@@ -288,7 +295,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
-		/* ÉèÖÃÐÂµÄ ÓÃ»§ÐÅÏ¢ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½Ã»ï¿½ï¿½ï¿½Ï¢ */
 		if (nickname != null)
 			user.setNickname(nickname);
 		if (building != null)
@@ -302,7 +309,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (company != null)
 			user.setCompany(company);
 
-		/* ¸üÐÂÓÃ»§ÐÅÏ¢ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï¢ */
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
@@ -324,22 +331,22 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) String newpassword) {
 		User user = null;
 
-		/* ²éÕÒÓÃ»§ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
 			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD);
 		}
 
-		/* ÓÃ»§²»´æÔÚ»òÕßÁîÅÆ²»ÕýÈ· */
+		/* ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ²ï¿½ï¿½ï¿½È· */
 		if (user == null || !user.getPassword().equals(oldpassword))
 			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD);
 
-		/* ÉèÖÃÐÂµÄ ÓÃ»§ÃÜÂë */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ */
 		user.setPassword(newpassword);
 		user.setLogin_attempts(0);
 
-		/* ¸üÐÂÓÃ»§ÃÜÂë */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ */
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
@@ -367,7 +374,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	private ValidatePhoneResponse _doValidate(String phoneNum,
 			ValidationCodeStatus inputStatus) {
-		/* Ëæ»úÑéÖ¤Âë */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½ */
 		ValidationCode validationCode = null;
 		try {
 			validationCode = validationCodeBo.findByPhoneNum(phoneNum);
@@ -417,7 +424,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	}
 
-	/* Ä¬ÈÏÔöµÄ²»ÊÇÍ·Ïñ */
+	/* Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½ï¿½ï¿½Í·ï¿½ï¿½ */
 	@RequestMapping(value = { "/addPhoto**" }, method = RequestMethod.POST)
 	public Enum<Status> addPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
@@ -425,15 +432,15 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) String description,
 			@RequestParam(required = false) Boolean isProfile) {
 
-		/* ÑéÖ¤Í¼Æ¬ */
+		/* ï¿½ï¿½Ö¤Í¼Æ¬ */
 		if (!StringUtils.equals(file.getContentType(), "image/png")) {
-			/* ÎÄ¼þ¸ñÊ½´íÎó */
+			/* ï¿½Ä¼ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ */
 			return Status.ERR_PIC_FORMAT;
 		}
 
 		String path = servletContext.getRealPath("/") + File.separator + DIR;
 		User user = null;
-		/* ÑéÖ¤ÓÃ»§ */
+		/* ï¿½ï¿½Ö¤ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
@@ -444,7 +451,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 		
-		/* ÐÂ½¨Í¼Æ¬ */
+		/* ï¿½Â½ï¿½Í¼Æ¬ */
 		Picture picture = null;
 		if (description != null)
 			picture = new Picture(new Date(), description);
@@ -471,7 +478,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		// TODO Auto-generated method stub
 		String path = servletContext.getRealPath("/") + File.separator + DIR;
 		User user = null;
-		/* ÑéÖ¤ÓÃ»§ */
+		/* ï¿½ï¿½Ö¤ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
@@ -482,7 +489,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 
-		/* ²éÕÒÍ¼Æ¬ */
+		/* ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ */
 		Picture picture = null;
 		try {
 			picture = pictureBo.findById(picId);
@@ -491,23 +498,23 @@ public class UserServiceImpl implements UserServiceInterface {
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
 		if (picture == null) {
-			// Í¼Æ¬²»´æÔÚ
+			// Í¼Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			return Status.ERR_PIC_NOT_FOUND;
 		}
 
-		/* ÊÇÍ·Ïñ£¬²»ÄÜÉ¾³ý */
+		/* ï¿½ï¿½Í·ï¿½ñ£¬²ï¿½ï¿½ï¿½É¾ï¿½ï¿½ */
 		if (user.getPic().equals(picture)) {
 			return Status.ERR_CANNOT_DELETE_PROFILE_PHOTO;
 		}
 
-		/* ²»ÊÇ×Ô¼ºµÄÍ¼Æ¬£¬²»ÄÜÉ¾³ý */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ */
 		if (!user.getPicture().contains(picture)) {
 			return Status.ERR_BANNED;
 		}
 
-		/* É¾³ýÍ¼Æ¬Êý¾ÝºÍÎÄ¼þ,Í·Ïñ²»ÄÜÉ¾³ý */
+		/* É¾ï¿½ï¿½Í¼Æ¬ï¿½ï¿½Ýºï¿½ï¿½Ä¼ï¿½,Í·ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ */
 		try {
-			/* É¾³ýÍ¼Æ¬Êý¾ÝºÍÎÄ¼þ */
+			/* É¾ï¿½ï¿½Í¼Æ¬ï¿½ï¿½Ýºï¿½ï¿½Ä¼ï¿½ */
 			pictureBo.delete(user, picture, path);
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -516,7 +523,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		return Status.OK;
 	}
 
-	/* Ä¬ÈÏÔ­Í¼ */
+	/* Ä¬ï¿½ï¿½Ô­Í¼ */
 	@RequestMapping(value = { "/getPhoto**" }, method = RequestMethod.GET)
 	public void getPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
@@ -525,7 +532,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			HttpServletResponse response) {
 		String path = servletContext.getRealPath("/") + File.separator + DIR;
 		User user = null;
-		/* ÑéÖ¤ÓÃ»§ */
+		/* ï¿½ï¿½Ö¤ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
@@ -541,7 +548,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			// TODO: handle exception
 //			return Status.SERVICE_NOT_AVAILABLE;
 		}
-		/* ²éÕÒÍ¼Æ¬ */
+		/* ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ */
 		Picture picture = null;
 		try {
 			picture = pictureBo.findById(picId);
@@ -555,7 +562,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		File file = new File(path + File.separator + picture.getFilename());
 		if (file.exists()) {
 			if (isThumb == null || isThumb == 0) {
-				/* ·µ»ØÔ­Í¼ */
+				/* ï¿½ï¿½ï¿½ï¿½Ô­Í¼ */
 				try {
 					FileInputStream is = new FileInputStream(file);
 					IOUtils.copy(is, response.getOutputStream());
@@ -564,7 +571,7 @@ public class UserServiceImpl implements UserServiceInterface {
 					return;
 				}
 			} else {
-				/* ·µ»ØÐ¡Í¼ */
+				/* ï¿½ï¿½ï¿½ï¿½Ð¡Í¼ */
 				try {
 					BufferedImage originalImage = ImageIO
 							.read(new FileInputStream(file));
@@ -586,14 +593,14 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) String code) {
 		User user = null;
 
-		/* ²éÕÒÓÃ»§ */
+		/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ */
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
-		/* ÓÃ»§²»´æÔÚ»òÕßÁîÅÆ²»ÕýÈ· */
+		/* ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ²ï¿½ï¿½ï¿½È· */
 		if (user == null)
 			return new LoginResponse(Status.ERR_USER_NOT_FOUND);
 
