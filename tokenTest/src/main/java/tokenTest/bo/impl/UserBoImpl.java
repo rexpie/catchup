@@ -59,15 +59,35 @@ public class UserBoImpl implements UserBo {
 	}
 
 	@Transactional
-	public User validateUser(Long id, String token) throws UserNotFoundException, WrongTokenException{
+	public User validateUser(Long id, String token)
+			throws UserNotFoundException, WrongTokenException {
 		// TODO Auto-generated method stub
 		User user = findByUserId(id);
-		if (user == null )
+		if (user == null)
 			throw new UserNotFoundException();
-		
+
 		if (!StringUtils.equals(user.getToken(), token))
 			throw new WrongTokenException();
-		
+
+		return user;
+	}
+
+	@Transactional
+	public User findByNickOrPhone(String nickorphone) {
+		User user = null;
+		if (StringUtils.containsOnly(nickorphone, "0123456789")) {
+			user = findByUserPhoneNum(nickorphone);
+			if (user == null) {
+				user = findByUserNickName(nickorphone);
+			}
+		} else {
+			user = findByUserNickName(nickorphone);
+			if (user == null) {
+				user = findByUserPhoneNum(nickorphone);
+
+			}
+
+		}
 		return user;
 	}
 

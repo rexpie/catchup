@@ -18,4 +18,6 @@ public interface UserBo {
 	User findByUserPhoneNum(String phoneNum);
 
 	User findByUserId(Long id);
+	
+	User findByNickOrPhone(String nickorphone);
 }

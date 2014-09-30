@@ -147,11 +147,17 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		/* 查找用户 */
 		try {
-			user = userBo.findByUserNickName(nickorphone);
+			user = userBo.findByNickOrPhone(nickorphone);
 		} catch (Exception e) {
 			// 不知道啥错
-			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
+			e.printStackTrace();
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, null);
 		}
+
+		/* 用昵称查找用户不存在 */
+
+		if (user == null)
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND, null);
 
 		int attempts = 0;
 		attempts = user.getLogin_attempts();
@@ -165,13 +171,13 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS) {
 			return new LoginResponse(Status.ERR_MAX_LOGIN_ATTEMPTS,
-					"密码输入错误过多，请重置密码");
+					null);
 		}
 
 		/* 用昵称查找用户不存在 */
 
 		if (user == null || !password.equals(user.getPassword()))
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND, "用户不存在或者密码错误");
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND, null);
 
 		/* 生产、更新令牌 */
 		user.setToken(RandomStringUtils.randomAlphanumeric(30));
@@ -179,7 +185,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, "服务器不可用");
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, null);
 		}
 		return new LoginResponse(Status.OK, user.getId(), user.getToken());
 	}
