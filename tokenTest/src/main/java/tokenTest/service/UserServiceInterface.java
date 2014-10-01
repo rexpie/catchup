@@ -32,7 +32,7 @@ public interface UserServiceInterface {
 
 	Enum<Status> deletePhoto(Long id, String token, Long picId);
 
-	void getPhoto(Long id, String token, Long picId, Integer size, HttpServletResponse response);
+	void getPhoto(Long id, String token, Long picId, Integer isThumb, HttpServletResponse response);
 
 	// 后面的还没改
 	Enum<Status> updateUserProfile(Long id, String token, String nickname,

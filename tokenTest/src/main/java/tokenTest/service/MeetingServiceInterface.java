@@ -1,17 +1,20 @@
 package tokenTest.service;
 
+import java.util.ArrayList;
+
 import tokenTest.response.MeetingResponse;
+import tokenTest.response.StatusResponse;
 import antlr.collections.List;
 
 public interface MeetingServiceInterface {
 	/* 未登录状态，使用客户端位置查询 */
-	List getMeetingList(String longtitude, String latitude, String pagenum, String sorttype);
+	ArrayList<MeetingResponse> getMeetingList(String longtitude, String latitude, String pagenum, String sorttype);
 
 	/* 登录状态，使用用户位置查询，建议先更新用户位置 */
-	List getMeetingList(Long id, String token, String pagenum);
+	ArrayList<MeetingResponse> getMeetingList(Long id, String token, String pagenum, String sorttype);
 
 	/* 发起饭约 */
-	MeetingResponse newMeeting(Long id, String token, Long shopid,
+	StatusResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description);
 
 	/* 返回饭约详情，含参与者 */

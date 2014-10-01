@@ -1,5 +1,6 @@
 package tokenTest.bo;
 
+import tokenTest.exception.ShopNotFoundException;
 import tokenTest.model.Shop;
 
 public interface ShopBo {
@@ -10,6 +11,6 @@ public interface ShopBo {
 	void delete(Shop shop);
 
 	Shop findByShopName(String name);
-	
-	Shop findByShopId(Long id);
+
+	Shop findByShopId(Long id) throws ShopNotFoundException;
 }

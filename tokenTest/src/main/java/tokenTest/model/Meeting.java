@@ -1,6 +1,7 @@
 package tokenTest.model;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,39 +23,61 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "meeting")
 public class Meeting {
-	
+	@GenericGenerator(name = "generator", strategy = "increment")
+	@Id
+	@GeneratedValue(generator = "generator")
+	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
-	private User owner;
-	private Date create_time;
-	private String genderConstraint;
-	private int seen_count;
-	private int apply_count;
-	private Shop shop;
-	private int time_limit;
-	private int status;
-	private String description;
 	
-	private Set<User> participator;
+	@ManyToOne(targetEntity = User.class)
+	@JoinColumn(name = "owner_id")
+	private User owner;
+	
+	@Column(name = "create_time")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date create_time;
+	
+	@Column(name = "genderConstraint", length = 1)
+	private String genderConstraint;
+	
+	@Column(name = "seen_count")
+	private int seen_count;
+	
+	@Column(name = "apply_count")
+	private int apply_count;
+	
+	@ManyToOne(targetEntity = Shop.class)
+	@JoinColumn(name = "shop_id")
+	private Shop shop;
+	
+	@Column(name = "time_limit")
+	private int time_limit=0;
+	
+	@Column(name = "status")
+	private int status=0;
+	
+	@Column(name = "description", length = 140)
+	private String description="";
+
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeeting_id") }, inverseJoinColumns = { @JoinColumn(name = "use_id") })
+	private Set<User> participator = new HashSet<User>();
 
 	public Meeting() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Meeting(User owner, Date create_time, Shop shop, String genderConstraint,
-			String description) {
+	public Meeting(User owner, Date create_time, Shop shop,
+			String genderConstraint, String description) {
 		super();
 		this.owner = owner;
 		this.create_time = create_time;
 		this.shop = shop;
-		this.genderConstraint=genderConstraint;
+		this.genderConstraint = genderConstraint;
 		this.description = description;
 	}
 
-	@GenericGenerator(name = "generator", strategy = "increment")
-	@Id
-	@GeneratedValue(generator = "generator")
-	@Column(name = "id", unique = true, nullable = false)
 	public Long getId() {
 		return id;
 	}
@@ -63,7 +86,6 @@ public class Meeting {
 		this.id = id;
 	}
 
-	@Column(name = "genderConstraint", length = 1)
 	public String getGenderConstraint() {
 		return genderConstraint;
 	}
@@ -72,8 +94,6 @@ public class Meeting {
 		this.genderConstraint = genderConstraint;
 	}
 
-	@ManyToOne(targetEntity = User.class)
-	@JoinColumn(name = "owner_id")
 	public User getOwner() {
 		return owner;
 	}
@@ -82,8 +102,6 @@ public class Meeting {
 		this.owner = owner;
 	}
 
-	@Column(name = "create_time")
-	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreate_time() {
 		return create_time;
 	}
@@ -92,7 +110,6 @@ public class Meeting {
 		this.create_time = create_time;
 	}
 
-	@Column(name = "seen_count")
 	public int getSeen_count() {
 		return seen_count;
 	}
@@ -101,7 +118,6 @@ public class Meeting {
 		this.seen_count = seen_count;
 	}
 
-	@Column(name = "apply_count")
 	public int getApply_count() {
 		return apply_count;
 	}
@@ -110,8 +126,6 @@ public class Meeting {
 		this.apply_count = apply_count;
 	}
 
-	@ManyToOne(targetEntity = Shop.class)
-	@JoinColumn(name = "shop_id")
 	public Shop getShop() {
 		return shop;
 	}
@@ -120,7 +134,6 @@ public class Meeting {
 		this.shop = shop;
 	}
 
-	@Column(name = "time_limit")
 	public int getTime_limit() {
 		return time_limit;
 	}
@@ -129,7 +142,6 @@ public class Meeting {
 		this.time_limit = time_limit;
 	}
 
-	@Column(name = "status")
 	public int getStatus() {
 		return status;
 	}
@@ -138,7 +150,6 @@ public class Meeting {
 		this.status = status;
 	}
 
-	@Column(name = "description", length = 140)
 	public String getDescription() {
 		return description;
 	}
@@ -147,9 +158,6 @@ public class Meeting {
 		this.description = description;
 	}
 
-	
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeeting_id") }, inverseJoinColumns = { @JoinColumn(name = "use_id") })
 	public Set<User> getParticipator() {
 		return participator;
 	}
@@ -157,29 +165,29 @@ public class Meeting {
 	public void setParticipator(Set<User> participator) {
 		this.participator = participator;
 	}
-	
-	@Override
-    public int hashCode() {
-        final int prime = 37;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
-    }
 
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final Meeting other = (Meeting) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!this.id.equals(other.id))
-            return false;
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 43;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final Meeting other = (Meeting) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!this.id.equals(other.id))
+			return false;
+		return true;
+	}
 }
