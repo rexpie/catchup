@@ -39,7 +39,7 @@ public interface UserServiceInterface {
 			String building, Date birthday, String sex, String emailaddress,
 			String company);
 
-	LoginResponse changePassWord(Long id, String oldpassword, String newpassword);
+	LoginResponse changePassword(Long id, String oldpassword, String newpassword);
 	
 	
 	LoginResponse resetPassword(Long id, String newPassword, String validationCode);

@@ -323,7 +323,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String, java.lang.String)
 	 */
 	@RequestMapping(value = { "/changePassword**" }, method = RequestMethod.GET)
-	public LoginResponse changePassWord(@RequestParam(required = true) Long id,
+	public LoginResponse changePassword(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String oldpassword,
 			@RequestParam(required = true) String newpassword) {
 		User user = null;
