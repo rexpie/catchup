@@ -465,7 +465,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			}
 
 		} catch (IOException e) {
-			/* �ļ�IO */
+			/* 文件IO */
 			return Status.SERVICE_NOT_AVAILABLE;
 		} catch (Exception e) {
 			return Status.SERVICE_NOT_AVAILABLE;
@@ -563,7 +563,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return;
 		}
 
-		/* ����ԭͼ����Сͼ */
+		/* 返回原图或者小图 */
 		if (isThumb == null || isThumb != 1) {
 			path += File.separator + Constants.RIGIN_PICTURE_PATH;
 		} else {
