@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import tokenTest.bo.ShopBo;
 import tokenTest.dao.ShopDao;
+import tokenTest.exception.ShopNotFoundException;
 import tokenTest.model.Shop;
 
 @Service("shopBo")
@@ -43,9 +44,11 @@ public class ShopBoImpl implements ShopBo {
 	}
 
 	@Transactional
-	public Shop findByShopId(Long id) {
+	public Shop findByShopId(Long id) throws ShopNotFoundException {
 		// TODO Auto-generated method stub
-		return shopDao.findByShopId(id);
+		Shop shop = shopDao.findByShopId(id);
+		if (shop == null)
+			throw new ShopNotFoundException();
+		return shop;
 	}
-
 }

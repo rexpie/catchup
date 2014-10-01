@@ -6,10 +6,9 @@ package tokenTest.service.impl;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
@@ -32,6 +31,7 @@ import tokenTest.Util.Status;
 import tokenTest.bo.PictureBo;
 import tokenTest.bo.UserBo;
 import tokenTest.bo.ValidationCodeBo;
+import tokenTest.exception.PictureNotFoundException;
 import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Picture;
@@ -61,8 +61,6 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Autowired
 	private ServletContext servletContext = null;
-
-	private static String DIR = "picture";
 
 	/*
 	 * (non-Javadoc)
@@ -334,12 +332,14 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD);
+			return new LoginResponse(
+					Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD);
 		}
 
 		/* 用户不存在或者令牌不正确 */
 		if (user == null || !user.getPassword().equals(oldpassword))
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD);
+			return new LoginResponse(
+					Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD);
 
 		/* 设置新的 用户密码 */
 		user.setPassword(newpassword);
@@ -437,7 +437,8 @@ public class UserServiceImpl implements UserServiceInterface {
 			return Status.ERR_PIC_FORMAT;
 		}
 
-		String path = servletContext.getRealPath("/") + File.separator + DIR;
+		String path = servletContext.getRealPath("/") + File.separator
+				+ Constants.PICTURE_ROOT_PATH;
 		User user = null;
 		/* 验证用户 */
 		try {
@@ -451,11 +452,10 @@ public class UserServiceImpl implements UserServiceInterface {
 		}
 		
 		/* 新建图片 */
-		Picture picture = null;
+
+		Picture picture = new Picture(new Date());
 		if (description != null)
-			picture = new Picture(new Date(), description);
-		else
-			picture = new Picture(new Date());
+			picture.setDescription(description);
 
 		try {
 			if (isProfile != null && isProfile) {
@@ -464,6 +464,9 @@ public class UserServiceImpl implements UserServiceInterface {
 				pictureBo.save(user, file, picture, path, false);
 			}
 
+		} catch (IOException e) {
+			/* �ļ�IO */
+			return Status.SERVICE_NOT_AVAILABLE;
 		} catch (Exception e) {
 			return Status.SERVICE_NOT_AVAILABLE;
 		}
@@ -475,7 +478,8 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long picId) {
 		// TODO Auto-generated method stub
-		String path = servletContext.getRealPath("/") + File.separator + DIR;
+		String path = servletContext.getRealPath("/") + File.separator
+				+ Constants.PICTURE_ROOT_PATH;
 		User user = null;
 		/* 验证用户 */
 		try {
@@ -529,59 +533,50 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) Long picId,
 			@RequestParam(required = false) Integer isThumb,
 			HttpServletResponse response) {
-		String path = servletContext.getRealPath("/") + File.separator + DIR;
-		User user = null;
-		/* 验证用户 */
+		String path = servletContext.getRealPath("/") + File.separator
+				+ Constants.PICTURE_ROOT_PATH;
+	/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
 			return;
 			// TODO: handle exception
-//			return Status.ERR_USER_NOT_FOUND;
+			// return Status.ERR_USER_NOT_FOUND;
 		} catch (WrongTokenException e) {
 			return;
 			// TODO: handle exception
-//			return Status.ERR_WRONG_TOKEN;
+			// return Status.ERR_WRONG_TOKEN;
 		} catch (Exception e) {
 			return;
 			// TODO: handle exception
-//			return Status.SERVICE_NOT_AVAILABLE;
+			// return Status.SERVICE_NOT_AVAILABLE;
 		}
 		/* 查找图片 */
 		Picture picture = null;
 		try {
 			picture = pictureBo.findById(picId);
+		} catch (PictureNotFoundException e) {
+			// TODO: handle exception
+			return;
 		} catch (Exception e) {
 			// TODO: handle exception
 			return;
 		}
-		if (picture == null)
-			return;
 
+		/* ����ԭͼ����Сͼ */
+		if (isThumb == null || isThumb != 1) {
+			path += File.separator + Constants.RIGIN_PICTURE_PATH;
+		} else {
+			path += File.separator + Constants.THUMB_PICTURE_PATH;
+		}
 		File file = new File(path + File.separator + picture.getFilename());
 		if (file.exists()) {
-			if (isThumb == null || isThumb == 0) {
-				/* 返回原图 */
-				try {
-					FileInputStream is = new FileInputStream(file);
-					IOUtils.copy(is, response.getOutputStream());
-				} catch (Exception e) {
-					// TODO: handle exception
-					return;
-				}
-			} else {
-				/* 返回小图 */
-				try {
-					BufferedImage originalImage = ImageIO
-							.read(new FileInputStream(file));
-					originalImage = pictureBo.zoomOutImage(originalImage, 100);
-					IOUtils.copy((InputStream) ImageIO
-							.createImageInputStream(originalImage), response
-							.getOutputStream());
-				} catch (Exception e) {
-					// TODO: handle exception
-					return;
-				}
+			try {
+				FileInputStream is = new FileInputStream(file);
+				IOUtils.copy(is, response.getOutputStream());
+			} catch (Exception e) {
+				// TODO: handle exception
+				return;
 			}
 		}
 	}

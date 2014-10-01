@@ -1,12 +1,12 @@
 package tokenTest.bo.impl;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
 
-import javax.transaction.RollbackException;
+import javax.imageio.ImageIO;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -14,10 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import tokenTest.Util.Status;
+import tokenTest.Util.Constants;
 import tokenTest.bo.PictureBo;
 import tokenTest.dao.PictureDao;
 import tokenTest.dao.UserDao;
+import tokenTest.exception.PictureNotFoundException;
 import tokenTest.model.Picture;
 import tokenTest.model.User;
 
@@ -29,36 +30,58 @@ public class PictureBoImpl implements PictureBo {
 	@Autowired
 	private UserDao userDao;
 
-	private static String TYPE = ".png";
-
 	public void setPictureDao(PictureDao pictureDao) {
 		this.pictureDao = pictureDao;
 	}
 
 	@Transactional(rollbackOn = { Exception.class })
 	public void save(User user, MultipartFile file, Picture picture,
-			String path, boolean isProfile) throws Exception {
+			String path, boolean isProfile) throws IOException {
 		// TODO Auto-generated method stub
+
 		/* 建立文件来存储上传的图片 */
-		File destination = new File(path);
+		File destination = new File(path + File.separator
+				+ Constants.THUMB_PICTURE_PATH);
 		if (!destination.exists())
 			destination.mkdirs();
 
-		String filename = path + File.separator
-				+ RandomStringUtils.randomAlphanumeric(30) + TYPE;
-		destination = new File(filename);
+		destination = new File(path + File.separator
+				+ Constants.RIGIN_PICTURE_PATH);
+		if (!destination.exists())
+			destination.mkdirs();
+
+		/* �����ļ��� */
+		String filename = RandomStringUtils.randomAlphanumeric(30);
+		destination = new File(path + File.separator
+				+ Constants.RIGIN_PICTURE_PATH + File.separator + filename
+				+ "." + Constants.PICTURE_FORMAT);
 		while (destination.exists()) {
-			filename = path + File.separator
-					+ RandomStringUtils.randomAlphanumeric(30) + TYPE;
-			destination = new File(filename);
+			filename = RandomStringUtils.randomAlphanumeric(30);
+			destination = new File(path + File.separator
+					+ Constants.RIGIN_PICTURE_PATH + File.separator + filename
+					+ "." + Constants.PICTURE_FORMAT);
 		}
+
+		/* ����ԭͼƬ�ļ� */
 		destination.createNewFile();
+
+		/* ����ԭͼƬ�ļ� */
 		if (file != null)
 			file.transferTo(destination);
-		if (picture != null)
-			picture.setFilename(destination.getName());
+
+		/* ���СͼƬ */
+		saveScaleImage(path + File.separator + Constants.RIGIN_PICTURE_PATH
+				+ File.separator + filename + "." + Constants.PICTURE_FORMAT,
+				path + File.separator + Constants.THUMB_PICTURE_PATH
+						+ File.separator + filename + "."
+						+ Constants.PICTURE_FORMAT, Constants.THUMBNAIL_WIDTH,
+				Constants.THUMBNAIL_HEIGHT);
+
 
 		/* 将图片添加到用户 */
+
+		if (picture != null)
+			picture.setFilename(destination.getName());
 		if (isProfile) {
 			user.setPic(picture);
 		} else {
@@ -83,7 +106,16 @@ public class PictureBoImpl implements PictureBo {
 		// TODO Auto-generated method stub
 		user.getPicture().remove(picture);
 		userDao.update(user);
-		File pictureFile = new File(path + picture.getFilename());
+
+		File pictureFile = new File(path + File.separator
+				+ Constants.RIGIN_PICTURE_PATH + File.separator
+				+ picture.getFilename());
+		if (pictureFile.exists())
+			pictureFile.delete();
+
+		pictureFile = new File(path + File.separator
+				+ Constants.THUMB_PICTURE_PATH + File.separator
+				+ picture.getFilename());
 		if (pictureFile.exists())
 			pictureFile.delete();
 		/* 级联操作，不需要另外删除图片 */
@@ -103,9 +135,12 @@ public class PictureBoImpl implements PictureBo {
 	}
 
 	@Transactional
-	public Picture findById(Long id) {
+	public Picture findById(Long id) throws PictureNotFoundException {
 		// TODO Auto-generated method stub
-		return pictureDao.findPictureById(id);
+		Picture picture = pictureDao.findPictureById(id);
+		if (picture == null)
+			throw new PictureNotFoundException();
+		return picture;
 	}
 
 	@Transactional
@@ -114,15 +149,18 @@ public class PictureBoImpl implements PictureBo {
 		return null;
 	}
 
-	public BufferedImage zoomOutImage(BufferedImage originalImage,
-			Integer width) {
-		double times = originalImage.getWidth() / width;
-		int height = (int) (originalImage.getHeight() / times);
-		BufferedImage newImage = new BufferedImage(width, height,
-				originalImage.getType());
-		Graphics g = newImage.getGraphics();
-		g.drawImage(originalImage, 0, 0, width, height, null);
-		g.dispose();
-		return newImage;
+	public void saveScaleImage(String originalImage, String newImage,
+			Integer width, Integer height) throws IOException {
+		BufferedImage oldImg = ImageIO.read(new File(originalImage));
+		BufferedImage newImg = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D grph = (Graphics2D) newImg.getGraphics();
+		// grph.scale(width / oldImg.getWidth(), height / oldImg.getHeight());
+		grph.drawImage(
+				oldImg.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0,
+				0, null);
+		grph.dispose();
+		ImageIO.write(newImg, "png", new File(newImage));
 	}
 }

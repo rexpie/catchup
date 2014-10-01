@@ -1,34 +1,37 @@
 package tokenTest.service;
 
+import java.util.ArrayList;
+
 import tokenTest.response.MeetingResponse;
+import tokenTest.response.StatusResponse;
 import antlr.collections.List;
 
 public interface MeetingServiceInterface {
-	/* æœªç™»å½•çŠ¶æ€ï¼Œä½¿ç”¨å®¢æˆ·ç«¯ä½ç½®æŸ¥è¯¢ */
-	List getMeetingList(String longtitude, String latitude, String pagenum, String sorttype);
+	/* Î´µÇÂ¼×´Ì¬£¬Ê¹ÓÃ¿Í»§¶ËÎ»ÖÃ²éÑ¯ */
+	ArrayList<MeetingResponse> getMeetingList(String longtitude, String latitude, String pagenum, String sorttype);
 
-	/* ç™»å½•çŠ¶æ€ï¼Œä½¿ç”¨ç”¨æˆ·ä½ç½®æŸ¥è¯¢ï¼Œå»ºè®®å…ˆæ›´æ–°ç”¨æˆ·ä½ç½® */
-	List getMeetingList(Long id, String token, String pagenum);
+	/* µÇÂ¼×´Ì¬£¬Ê¹ÓÃÓÃ»§Î»ÖÃ²éÑ¯£¬½¨ÒéÏÈ¸üĞÂÓÃ»§Î»ÖÃ */
+	ArrayList<MeetingResponse> getMeetingList(Long id, String token, String pagenum, String sorttype);
 
-	/* å‘èµ·é¥­çº¦ */
-	MeetingResponse newMeeting(Long id, String token, Long shopid,
+	/* ·¢Æğ·¹Ô¼ */
+	StatusResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description);
 
-	/* è¿”å›é¥­çº¦è¯¦æƒ…ï¼Œå«å‚ä¸è€… */
+	/* ·µ»Ø·¹Ô¼ÏêÇé£¬º¬²ÎÓëÕß */
 	MeetingResponse getMeetingDetail(Long meetingid);
 
-	/* ç”³è¯·åŠ å…¥é¥­çº¦ */
+	/* ÉêÇë¼ÓÈë·¹Ô¼ */
 	String applyForMeeting(Long id, String token, Long meetingid);
 
-	/* åŒæ„é¥­çº¦ç”³è¯· */
+	/* Í¬Òâ·¹Ô¼ÉêÇë */
 	String approveMeetingApply(Long id, String token, Long meetingid,
 			Long applyid);
 
-	/* ä¸åŒæ„é¥­çº¦ç”³è¯· */
+	/* ²»Í¬Òâ·¹Ô¼ÉêÇë */
 	String disapproveMeetingApply(Long id, String token, Long meetingid,
 			Long applyid);
 
-	/* è¯„è®ºé¥­çº¦ï¼Œæš‚æ—¶ä¸åš */
+	/* ÆÀÂÛ·¹Ô¼£¬ÔİÊ±²»×ö */
 	String commentOnMeeting(Long id, String token, Long meetingid,
 			String comment);
 }
