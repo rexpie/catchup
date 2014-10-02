@@ -50,7 +50,7 @@ public class PictureBoImpl implements PictureBo {
 		if (!destination.exists())
 			destination.mkdirs();
 
-		/* �����ļ��� */
+		/* 随机出文件名 */
 		String filename = RandomStringUtils.randomAlphanumeric(30);
 		destination = new File(path + File.separator
 				+ Constants.RIGIN_PICTURE_PATH + File.separator + filename
@@ -62,14 +62,14 @@ public class PictureBoImpl implements PictureBo {
 					+ "." + Constants.PICTURE_FORMAT);
 		}
 
-		/* ����ԭͼƬ�ļ� */
+		/* 建立原图片文件 */
 		destination.createNewFile();
 
-		/* ����ԭͼƬ�ļ� */
+		/* 保存原图片文件 */
 		if (file != null)
 			file.transferTo(destination);
 
-		/* ���СͼƬ */
+		/* 生成小图片 */
 		saveScaleImage(path + File.separator + Constants.RIGIN_PICTURE_PATH
 				+ File.separator + filename + "." + Constants.PICTURE_FORMAT,
 				path + File.separator + Constants.THUMB_PICTURE_PATH
@@ -82,6 +82,7 @@ public class PictureBoImpl implements PictureBo {
 
 		if (picture != null)
 			picture.setFilename(destination.getName());
+		
 		if (isProfile) {
 			user.setPic(picture);
 		} else {
