@@ -2,13 +2,13 @@ package tokenTest.service;
 
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import tokenTest.Util.Status;
 import tokenTest.response.LoginResponse;
+import tokenTest.response.PicResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 
@@ -23,19 +23,19 @@ public interface UserServiceInterface {
 
 	ValidatePhoneResponse validatePhone(String phoneNum);
 
-	Enum<Status> userLogout(Long id, String token);
+	LoginResponse userLogout(Long id, String token);
 
 	UserDetailResponse getUserDetail(Long id, String token, Long targetId);
 
-	Enum<Status> addPhoto(Long id, String token, MultipartFile file,
+	PicResponse addPhoto(Long id, String token, MultipartFile file,
 			String description, Boolean isProfile);
 
-	Enum<Status> deletePhoto(Long id, String token, Long picId);
+	PicResponse deletePhoto(Long id, String token, Long picId);
 
 	void getPhoto(Long id, String token, Long picId, Integer isThumb, HttpServletResponse response);
 
 	// 后面的还没改
-	Enum<Status> updateUserProfile(Long id, String token, String nickname,
+	PicResponse updateUserProfile(Long id, String token, String nickname,
 			String building, Date birthday, String sex, String emailaddress,
 			String company);
 

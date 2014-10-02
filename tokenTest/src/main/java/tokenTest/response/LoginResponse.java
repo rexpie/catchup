@@ -52,5 +52,7 @@ public class LoginResponse {
 		this.id = id;
 		this.token = token;
 	}
+	
+	public static final LoginResponse OK = new LoginResponse(Status.OK);
 
 }

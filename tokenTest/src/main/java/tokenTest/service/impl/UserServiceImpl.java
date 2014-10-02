@@ -3,14 +3,11 @@
  */
 package tokenTest.service.impl;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Date;
 
-import javax.imageio.ImageIO;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,6 +35,7 @@ import tokenTest.model.Picture;
 import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
 import tokenTest.response.LoginResponse;
+import tokenTest.response.PicResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 import tokenTest.service.UserServiceInterface;
@@ -195,7 +193,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String)
 	 */
 	@RequestMapping(value = { "/userLogout**" }, method = RequestMethod.GET)
-	public Enum<Status> userLogout(@RequestParam(required = true) Long id,
+	public LoginResponse userLogout(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token) {
 		User user = null;
 
@@ -204,12 +202,12 @@ public class UserServiceImpl implements UserServiceInterface {
 			user = userBo.findByUserId(id);
 		} catch (Exception e) {
 			// 不管什么错，用户不用知道。
-			return Status.OK;
+			return LoginResponse.OK;
 		}
 
 		/* 用户不存在或者令牌不正确 ，不管什么错，用户不用知道。 */
 		if (user == null || !user.getToken().equals(token))
-			return Status.OK;
+			return LoginResponse.OK;
 
 		/* 清除令牌 */
 		user.setToken("");
@@ -217,9 +215,9 @@ public class UserServiceImpl implements UserServiceInterface {
 			userBo.update(user);
 		} catch (Exception e) {
 			// 不管什么错，用户不用知道。
-			return Status.OK;
+			return LoginResponse.OK;
 		}
-		return Status.OK;
+		return LoginResponse.OK;
 	}
 
 	/*
@@ -270,7 +268,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String, java.lang.String, java.lang.String) 修改用户信息
 	 */
 	@RequestMapping(value = { "/updateUserProfile**" }, method = RequestMethod.GET)
-	public Enum<Status> updateUserProfile(
+	public PicResponse updateUserProfile(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) String nickname,
@@ -285,11 +283,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
-			return Status.ERR_USER_NOT_FOUND;
+			return new PicResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
-			return Status.ERR_WRONG_TOKEN;
+			return new PicResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
-			return Status.SERVICE_NOT_AVAILABLE;
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
 		/* 设置新的 用户信息 */
@@ -310,9 +308,9 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			return Status.ERR_GENERIC;
+			return new PicResponse(Status.ERR_GENERIC);
 		}
-		return Status.OK;
+		return new PicResponse(Status.OK);
 	}
 
 	/*
@@ -425,7 +423,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	/* 默认增的不是头像 */
 	@RequestMapping(value = { "/addPhoto**" }, method = RequestMethod.POST)
-	public Enum<Status> addPhoto(@RequestParam(required = true) Long id,
+	public PicResponse addPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) MultipartFile file,
 			@RequestParam(required = false) String description,
@@ -434,7 +432,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 验证图片 */
 		if (!StringUtils.equals(file.getContentType(), "image/png")) {
 			/* 文件格式错误 */
-			return Status.ERR_PIC_FORMAT;
+			return new PicResponse(Status.ERR_PIC_FORMAT);
 		}
 
 		String path = servletContext.getRealPath("/") + File.separator
@@ -444,11 +442,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
-			return Status.ERR_USER_NOT_FOUND;
+			return new PicResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
-			return Status.ERR_WRONG_TOKEN;
+			return new PicResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
-			return Status.SERVICE_NOT_AVAILABLE;
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 		
 		/* 新建图片 */
@@ -466,15 +464,15 @@ public class UserServiceImpl implements UserServiceInterface {
 
 		} catch (IOException e) {
 			/* 文件IO */
-			return Status.SERVICE_NOT_AVAILABLE;
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		} catch (Exception e) {
-			return Status.SERVICE_NOT_AVAILABLE;
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		return Status.OK;
+		return new PicResponse(Status.OK);
 	}
 
 	@RequestMapping(value = { "/deletePhoto**" }, method = RequestMethod.GET)
-	public Enum<Status> deletePhoto(@RequestParam(required = true) Long id,
+	public PicResponse deletePhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long picId) {
 		// TODO Auto-generated method stub
@@ -485,11 +483,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
-			return Status.ERR_USER_NOT_FOUND;
+			return new PicResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
-			return Status.ERR_WRONG_TOKEN;
+			return new PicResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
-			return Status.SERVICE_NOT_AVAILABLE;
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
 		/* 查找图片 */
@@ -498,21 +496,21 @@ public class UserServiceImpl implements UserServiceInterface {
 			picture = pictureBo.findById(picId);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return Status.SERVICE_NOT_AVAILABLE;
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 		if (picture == null) {
 			// 图片不存在
-			return Status.ERR_PIC_NOT_FOUND;
+			return new PicResponse(Status.ERR_PIC_NOT_FOUND);
 		}
 
 		/* 是头像，不能删除 */
 		if (user.getPic().equals(picture)) {
-			return Status.ERR_CANNOT_DELETE_PROFILE_PHOTO;
+			return new PicResponse(Status.ERR_CANNOT_DELETE_PROFILE_PHOTO);
 		}
 
 		/* 不是自己的图片，不能删除 */
 		if (!user.getPicture().contains(picture)) {
-			return Status.ERR_BANNED;
+			return new PicResponse(Status.ERR_BANNED);
 		}
 
 		/* 删除图片数据和文件,头像不能删除 */
@@ -521,9 +519,9 @@ public class UserServiceImpl implements UserServiceInterface {
 			pictureBo.delete(user, picture, path);
 		} catch (Exception e) {
 			// TODO: handle exception
-			return Status.SERVICE_NOT_AVAILABLE;
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		return Status.OK;
+		return new PicResponse(Status.OK);
 	}
 
 	/* 默认原图 */
