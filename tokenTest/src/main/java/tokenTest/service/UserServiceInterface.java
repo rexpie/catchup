@@ -22,6 +22,8 @@ public interface UserServiceInterface {
 	LoginResponse userLogin(String nickorphone, String password);
 
 	ValidatePhoneResponse validatePhone(String phoneNum);
+	
+	ValidatePhoneResponse validateReset(String phoneNum);
 
 	LoginResponse userLogout(Long id, String token);
 
@@ -42,6 +44,6 @@ public interface UserServiceInterface {
 	LoginResponse changePassword(Long id, String oldpassword, String newpassword);
 	
 	
-	LoginResponse resetPassword(Long id, String newPassword, String validationCode);
+	LoginResponse resetPassword(String nickorphone, String newPassword, String validationCode);
 
 }
