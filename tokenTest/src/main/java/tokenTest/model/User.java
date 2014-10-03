@@ -37,37 +37,37 @@ public class User implements Serializable {
 	@GeneratedValue(generator = "generator")
 	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
-	
+
 	@Column(name = "token", length = 30)
 	private String token;
-	
+
 	@Column(name = "password", nullable = false, length = 128)
 	private String password;
-	
+
 	@Column(name = "login_attempts")
 	private Integer login_attempts;
 
 	/* 必填信息 */
 	@Column(name = "nickname", unique = true, nullable = false, length = 128)
 	private String nickname;
-	
+
 	@Column(name = "phone_number", unique = true, nullable = false, length = 128)
 	private String phone_number;
-	
+
 	@Column(name = "birthday")
 	@Temporal(TemporalType.DATE)
 	private Date birthday;
-	
+
 	@Column(name = "sex", length = 1)
 	private String sex;
-	
+
 	@Column(name = "building", nullable = false, length = 128)
 	private String building;
-	
-	@OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "pic_id", unique = true)
 	private Picture pic; // 头像
-	
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	private Set<Tag> tags;
@@ -75,10 +75,10 @@ public class User implements Serializable {
 	/* 非必填信息 */
 	@Column(name = "company", length = 128)
 	private String company;
-	
+
 	@Column(name = "role", length = 30)
 	private String role;
-	
+
 	@Column(name = "email_address", length = 128)
 	private String email_address;
 
@@ -86,25 +86,25 @@ public class User implements Serializable {
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
 	private Set<Picture> picture = new HashSet<>(); // 非头像照片
-	
+
 	@Column(name = "zan_count")
 	private long zan_count;
-	
+
 	@Column(name = "update_time")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date update_time;
-	
+
 	@Column(name = "create_time")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date create_time;
-	
+
 	@Column(name = "status")
 	private int status;
-	
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "friend_id") })
 	private Set<User> followings;
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -168,7 +168,7 @@ public class User implements Serializable {
 	public void setId(long id) {
 		this.id = id;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}

@@ -50,8 +50,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) String genderConstraint,
 			@RequestParam(required = true) String description) {
 		StatusResponse response = new StatusResponse(Status.OK);
-		
-		/*查找用户*/
+
+		/* 查找用户 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -66,7 +66,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/*查找店*/
+		/* 查找店 */
 		Shop shop = null;
 		try {
 			shop = shopBo.findByShopId(shopid);
@@ -75,7 +75,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/*新建并保存Meeting*/
+		/* 新建并保存Meeting */
 		Meeting meeting = new Meeting(user, new Date(), shop, genderConstraint,
 				description);
 		try {
@@ -88,13 +88,19 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		return response;
 	}
 
-	public ArrayList<MeetingResponse> getMeetingList(String longtitude,
-			String latitude, String pagenum, String sorttype) {
+	@RequestMapping(value = { "/getMeetingList**" }, method = RequestMethod.GET)
+	public ArrayList<MeetingResponse> getMeetingList(
+			@RequestParam(required = true) Long longtitude,
+			@RequestParam(required = true) Long latitude,
+			@RequestParam(required = true) Integer pagenum,
+			@RequestParam(required = false) Integer sorttype,
+			@RequestParam(required = false) Integer range,
+			@RequestParam(required = false) String gender, String job,
+			@RequestParam(required = false) String shopName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@RequestMapping(value = { "/getMeetingList**" }, method = RequestMethod.GET)
 	public ArrayList<MeetingResponse> getMeetingList(Long id, String token,
 			String pagenum, String sorttype) {
 		// TODO Auto-generated method stub
