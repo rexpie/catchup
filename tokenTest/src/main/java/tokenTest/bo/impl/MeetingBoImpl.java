@@ -1,6 +1,7 @@
 package tokenTest.bo.impl;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -39,12 +40,14 @@ public class MeetingBoImpl implements MeetingBo {
 	}
 
 	@Transactional
-	public ArrayList<Meeting> getMeetingList(Double longtitude, Double latitude,
+	public List getMeetingList(Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
-			String job, String shopName) {
+			String job, String shopName) throws Exception {
 		// TODO Auto-generated method stub
-		return meetingDao.getMeetingList(longtitude, latitude, pagenum,
+		List list = meetingDao.getMeetingList(longitude, latitude, pagenum,
 				sorttype, range, gender, job, shopName);
+		if(list==null)throw new Exception();
+		return list;
 	}
 
 }

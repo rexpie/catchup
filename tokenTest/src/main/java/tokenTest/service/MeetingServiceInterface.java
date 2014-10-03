@@ -2,18 +2,18 @@ package tokenTest.service;
 
 import java.util.ArrayList;
 
-import tokenTest.response.MeetingResponse;
+import tokenTest.response.MeetingListResponse;
 import tokenTest.response.StatusResponse;
 import antlr.collections.List;
 
 public interface MeetingServiceInterface {
 	/* δ��¼״̬��ʹ�ÿͻ���λ�ò�ѯ */
-	ArrayList<MeetingResponse> getMeetingList(Long longtitude, Long latitude,
+	MeetingListResponse getMeetingList(Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
 			String job, String shopName);
 
 	/* ��¼״̬��ʹ���û�λ�ò�ѯ�������ȸ����û�λ�� */
-	ArrayList<MeetingResponse> getMeetingList(Long id, String token,
+	ArrayList<MeetingListResponse> getMeetingList(Long id, String token,
 			String pagenum, String sorttype);
 
 	/* ����Լ */
@@ -21,7 +21,7 @@ public interface MeetingServiceInterface {
 			String genderConstraint, String description);
 
 	/* ���ط�Լ���飬�������� */
-	MeetingResponse getMeetingDetail(Long meetingid);
+	MeetingListResponse getMeetingDetail(Long meetingid);
 
 	/* ������뷹Լ */
 	String applyForMeeting(Long id, String token, Long meetingid);

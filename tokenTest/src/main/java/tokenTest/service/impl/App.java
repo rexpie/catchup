@@ -26,10 +26,10 @@ public class App {
 		 * 
 		 * user = new User("123456", "xiaozi", "F", "jinqiao", "18918218819");
 		 * userBo.save(user);
-		 */
+		 *//*
 		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
 		System.out.println(meetingBo.getMeetingList(0.0001, 0.0002, 0, 1, 1000,
-				"F", "", ""));
+				"F", "", ""));*/
 		System.out.println("Done");
 	}
 }

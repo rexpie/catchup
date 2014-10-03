@@ -5,6 +5,8 @@ package tokenTest.service.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,10 +24,10 @@ import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Meeting;
 import tokenTest.model.Shop;
 import tokenTest.model.User;
-import tokenTest.response.MeetingResponse;
+import tokenTest.response.MeetingDetail;
+import tokenTest.response.MeetingListResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.service.MeetingServiceInterface;
-import antlr.collections.List;
 
 /**
  * @author pengtao
@@ -89,25 +91,42 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 	}
 
 	@RequestMapping(value = { "/getMeetingList**" }, method = RequestMethod.GET)
-	public ArrayList<MeetingResponse> getMeetingList(
-			@RequestParam(required = true) Long longtitude,
-			@RequestParam(required = true) Long latitude,
+	public MeetingListResponse getMeetingList(
+			@RequestParam(required = true) Double longitude,
+			@RequestParam(required = true) Double latitude,
 			@RequestParam(required = true) Integer pagenum,
-			@RequestParam(required = false) Integer sorttype,
-			@RequestParam(required = false) Integer range,
-			@RequestParam(required = false) String gender, String job,
-			@RequestParam(required = false) String shopName) {
-		// TODO Auto-generated method stub
-		return null;
+			@RequestParam(required = false, defaultValue = "1") Integer sorttype,
+			@RequestParam(required = false, defaultValue = "1000") Integer range,
+			@RequestParam(required = false, defaultValue = "") String gender,
+			@RequestParam(required = false, defaultValue = "") String job,
+			@RequestParam(required = false, defaultValue = "") String shopName) {
+		MeetingListResponse meetingListResponse = new MeetingListResponse();
+		
+		/* list元素为Object[2]中第一个对象是meeting，第二个是距离，double类型 */
+		List list = null;
+		try {
+			list = meetingBo.getMeetingList(longitude, latitude, pagenum,
+					sorttype, range, gender, job, shopName);
+		} catch (Exception e) {
+			meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		meetingListResponse.setStatus(Status.OK);
+		Iterator iterator = list.iterator();
+		while (iterator.hasNext()) {
+			Object[] objects = (Object[]) iterator.next();
+			meetingListResponse.getMeetingList().add(new MeetingDetail((Meeting) objects[0], (Double) objects[1]));
+		}
+		return meetingListResponse;
 	}
 
-	public ArrayList<MeetingResponse> getMeetingList(Long id, String token,
+	public ArrayList<MeetingListResponse> getMeetingList(Long id, String token,
 			String pagenum, String sorttype) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public MeetingResponse getMeetingDetail(Long meetingid) {
+	public MeetingListResponse getMeetingDetail(Long meetingid) {
 		// TODO Auto-generated method stub
 		return null;
 	}

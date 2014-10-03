@@ -36,7 +36,7 @@ public class MeetingDaoImpl implements MeetingDao {
 	}
 
 	@Override
-	public ArrayList<Meeting> getMeetingList(Double longtitude,
+	public List getMeetingList(Double longitude,
 			Double latitude, Integer pagenum, Integer sorttype, Integer range,
 			String gender, String job, String shopName) {
 		// TODO Auto-generated method stub
@@ -55,34 +55,25 @@ public class MeetingDaoImpl implements MeetingDao {
 		 * + "GROUP BY m " + "HAVING distance < 5000 " +
 		 * "ORDER BY distance desc");
 		 */
+		/*根据经纬度计算距离，6371km为地球半径，结果为m*/
 		Query query = session
 				.createQuery("SELECT m, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) +"
 						+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
 						+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
 						+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
-						+ "WHERE m.genderConstraint=:ugender AND m.shop.name like :uname AND m.owner.role like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
+						+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.role like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
 						+ "ORDER BY distance ASC");
-		query.setDouble("ulongitude", longtitude);
+		/*设置参数*/
+		query.setDouble("ulongitude", longitude);
 		query.setDouble("ulatitude", latitude);
-		query.setString("ugender", gender);
+		query.setString("ugender", "%" + gender + "%");
 		query.setString("uname", "%" + shopName + "%");
 		query.setString("ujob", "%" + job + "%");
 		query.setDouble("urange", range);
-		// 8个一页
+		// 分页处理
 		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
 		query.setMaxResults(Constants.NUM_PER_PAGE);
-		// System.out.print(query.list().toString());
-		List list = (List) query.list();
-		Iterator iterator = list.iterator();
-		while (iterator.hasNext()) {
-			Object[] objects = (Object[]) iterator.next();
-			Meeting meeting = (Meeting) objects[0];
-			double dis = (double) objects[1];
-			System.out.println(meeting.getId());
-			System.out.println(dis);
-		}
-		// System.out.print(list);
-		return (ArrayList<Meeting>) query.list();
+		return (List) query.list();
 	}
 
 }

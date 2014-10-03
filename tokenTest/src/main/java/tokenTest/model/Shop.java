@@ -25,11 +25,11 @@ public class Shop implements Serializable {
 	private String area;
 	private String country;
 	private String description;
-	private double latitude;
-	private double longitude;
+	private Double latitude;
+	private Double longitude;
 	private String type;
 	private String classtype;
-	private double price;
+	private Double price;
 
 	public Shop(String dianping_id, String name, String city, String area,
 			String country, String description, double latitude,
@@ -120,20 +120,20 @@ public class Shop implements Serializable {
 	}
 
 	@Column(name = "latitude")
-	public double getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(double latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
 	@Column(name = "longitude")
-	public double getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(double longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
