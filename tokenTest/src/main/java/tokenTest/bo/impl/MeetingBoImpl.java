@@ -1,5 +1,8 @@
 package tokenTest.bo.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +37,17 @@ public class MeetingBoImpl implements MeetingBo {
 	public void delete(Meeting meeting) {
 		// TODO Auto-generated method stub
 		meetingDao.delete(meeting);
+	}
+
+	@Transactional
+	public List getMeetingList(Double longitude, Double latitude,
+			Integer pagenum, Integer sorttype, Integer range, String gender,
+			String job, String shopName) throws Exception {
+		// TODO Auto-generated method stub
+		List list = meetingDao.getMeetingList(longitude, latitude, pagenum,
+				sorttype, range, gender, job, shopName);
+		if(list==null)throw new Exception();
+		return list;
 	}
 
 }

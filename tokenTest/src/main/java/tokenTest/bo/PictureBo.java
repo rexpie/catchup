@@ -23,6 +23,8 @@ public interface PictureBo {
 
 	File getFileById(Long id, String path);
 
+	void deletePictureFile(Picture picture, String path);
+
 	void saveScaleImage(String originalImage, String newImage, Integer width,
 			Integer height) throws IOException;
 }

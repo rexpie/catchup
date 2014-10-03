@@ -77,18 +77,27 @@ public class PictureBoImpl implements PictureBo {
 						+ Constants.PICTURE_FORMAT, Constants.THUMBNAIL_WIDTH,
 				Constants.THUMBNAIL_HEIGHT);
 
-
 		/* 将图片添加到用户 */
 
 		if (picture != null)
 			picture.setFilename(destination.getName());
-		
+
+		Picture portrait = null;
 		if (isProfile) {
+			/* 新增头像，需要删除原头像 */
+			portrait = user.getPic();
 			user.setPic(picture);
 		} else {
 			user.getPicture().add(picture);
 		}
 		userDao.update(user);
+
+		/* 删除原头像及其文件 */
+		if (portrait != null) {
+			System.out.println(portrait);
+			deletePictureFile(portrait, path);
+			pictureDao.delete(portrait);
+		}
 
 		/* 级联操作，不需要另外保存图片 */
 		// pictureDao.save(picture);
@@ -108,17 +117,7 @@ public class PictureBoImpl implements PictureBo {
 		user.getPicture().remove(picture);
 		userDao.update(user);
 
-		File pictureFile = new File(path + File.separator
-				+ Constants.RIGIN_PICTURE_PATH + File.separator
-				+ picture.getFilename());
-		if (pictureFile.exists())
-			pictureFile.delete();
-
-		pictureFile = new File(path + File.separator
-				+ Constants.THUMB_PICTURE_PATH + File.separator
-				+ picture.getFilename());
-		if (pictureFile.exists())
-			pictureFile.delete();
+		deletePictureFile(picture, path);
 		/* 级联操作，不需要另外删除图片 */
 		// pictureDao.delete(picture);
 	}
@@ -148,6 +147,20 @@ public class PictureBoImpl implements PictureBo {
 	public File getFileById(Long id, String path) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void deletePictureFile(Picture picture, String path) {
+		File pictureFile = new File(path + File.separator
+				+ Constants.RIGIN_PICTURE_PATH + File.separator
+				+ picture.getFilename());
+		if (pictureFile.exists())
+			pictureFile.delete();
+
+		pictureFile = new File(path + File.separator
+				+ Constants.THUMB_PICTURE_PATH + File.separator
+				+ picture.getFilename());
+		if (pictureFile.exists())
+			pictureFile.delete();
 	}
 
 	public void saveScaleImage(String originalImage, String newImage,

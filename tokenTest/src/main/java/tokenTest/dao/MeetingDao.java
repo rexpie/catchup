@@ -1,5 +1,7 @@
 package tokenTest.dao;
 
+import java.util.List;
+
 import tokenTest.model.Meeting;
 
 public interface MeetingDao {
@@ -9,5 +11,7 @@ public interface MeetingDao {
 
 	void delete(Meeting meeting);
 
-	// Meeting findByStockCode(String stockCode);
+	List getMeetingList(Double longitude, Double latitude,
+			Integer pagenum, Integer sorttype, Integer range, String gender,
+			String job, String shopName);
 }
