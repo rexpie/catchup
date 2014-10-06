@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import tokenTest.dao.MeetingApplyDao;
-import tokenTest.model.FriendApply;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 
@@ -32,9 +31,10 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 		sessionFactory.getCurrentSession().delete(meetingApply);
 	}
 
-	public List<MeetingApply> findApplyByMeeeting(Meeting meeting) {
+	public List<MeetingApply> getApplyByMeeeting(Meeting meeting) {
 		// TODO Auto-generated method stub
-		Query query = sessionFactory.getCurrentSession().createQuery("from MeetingApply as m where f.toMeeting= :toMeeting");
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"from MeetingApply as m where f.toMeeting= :toMeeting");
 		query.setEntity("toUser", meeting);
 		List<MeetingApply> list = query.list();
 		return list;

@@ -35,41 +35,63 @@ public class MeetingDaoImpl implements MeetingDao {
 		sessionFactory.getCurrentSession().delete(meeting);
 	}
 
-	@Override
-	public List getMeetingList(Double longitude,
-			Double latitude, Integer pagenum, Integer sorttype, Integer range,
-			String gender, String job, String shopName) {
-		// TODO Auto-generated method stub
-		Session session = sessionFactory.getCurrentSession();
-		/*
-		 * Query query = session .createQuery(
-		 * "SELECT m, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) +"
-		 * +
-		 * "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
-		 * +
-		 * "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
-		 * +
-		 * "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
-		 * +
-		 * "WHERE m.genderConstraint=:ugender AND m.shop.name like :uname AND m.owner.role like :ujob "
-		 * + "GROUP BY m " + "HAVING distance < 5000 " +
-		 * "ORDER BY distance desc");
-		 */
-		/*根据经纬度计算距离，6371km为地球半径，结果为m*/
-		Query query = session
-				.createQuery("SELECT m, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) +"
-						+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
-						+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
-						+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
-						+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.role like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
-						+ "ORDER BY distance ASC");
-		/*设置参数*/
+	public Meeting getMeetingById(Long id) {
+		return (Meeting) sessionFactory.getCurrentSession().load(Meeting.class,
+				id);
+	}
+
+	public List getMeetingList(Double longitude, Double latitude,
+			Integer pagenum, Integer sorttype, Integer range, String gender,
+			String job, String shopName) {
+		/* 根据经纬度计算距离，6371km为地球半径，结果为m */
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"SELECT m, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) +"
+								+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
+								+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
+								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
+								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.role like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
+								+ "ORDER BY distance ASC");
+		/* 设置参数 */
 		query.setDouble("ulongitude", longitude);
 		query.setDouble("ulatitude", latitude);
 		query.setString("ugender", "%" + gender + "%");
 		query.setString("uname", "%" + shopName + "%");
 		query.setString("ujob", "%" + job + "%");
 		query.setDouble("urange", range);
+		// 分页处理
+		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
+		query.setMaxResults(Constants.NUM_PER_PAGE);
+		return (List) query.list();
+	}
+
+	public List getMeetingListByUser(User user, Integer pagenum) {
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"SELECT m "
+								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
+								+ "WHERE m.owner =:user "
+								+ "ORDER BY create_time DESC");
+		/* 设置参数 */
+		query.setEntity("user", user);
+		// 分页处理
+		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
+		query.setMaxResults(Constants.NUM_PER_PAGE);
+		return (List) query.list();
+	}
+
+	public List getMeetingListByParticipate(User user, Integer pagenum) {
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"SELECT m "
+								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
+								+ "WHERE :user in m.participator "
+								+ "ORDER BY create_time DESC");
+		/* 设置参数 */
+		query.setEntity("user", user);
 		// 分页处理
 		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
 		query.setMaxResults(Constants.NUM_PER_PAGE);

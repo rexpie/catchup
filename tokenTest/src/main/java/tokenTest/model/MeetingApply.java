@@ -26,6 +26,13 @@ public class MeetingApply implements Serializable {
 	private Meeting toMeeting;
 	private String applyContent;
 
+	public MeetingApply(User fromUser, Meeting toMeeting, String applyContent) {
+		super();
+		this.fromUser = fromUser;
+		this.toMeeting = toMeeting;
+		this.applyContent = applyContent;
+	}
+
 	@GenericGenerator(name = "generator", strategy = "increment")
 	@Id
 	@GeneratedValue(generator = "generator")

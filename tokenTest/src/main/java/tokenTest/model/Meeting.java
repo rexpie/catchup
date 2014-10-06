@@ -28,36 +28,36 @@ public class Meeting {
 	@GeneratedValue(generator = "generator")
 	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
-	
+
 	@ManyToOne(targetEntity = User.class)
 	@JoinColumn(name = "owner_id")
 	private User owner;
-	
+
 	@Column(name = "create_time")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date create_time;
-	
+
 	@Column(name = "genderConstraint", length = 1)
 	private String genderConstraint;
-	
+
 	@Column(name = "seen_count")
 	private int seen_count;
-	
+
 	@Column(name = "apply_count")
 	private int apply_count;
-	
+
 	@ManyToOne(targetEntity = Shop.class)
 	@JoinColumn(name = "shop_id")
 	private Shop shop;
-	
+
 	@Column(name = "time_limit")
-	private int time_limit=0;
-	
+	private int time_limit = 0;
+
 	@Column(name = "status")
-	private int status=0;
-	
+	private int status = 0;
+
 	@Column(name = "description", length = 140)
-	private String description="";
+	private String description = "";
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeeting_id") }, inverseJoinColumns = { @JoinColumn(name = "use_id") })

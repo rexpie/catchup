@@ -13,5 +13,5 @@ public interface MeetingApplyDao {
 
 	void delete(MeetingApply meetingApply);
 	
-	List<MeetingApply> findApplyByMeeeting(Meeting meeting);
+	List<MeetingApply> getApplyByMeeeting(Meeting meeting);
 }
