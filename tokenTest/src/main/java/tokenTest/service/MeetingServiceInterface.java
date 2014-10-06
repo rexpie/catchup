@@ -1,37 +1,40 @@
 package tokenTest.service;
 
-import java.util.ArrayList;
-
+import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
+import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
-import antlr.collections.List;
 
 public interface MeetingServiceInterface {
-	/* δ��¼״̬��ʹ�ÿͻ���λ�ò�ѯ */
+	/* 获取附近的饭约列表 */
 	MeetingListResponse getMeetingList(Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
 			String job, String shopName);
 
-	/* ��¼״̬��ʹ���û�λ�ò�ѯ�������ȸ����û�λ�� */
-	ArrayList<MeetingListResponse> getMeetingList(Long id, String token,
-			String pagenum, String sorttype);
+	/* 获取自己发起的饭约列表 ,按时间排序 */
+	MeetingListResponse getMyMeetingList(Long id, String token, Integer pagenum);
 
-	/* ����Լ */
+	/* 获取自己参见的饭约列表 ,按时间排序 */
+	MeetingListResponse getMyPartMeetingList(Long id, String token,
+			Integer pagenum);
+
+	/* 获取自己饭约详细信息,包括参与人 */
+	MeetingDetailResponse getMeetingDetail(Long id, String token, Long meetingid);
+
+	/* 发起饭约 */
 	StatusResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description);
 
-	/* ���ط�Լ���飬�������� */
-	MeetingListResponse getMeetingDetail(Long meetingid);
+	/* 申请参加饭约 */
+	NewApplyResponse applyForMeeting(Long id, String token, Long meetingid,
+			String applyContent);
 
-	/* ������뷹Լ */
-	String applyForMeeting(Long id, String token, Long meetingid);
-
-	/* ͬ�ⷹԼ���� */
-	String approveMeetingApply(Long id, String token, Long meetingid,
+	/* 同意饭约申请 */
+	NewApplyResponse approveMeetingApply(Long id, String token,
 			Long applyid);
 
-	/* ��ͬ�ⷹԼ���� */
-	String disapproveMeetingApply(Long id, String token, Long meetingid,
+	/* 不同意饭约申请 */
+	NewApplyResponse disapproveMeetingApply(Long id, String token,
 			Long applyid);
 
 	/* ���۷�Լ����ʱ���� */

@@ -3,6 +3,7 @@ package tokenTest.dao;
 import java.util.List;
 
 import tokenTest.model.Meeting;
+import tokenTest.model.User;
 
 public interface MeetingDao {
 	void save(Meeting meeting);
@@ -11,7 +12,13 @@ public interface MeetingDao {
 
 	void delete(Meeting meeting);
 
-	List getMeetingList(Double longitude, Double latitude,
-			Integer pagenum, Integer sorttype, Integer range, String gender,
-			String job, String shopName);
+	Meeting getMeetingById(Long id);
+
+	List getMeetingList(Double longitude, Double latitude, Integer pagenum,
+			Integer sorttype, Integer range, String gender, String job,
+			String shopName);
+
+	List getMeetingListByUser(User user, Integer pagenum);
+
+	List getMeetingListByParticipate(User user, Integer pagenum);
 }
