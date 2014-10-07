@@ -29,7 +29,7 @@ public class Meeting {
 	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
 
-	@ManyToOne(targetEntity = User.class)
+	@ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
 	private User owner;
 
@@ -59,7 +59,7 @@ public class Meeting {
 	@Column(name = "description", length = 140)
 	private String description = "";
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeeting_id") }, inverseJoinColumns = { @JoinColumn(name = "use_id") })
 	private Set<User> participator = new HashSet<User>();
 

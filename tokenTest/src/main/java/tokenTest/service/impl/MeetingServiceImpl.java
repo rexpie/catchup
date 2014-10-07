@@ -235,7 +235,6 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		if (meeting.getOwner().equals(user)) {
 			/* 饭约基本信息 */
 			response.setMeetingDetail(new MeetingDetail(meeting));
-
 			/* 参与者信息 */
 			Iterator iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
@@ -254,7 +253,6 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 				response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 				return response;
 			}
-
 		} else if (meeting.getParticipator().contains(user)) {
 			/* 是参与者，能看到参与者信息 */
 			/* 饭约基本信息 */
@@ -318,7 +316,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 	}
 
 	@RequestMapping(value = { "/approveMeetingApply**" }, method = RequestMethod.GET)
-	public NewApplyResponse approveMeetingApply(@RequestParam(required = true) Long id,
+	public NewApplyResponse approveMeetingApply(
+			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long applyid) {
 		NewApplyResponse response = new NewApplyResponse();
@@ -336,12 +335,12 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
-		
-		
+
 		return null;
 	}
 
-	public NewApplyResponse disapproveMeetingApply(Long id, String token, Long applyid) {
+	public NewApplyResponse disapproveMeetingApply(Long id, String token,
+			Long applyid) {
 		// TODO Auto-generated method stub
 		return null;
 	}

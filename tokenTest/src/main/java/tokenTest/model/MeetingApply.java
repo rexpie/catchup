@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -45,7 +46,7 @@ public class MeetingApply implements Serializable {
 		this.id = id;
 	}
 
-	@ManyToOne(targetEntity = User.class)
+	@ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "from_id", nullable = false)
 	public User getFromUser() {
 		return fromUser;
@@ -55,7 +56,7 @@ public class MeetingApply implements Serializable {
 		this.fromUser = fromUser;
 	}
 
-	@ManyToOne(targetEntity = Meeting.class)
+	@ManyToOne(targetEntity = Meeting.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "to_id", nullable = false)
 	public Meeting getToMeeting() {
 		return toMeeting;
