@@ -34,7 +34,7 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 	public List<MeetingApply> getApplyByMeeeting(Meeting meeting) {
 		// TODO Auto-generated method stub
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from MeetingApply as m where f.toMeeting= :toMeeting");
+				"from MeetingApply as m where m.toMeeting= :toMeeting");
 		query.setEntity("toUser", meeting);
 		List<MeetingApply> list = query.list();
 		return list;

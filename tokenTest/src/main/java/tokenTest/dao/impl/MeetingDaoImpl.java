@@ -36,8 +36,14 @@ public class MeetingDaoImpl implements MeetingDao {
 	}
 
 	public Meeting getMeetingById(Long id) {
-		return (Meeting) sessionFactory.getCurrentSession().load(Meeting.class,
-				id);
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"from Meeting where id= :id");
+		query.setLong("id", id);
+		List list = query.list();
+		if (list.size() > 0)
+			return (Meeting) list.get(0);
+		else
+			return null;
 	}
 
 	public List getMeetingList(Double longitude, Double latitude,

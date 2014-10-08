@@ -250,8 +250,9 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 							((User) iterator.next()).getId());
 				}
 			} catch (Exception e) {
-				response.setStatus(Status.SERVICE_NOT_AVAILABLE);
-				return response;
+				/* 没有参与者,不做处理 */
+				// response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+				// return response;
 			}
 		} else if (meeting.getParticipator().contains(user)) {
 			/* 是参与者，能看到参与者信息 */
@@ -274,7 +275,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long meetingid,
-			@RequestParam(required = true) String applyContent) {
+			@RequestParam(required = false, defaultValue = "") String applyContent) {
 		NewApplyResponse response = new NewApplyResponse();
 		/* 查找用户 */
 		User user = null;
