@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import tokenTest.bo.MeetingBo;
 import tokenTest.dao.MeetingApplyDao;
 import tokenTest.dao.MeetingDao;
+import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
@@ -69,6 +70,15 @@ public class MeetingBoImpl implements MeetingBo {
 	}
 
 	@Transactional
+	public MeetingApply getApplyById(Long applyId)
+			throws ApplyNotFoundException {
+		MeetingApply apply = meetingApplyDao.getApplyById(applyId);
+		if (apply == null)
+			throw new ApplyNotFoundException();
+		return apply;
+	}
+
+	@Transactional
 	public List getMeetingList(Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
 			String job, String shopName) throws Exception {
@@ -96,6 +106,20 @@ public class MeetingBoImpl implements MeetingBo {
 		if (list == null)
 			throw new Exception();
 		return list;
+	}
+
+	@Transactional
+	public void processMeetingApply(MeetingApply meetingApply, boolean approved) {
+		// TODO Auto-generated method stub
+		if (approved) {
+			meetingApply.getToMeeting().getParticipator()
+					.add(meetingApply.getFromUser());
+			meetingApply.setStatus(1);
+		} else {
+			meetingApply.setStatus(2);
+		}
+		meetingDao.update(meetingApply.getToMeeting());
+		meetingApplyDao.update(meetingApply);
 	}
 
 }

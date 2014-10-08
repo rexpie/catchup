@@ -17,11 +17,13 @@ import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.ShopBo;
 import tokenTest.bo.UserBo;
+import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
 import tokenTest.exception.ShopNotFoundException;
 import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Meeting;
+import tokenTest.model.MeetingApply;
 import tokenTest.model.Shop;
 import tokenTest.model.User;
 import tokenTest.response.MeetingDetail;
@@ -316,11 +318,12 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		return response;
 	}
 
-	@RequestMapping(value = { "/approveMeetingApply**" }, method = RequestMethod.GET)
-	public NewApplyResponse approveMeetingApply(
+	@RequestMapping(value = { "/processMeetingApply**" }, method = RequestMethod.GET)
+	public NewApplyResponse processMeetingApply(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) Long applyid) {
+			@RequestParam(required = true) Long applyid,
+			@RequestParam(required = true) Boolean approved) {
 		NewApplyResponse response = new NewApplyResponse();
 		/* 查找用户 */
 		User user = null;
@@ -337,13 +340,40 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		return null;
-	}
+		/* 查找申请 */
+		MeetingApply meetingApply = null;
+		try {
+			meetingApply = meetingBo.getApplyById(applyid);
+		} catch (ApplyNotFoundException e) {
+			response.setStatus(Status.ERR_NO_SUCH_APPLY);
+			return response;
+		}
 
-	public NewApplyResponse disapproveMeetingApply(Long id, String token,
-			Long applyid) {
-		// TODO Auto-generated method stub
-		return null;
+		/* 查找饭约 */
+		Meeting meeting = meetingApply.getToMeeting();
+		if (meeting == null) {
+			response.setStatus(Status.ERR_MEETING_NOT_FOUND);
+			return response;
+		}
+
+		/* 不是饭约拥有者，不能处理饭约申请 */
+		if (!meeting.getOwner().equals(user)) {
+			response.setStatus(Status.ERR_BANNED);
+			return response;
+		}
+		try {
+			if (approved) {
+				meetingBo.processMeetingApply(meetingApply, true);
+			} else {
+				meetingBo.processMeetingApply(meetingApply, false);
+			}
+		} catch (Exception e) {
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		response.setStatus(Status.OK);
+		return response;
 	}
 
 	public String commentOnMeeting(Long id, String token, Long meetingid,

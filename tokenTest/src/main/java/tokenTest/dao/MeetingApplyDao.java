@@ -12,6 +12,8 @@ public interface MeetingApplyDao {
 	void update(MeetingApply meetingApply);
 
 	void delete(MeetingApply meetingApply);
-	
+
 	List<MeetingApply> getApplyByMeeeting(Meeting meeting);
+
+	MeetingApply getApplyById(Long applyId);
 }

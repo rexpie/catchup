@@ -29,14 +29,10 @@ public interface MeetingServiceInterface {
 	NewApplyResponse applyForMeeting(Long id, String token, Long meetingid,
 			String applyContent);
 
-	/* 同意饭约申请 */
-	NewApplyResponse approveMeetingApply(Long id, String token,
-			Long applyid);
-
-	/* 不同意饭约申请 */
-	NewApplyResponse disapproveMeetingApply(Long id, String token,
-			Long applyid);
-
+	/* 处理饭约申请 */
+	NewApplyResponse processMeetingApply(Long id, String token,
+			Long applyid,Boolean approved);
+	
 	/* ���۷�Լ����ʱ���� */
 	String commentOnMeeting(Long id, String token, Long meetingid,
 			String comment);
