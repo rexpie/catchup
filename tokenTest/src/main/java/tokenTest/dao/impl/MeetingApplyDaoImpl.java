@@ -40,13 +40,40 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 			return null;
 	}
 
+	public List getApplyByUser(User user) {
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from MeetingApply as m where m.fromUser= :user and m.status=0");
+		query.setEntity("user", user);
+		return query.list();
+	}
+
 	public List<MeetingApply> getApplyByMeeeting(Meeting meeting) {
 		// TODO Auto-generated method stub
-		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from MeetingApply as m where m.toMeeting= :toMeeting");
-		query.setEntity("toUser", meeting);
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from MeetingApply as m where m.toMeeting= :toMeeting and m.status=0");
+		query.setEntity("toMeeting", meeting);
 		List<MeetingApply> list = query.list();
 		return list;
+	}
+
+	@Override
+	public MeetingApply getApplyByUserAndMeeting(User user, Meeting meeting) {
+		// TODO Auto-generated method stub
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"from MeetingApply as m where m.toMeeting= :toMeeting and m.fromUser=:fromUser and m.status=0");
+		query.setEntity("fromUser", user);
+		query.setEntity("toMeeting", meeting);
+		List list = query.list();
+		if (list.size() > 0)
+			return (MeetingApply) list.get(0);
+		else
+			return null;
 	}
 
 }

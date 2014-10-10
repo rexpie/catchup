@@ -7,8 +7,8 @@ import tokenTest.Util.Status;
 public class MeetingDetailResponse {
 	private Enum<Status> status;
 	private MeetingDetail meetingDetail;
-	private ArrayList<Long> applicants = new ArrayList<Long>();
-	private ArrayList<Long> participates = new ArrayList<Long>();
+	private ArrayList<ApplyInfo> applicants = new ArrayList<ApplyInfo>();
+	private ArrayList<UserInfo> participates = new ArrayList<UserInfo>();
 
 	public MeetingDetailResponse() {
 		super();
@@ -31,19 +31,19 @@ public class MeetingDetailResponse {
 		this.meetingDetail = meetingDetail;
 	}
 
-	public ArrayList<Long> getApplicants() {
+	public ArrayList<ApplyInfo> getApplicants() {
 		return applicants;
 	}
 
-	public void setApplicants(ArrayList<Long> applicants) {
+	public void setApplicants(ArrayList<ApplyInfo> applicants) {
 		this.applicants = applicants;
 	}
 
-	public ArrayList<Long> getParticipates() {
+	public ArrayList<UserInfo> getParticipates() {
 		return participates;
 	}
 
-	public void setParticipates(ArrayList<Long> participates) {
+	public void setParticipates(ArrayList<UserInfo> participates) {
 		this.participates = participates;
 	}
 
