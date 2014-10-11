@@ -363,9 +363,25 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@RequestMapping(value = { "/validateReset**" }, method = RequestMethod.GET)
 	public ValidatePhoneResponse validateReset(
-			@RequestParam(required = true) String phoneNum) {
+			@RequestParam(required = true) String nickorphone) {
 
-		return _doValidate(phoneNum, ValidationCodeStatus.PASSWD_RESET);
+		User user = null;
+
+		/* 查找用户 */
+		try {
+			user = userBo.findByNickOrPhone(nickorphone);
+		} catch (Exception e) {
+			// 不知道啥错
+			e.printStackTrace();
+			return new ValidatePhoneResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		/* 用昵称查找用户不存在 */
+
+		if (user == null)
+			return new ValidatePhoneResponse(Status.ERR_USER_NOT_FOUND);
+
+		return _doValidate(user.getPhone_number(), ValidationCodeStatus.PASSWD_RESET);
 
 	}
 
@@ -580,14 +596,14 @@ public class UserServiceImpl implements UserServiceInterface {
 	}
 
 	@RequestMapping(value = { "/resetPassword**" }, method = RequestMethod.GET)
-	public LoginResponse resetPassword(@RequestParam(required = true) Long id,
+	public LoginResponse resetPassword(@RequestParam(required = true) String nickorphone,
 			@RequestParam(required = true) String newPassword,
 			@RequestParam(required = true) String code) {
 		User user = null;
 
 		/* 查找用户 */
 		try {
-			user = userBo.findByUserId(id);
+			user = userBo.findByNickOrPhone(nickorphone);
 		} catch (Exception e) {
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
@@ -633,4 +649,5 @@ public class UserServiceImpl implements UserServiceInterface {
 		return new LoginResponse(Status.ERR_PHONE_VALIDATION_FAIL);
 
 	}
+
 }
