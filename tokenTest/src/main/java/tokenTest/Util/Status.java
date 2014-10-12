@@ -40,7 +40,7 @@ public enum Status {
 
 	ERR_NOT_BANNED(-21),
 
-	ERROR_NOT_BLACKLISTED(-22),
+	ERR_NOT_BLACKLISTED(-22),
 
 	ERR_PIC_FORMAT(-23),
 
@@ -48,7 +48,9 @@ public enum Status {
 	
 	ERR_CAN_NOT_APPLY_FOR_THE_MEETING(-25),
 	
-	ERR_NO_SUCH_APPLY(-26);
+	ERR_NEW_MEETING_MUST_HAVE_PIC(-26),
+	
+	ERR_NO_SUCH_APPLY(-27);
 
 	int value;
 
