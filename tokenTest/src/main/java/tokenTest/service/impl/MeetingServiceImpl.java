@@ -20,6 +20,7 @@ import tokenTest.bo.UserBo;
 import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
 import tokenTest.exception.ShopNotFoundException;
+import tokenTest.exception.TooManyAppliesException;
 import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Meeting;
@@ -317,8 +318,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 
 		try {
 			meetingBo.applyForMeeting(user, meeting, applyContent);
-		} catch (Exception e) {
-			response.setStatus(Status.ERR_CAN_NOT_APPLY_FOR_THE_MEETING);
+		} catch (TooManyAppliesException e) {
+			response.setStatus(Status.ERR_TOO_MANY_APPLY);
 			return response;
 		}
 		response.setStatus(Status.OK);

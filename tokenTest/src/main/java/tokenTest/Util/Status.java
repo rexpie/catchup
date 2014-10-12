@@ -50,7 +50,9 @@ public enum Status {
 	
 	ERR_NEW_MEETING_MUST_HAVE_PIC(-26),
 	
-	ERR_NO_SUCH_APPLY(-27);
+	ERR_NO_SUCH_APPLY(-27),
+	
+	ERR_TOO_MANY_APPLY(-28);
 
 	int value;
 
