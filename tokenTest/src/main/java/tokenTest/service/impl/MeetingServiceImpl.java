@@ -76,6 +76,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		
 		if (user.getPic() == null){
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
+			return response;
 		}
 
 		/* 查找店 */
