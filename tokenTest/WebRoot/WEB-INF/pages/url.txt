@@ -24,7 +24,10 @@ http://localhost:8080/tokenTest/meeting/newMeeting?id=2&token=YoKq4cFGUimLAZDJ8n
 http://localhost:8080/tokenTest/user/deletePhoto?id=2&token=YoKq4cFGUimLAZDJ8nHzbOifStSjnk&picId=7
 
 下载照片
-http://localhost:8080/tokenTest/user/getPhoto?picId=11&size=0
+http://localhost:8080/tokenTest/user/getPhoto?id=2&token=YoKq4cFGUimLAZDJ8nHzbOifStSjnk&picId=7&isThumb=0
+
+下载头像
+http://localhost:8080/tokenTest/user/getPicture?id=2&isThumb=1
 
 获取附近饭约列表
 http://localhost:8080/tokenTest/meeting/getMeetingList?longitude=0.002&latitude=0.001&pagenum=0&job=ccb

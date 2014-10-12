@@ -35,6 +35,9 @@ public interface UserServiceInterface {
 	PicResponse deletePhoto(Long id, String token, Long picId);
 
 	void getPhoto(Long id, String token, Long picId, Integer isThumb, HttpServletResponse response);
+	
+	/*获取头像*/
+	void getPicture(Long id, Integer isThumb, HttpServletResponse response);
 
 	// 后面的还没改
 	PicResponse updateUserProfile(Long id, String token, String nickname,

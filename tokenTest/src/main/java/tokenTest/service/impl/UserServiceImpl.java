@@ -166,8 +166,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		}
 
 		if (attempts >= Constants.MAX_LOGIN_ATTEMPTS) {
-			return new LoginResponse(Status.ERR_MAX_LOGIN_ATTEMPTS,
-					null);
+			return new LoginResponse(Status.ERR_MAX_LOGIN_ATTEMPTS, null);
 		}
 
 		/* 用昵称查找用户不存在 */
@@ -464,7 +463,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		/* 新建图片 */
 
 		Picture picture = new Picture(new Date());
@@ -549,7 +548,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			HttpServletResponse response) {
 		String path = servletContext.getRealPath("/") + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
-	/* 验证用户 */
+		/* 验证用户 */
 		try {
 			userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
@@ -591,6 +590,41 @@ public class UserServiceImpl implements UserServiceInterface {
 			} catch (Exception e) {
 				// TODO: handle exception
 				return;
+			}
+		}
+	}
+
+	@RequestMapping(value = { "/getPicture**" }, method = RequestMethod.GET)
+	public void getPicture(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = false, defaultValue = "0") Integer isThumb,
+			HttpServletResponse response) {
+		String path = servletContext.getRealPath("/") + File.separator
+				+ Constants.PICTURE_ROOT_PATH;
+		/* 验证用户 */
+		User user = null;
+		try {
+			user = userBo.findByUserId(id);
+		} catch (Exception e) {
+			return;
+		}
+		
+		if(user!=null){
+			/* 返回原图或者小图 */
+			if (isThumb == null || isThumb != 1) {
+				path += File.separator + Constants.RIGIN_PICTURE_PATH;
+			} else {
+				path += File.separator + Constants.THUMB_PICTURE_PATH;
+			}
+			File file = new File(path + File.separator + user.getPic().getFilename());
+			if (file.exists()) {
+				try {
+					FileInputStream is = new FileInputStream(file);
+					IOUtils.copy(is, response.getOutputStream());
+				} catch (Exception e) {
+					// TODO: handle exception
+					return;
+				}
 			}
 		}
 	}

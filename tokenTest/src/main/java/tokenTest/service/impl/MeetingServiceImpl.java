@@ -26,11 +26,13 @@ import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.Shop;
 import tokenTest.model.User;
+import tokenTest.response.ApplyInfo;
 import tokenTest.response.MeetingDetail;
 import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
 import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
+import tokenTest.response.UserInfo;
 import tokenTest.service.MeetingServiceInterface;
 
 /**
@@ -240,8 +242,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			/* 参与者信息 */
 			Iterator iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
-				response.getParticipates()
-						.add(((User) iterator.next()).getId());
+				response.getParticipates().add(
+						new UserInfo((User) iterator.next()));
 			}
 
 			/* 申请信息 */
@@ -249,7 +251,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 				iterator = meetingBo.getApplyByMeeting(meeting).iterator();
 				while (iterator.hasNext()) {
 					response.getApplicants().add(
-							((User) iterator.next()).getId());
+							new ApplyInfo((MeetingApply) iterator.next()));
 				}
 			} catch (Exception e) {
 				/* 没有参与者,不做处理 */
@@ -264,8 +266,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			/* 参与者信息 */
 			Iterator iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
-				response.getParticipates()
-						.add(((User) iterator.next()).getId());
+				response.getParticipates().add(
+						new UserInfo((User) iterator.next()));
 			}
 		}
 		response.setStatus(Status.OK);

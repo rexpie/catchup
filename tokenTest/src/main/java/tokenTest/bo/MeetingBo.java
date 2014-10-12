@@ -4,6 +4,7 @@ import java.util.List;
 
 import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
+import tokenTest.exception.TooManyAppliesException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;
@@ -21,7 +22,7 @@ public interface MeetingBo {
 
 	MeetingApply getApplyById(Long applyId) throws ApplyNotFoundException;
 
-	void applyForMeeting(User user, Meeting meeting, String applyContent);
+	void applyForMeeting(User user, Meeting meeting, String applyContent) throws TooManyAppliesException;
 
 	void processMeetingApply(MeetingApply meetingApply, boolean approved);
 

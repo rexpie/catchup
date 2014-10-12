@@ -1,9 +1,11 @@
 package tokenTest.bo.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +14,11 @@ import tokenTest.dao.MeetingApplyDao;
 import tokenTest.dao.MeetingDao;
 import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
+import tokenTest.exception.TooManyAppliesException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;
+import tokenTest.response.UserInfo;
 
 @Service("meetingBo")
 public class MeetingBoImpl implements MeetingBo {
@@ -55,8 +59,16 @@ public class MeetingBoImpl implements MeetingBo {
 	}
 
 	@Transactional
-	public void applyForMeeting(User user, Meeting meeting, String applyContent) {
-		meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
+	public void applyForMeeting(User user, Meeting meeting, String applyContent)
+			throws TooManyAppliesException {
+		List list = meetingApplyDao.getApplyByUser(user);
+		if (list != null && list.size() <= 2) {
+			if(meetingApplyDao.getApplyByUserAndMeeting(user,meeting)!=null){
+				meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
+			}
+		} else {
+			throw new TooManyAppliesException();
+		}
 	}
 
 	@Transactional
@@ -120,6 +132,17 @@ public class MeetingBoImpl implements MeetingBo {
 		}
 		meetingDao.update(meetingApply.getToMeeting());
 		meetingApplyDao.update(meetingApply);
+
+		/* 清除其他申请 */
+		Iterator iterator = meetingApplyDao.getApplyByUser(
+				meetingApply.getFromUser()).iterator();
+		MeetingApply otherApply = null;
+		while (iterator.hasNext()) {
+			otherApply = (MeetingApply) iterator.next();
+			otherApply.setStatus(2);
+			meetingApplyDao.update(otherApply);
+		}
+
 	}
 
 }
