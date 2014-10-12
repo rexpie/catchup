@@ -63,7 +63,7 @@ public class MeetingBoImpl implements MeetingBo {
 			throws TooManyAppliesException {
 		List list = meetingApplyDao.getApplyByUser(user);
 		if (list != null && list.size() <= 2) {
-			if(meetingApplyDao.getApplyByUserAndMeeting(user,meeting)!=null){
+			if(meetingApplyDao.getApplyByUserAndMeeting(user,meeting)==null){
 				meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
 			}
 		} else {
