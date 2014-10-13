@@ -5,20 +5,21 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.springframework.aop.ThrowsAdvice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import tokenTest.Util.Constants;
+import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.dao.MeetingApplyDao;
 import tokenTest.dao.MeetingDao;
 import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
+import tokenTest.exception.NotAppliedException;
 import tokenTest.exception.TooManyAppliesException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;
-import tokenTest.response.UserInfo;
 
 @Service("meetingBo")
 public class MeetingBoImpl implements MeetingBo {
@@ -75,7 +76,7 @@ public class MeetingBoImpl implements MeetingBo {
 	public List<MeetingApply> getApplyByMeeting(Meeting meeting)
 			throws Exception {
 		List<MeetingApply> applies = meetingApplyDao
-				.getApplyByMeeeting(meeting);
+				.getApplyByMeeting(meeting);
 		if (applies == null)
 			throw new Exception();
 		return applies;
@@ -122,13 +123,13 @@ public class MeetingBoImpl implements MeetingBo {
 
 	@Transactional
 	public void processMeetingApply(MeetingApply meetingApply, boolean approved) {
-		// TODO Auto-generated method stub
+
 		if (approved) {
 			meetingApply.getToMeeting().getParticipator()
 					.add(meetingApply.getFromUser());
-			meetingApply.setStatus(1);
+			meetingApply.setStatus(Constants.APPLY_STATUS_ACC);
 		} else {
-			meetingApply.setStatus(2);
+			meetingApply.setStatus(Constants.APPLY_STATUS_REJ);
 		}
 		meetingDao.update(meetingApply.getToMeeting());
 		meetingApplyDao.update(meetingApply);
@@ -139,10 +140,27 @@ public class MeetingBoImpl implements MeetingBo {
 		MeetingApply otherApply = null;
 		while (iterator.hasNext()) {
 			otherApply = (MeetingApply) iterator.next();
-			otherApply.setStatus(2);
+			otherApply.setStatus(Constants.APPLY_STATUS_WITHDRAWN_BY_SYS);
 			meetingApplyDao.update(otherApply);
 		}
 
+	}
+
+
+	@Transactional
+	@Override
+	public void withdrawMeetingApply(MeetingApply meetingApply) {
+		if ( meetingApply == null ) return;
+		meetingApply.setStatus(Constants.APPLY_STATUS_WITHDRAWN);
+		meetingApplyDao.update(meetingApply);
+	}
+
+	@Transactional
+	@Override
+	public Status stopMeeting(Meeting meeting, String cancelReason) {
+		User user = meeting.getOwner();
+		//TODO rex
+		return null;
 	}
 
 }

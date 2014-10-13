@@ -49,7 +49,7 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 		return query.list();
 	}
 
-	public List<MeetingApply> getApplyByMeeeting(Meeting meeting) {
+	public List<MeetingApply> getApplyByMeeting(Meeting meeting) {
 		// TODO Auto-generated method stub
 		Query query = sessionFactory
 				.getCurrentSession()

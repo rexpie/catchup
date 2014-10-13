@@ -52,7 +52,9 @@ public enum Status {
 	
 	ERR_NO_SUCH_APPLY(-27),
 	
-	ERR_TOO_MANY_APPLY(-28);
+	ERR_TOO_MANY_APPLY(-28),
+	
+	ERR_NOT_APPLIER(-29);
 
 	int value;
 

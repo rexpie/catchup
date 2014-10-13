@@ -34,6 +34,7 @@ import tokenTest.response.MeetingListResponse;
 import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserInfo;
+import tokenTest.response.WithdrawApplyResponse;
 import tokenTest.service.MeetingServiceInterface;
 
 /**
@@ -286,7 +287,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long meetingid,
 			@RequestParam(required = false, defaultValue = "") String applyContent) {
-		NewApplyResponse response = new NewApplyResponse();
+		NewApplyResponse response = new NewApplyResponse(null);
 		/* 查找用户 */
 		User user = null;
 		try {
@@ -327,12 +328,12 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 	}
 
 	@RequestMapping(value = { "/processMeetingApply**" }, method = RequestMethod.GET)
-	public NewApplyResponse processMeetingApply(
+	public StatusResponse processMeetingApply(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long applyid,
 			@RequestParam(required = true) Boolean approved) {
-		NewApplyResponse response = new NewApplyResponse();
+		StatusResponse response = new StatusResponse(null);
 		/* 查找用户 */
 		User user = null;
 		try {
@@ -388,6 +389,58 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			String comment) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	@RequestMapping(value = { "/withdrawMeetingApply**" }, method = RequestMethod.GET)
+	public WithdrawApplyResponse withdrawMeetingApply(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long applyid,
+			@RequestParam(required = true) String withdrawReason) {
+		// TODO Auto-generated method stub
+		WithdrawApplyResponse response = new WithdrawApplyResponse(null);
+		/* 查找用户 */
+		User user = null;
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			response.setStatus(Status.ERR_USER_NOT_FOUND);
+			return response;
+		} catch (WrongTokenException e) {
+			response.setStatus(Status.ERR_WRONG_TOKEN);
+			return response;
+		} catch (Exception e) {
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		/* 查找申请 */
+		MeetingApply meetingApply = null;
+		try {
+			meetingApply = meetingBo.getApplyById(applyid);
+		} catch (ApplyNotFoundException e) {
+			response.setStatus(Status.ERR_NO_SUCH_APPLY);
+			return response;
+		}
+
+		// check if meeting apply exists and owner matches
+		if ( !user.equals(meetingApply.getFromUser()) ){
+			response.setStatus(Status.ERR_NOT_APPLIER);
+			return response;
+		}
+		
+		try {
+			meetingBo.withdrawMeetingApply(meetingApply);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		response.setStatus(Status.OK);
+		return response;
+		
 	}
 
 }

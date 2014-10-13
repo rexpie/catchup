@@ -60,7 +60,7 @@ public class Meeting {
 	private String description = "";
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeeting_id") }, inverseJoinColumns = { @JoinColumn(name = "use_id") })
+	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeting_id") }, inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	private Set<User> participator = new HashSet<User>();
 
 	public Meeting() {

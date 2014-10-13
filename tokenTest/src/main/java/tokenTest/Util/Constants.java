@@ -11,4 +11,13 @@ public class Constants {
 	public static final String RIGIN_PICTURE_PATH = "origin";
 	public static final String THUMB_PICTURE_PATH = "thumb";
 	public static final int NUM_PER_PAGE = 8;
+	
+	
+	public static final int APPLY_STATUS_NEW = 0;
+	public static final int APPLY_STATUS_ACC = 1;
+	public static final int APPLY_STATUS_REJ = 2;
+	public static final int APPLY_STATUS_WITHDRAWN = 3;
+	public static final int APPLY_STATUS_WITHDRAWN_BY_SYS = 3;
+	
+	
 }
