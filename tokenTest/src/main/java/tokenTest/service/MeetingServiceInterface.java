@@ -31,6 +31,8 @@ public interface MeetingServiceInterface {
 			String applyContent);
 
 	WithdrawApplyResponse withdrawMeetingApply(Long id, String token, Long meetingid, String withdrawReason);
+
+	StatusResponse stopMeeting(Long id, String token, Long meetingid, String stopReason);
 	
 	/* 处理饭约申请 */
 	StatusResponse processMeetingApply(Long id, String token,

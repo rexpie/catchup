@@ -20,6 +20,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import tokenTest.Util.Constants;
+
 @Entity
 @Table(name = "meeting")
 public class Meeting {
@@ -54,7 +56,7 @@ public class Meeting {
 	private int time_limit = 0;
 
 	@Column(name = "status")
-	private int status = 0;
+	private int status = Constants.MEETING_STATUS_NEW;
 
 	@Column(name = "description", length = 140)
 	private String description = "";

@@ -17,7 +17,11 @@ public class Constants {
 	public static final int APPLY_STATUS_ACC = 1;
 	public static final int APPLY_STATUS_REJ = 2;
 	public static final int APPLY_STATUS_WITHDRAWN = 3;
-	public static final int APPLY_STATUS_WITHDRAWN_BY_SYS = 3;
+	public static final int APPLY_STATUS_WITHDRAWN_BY_SYS = 4;
+	public static final int APPLY_STATUS_STOPPED_BY_SYS = 4;
 	
+	
+	public static final int MEETING_STATUS_NEW = 0;
+	public static final int MEETING_STATUS_STOPPED = 1;
 	
 }

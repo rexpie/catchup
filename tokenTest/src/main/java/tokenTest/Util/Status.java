@@ -54,7 +54,9 @@ public enum Status {
 	
 	ERR_TOO_MANY_APPLY(-28),
 	
-	ERR_NOT_APPLIER(-29);
+	ERR_NOT_APPLIER(-29),
+	
+	ERR_NOT_MEETING_OWNER(-30);
 
 	int value;
 

@@ -9,17 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import tokenTest.Util.Constants;
+import tokenTest.Util.MessageUtil;
+import tokenTest.Util.Messages;
 import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.dao.MeetingApplyDao;
 import tokenTest.dao.MeetingDao;
 import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
-import tokenTest.exception.NotAppliedException;
 import tokenTest.exception.TooManyAppliesException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;
+import tokenTest.response.ApplyInfo;
 
 @Service("meetingBo")
 public class MeetingBoImpl implements MeetingBo {
@@ -159,7 +161,22 @@ public class MeetingBoImpl implements MeetingBo {
 	@Override
 	public Status stopMeeting(Meeting meeting, String cancelReason) {
 		User user = meeting.getOwner();
-		//TODO rex
+		MessageUtil.notifyUser(user, Messages.WARN_STOP_WITH_APPLICANTS.toString());
+
+		Iterator iterator = null;
+		try {
+			iterator = getApplyByMeeting(meeting).iterator();
+			while (iterator.hasNext()) {
+				MeetingApply apply = (MeetingApply)iterator.next();
+				apply.setStatus(Constants.APPLY_STATUS_STOPPED_BY_SYS);
+				meetingApplyDao.update(apply);
+			}
+		} catch (Exception e) {
+			/* 没有参与者,不做处理 */
+		}
+		
+		meeting.setStatus(Constants.MEETING_STATUS_STOPPED);
+		meetingDao.update(meeting);
 		return null;
 	}
 

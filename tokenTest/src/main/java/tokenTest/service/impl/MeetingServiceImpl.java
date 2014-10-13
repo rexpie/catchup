@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import tokenTest.Util.Constants;
 import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.ShopBo;
@@ -367,7 +368,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 
 		/* 不是饭约拥有者，不能处理饭约申请 */
 		if (!meeting.getOwner().equals(user)) {
-			response.setStatus(Status.ERR_BANNED);
+			response.setStatus(Status.ERR_NOT_MEETING_OWNER);
 			return response;
 		}
 		try {
@@ -441,6 +442,51 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		response.setStatus(Status.OK);
 		return response;
 		
+	}
+
+	@Override
+	@RequestMapping(value = { "/stopMeeting**" }, method = RequestMethod.GET)
+	public StatusResponse stopMeeting(
+			@RequestParam(required = true) Long id, 
+			@RequestParam(required = true) String token, 
+			@RequestParam(required = true) Long meetingid,
+			@RequestParam(required = false) String stopReason) {
+		StatusResponse response = new StatusResponse(null);
+		User user = null;
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			response.setStatus(Status.ERR_USER_NOT_FOUND);
+			return response;
+		} catch (WrongTokenException e) {
+			response.setStatus(Status.ERR_WRONG_TOKEN);
+			return response;
+		} catch (Exception e) {
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		Meeting meeting = null;
+		try {
+			meeting = meetingBo.getMeetingById(meetingid);
+		} catch (MeetingNotFoundException e) {
+			response.setStatus(Status.ERR_MEETING_NOT_FOUND);
+			return response;
+		}
+		
+		if (!user.equals(meeting.getOwner())){
+			response.setStatus(Status.ERR_NOT_MEETING_OWNER);
+			return response;
+		}
+		
+
+		try {
+			meetingBo.stopMeeting(meeting, stopReason);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+		}
+		return response;
 	}
 
 }
