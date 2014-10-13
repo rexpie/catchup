@@ -478,14 +478,16 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.ERR_NOT_MEETING_OWNER);
 			return response;
 		}
-		
 
 		try {
 			meetingBo.stopMeeting(meeting, stopReason);
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
 		}
+		
+		response.setStatus(Status.OK);
 		return response;
 	}
 

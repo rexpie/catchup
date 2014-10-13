@@ -163,20 +163,18 @@ public class MeetingBoImpl implements MeetingBo {
 		User user = meeting.getOwner();
 		MessageUtil.notifyUser(user, Messages.WARN_STOP_WITH_APPLICANTS.toString());
 
-		Iterator iterator = null;
+		
 		try {
-			iterator = getApplyByMeeting(meeting).iterator();
-			while (iterator.hasNext()) {
-				MeetingApply apply = (MeetingApply)iterator.next();
+			for (MeetingApply apply :meetingApplyDao.getApplyByMeeting(meeting)){
 				apply.setStatus(Constants.APPLY_STATUS_STOPPED_BY_SYS);
 				meetingApplyDao.update(apply);
 			}
-		} catch (Exception e) {
-			/* 没有参与者,不做处理 */
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
 		
 		meeting.setStatus(Constants.MEETING_STATUS_STOPPED);
-		meetingDao.update(meeting);
+		meetingDao.merge(meeting);
 		return null;
 	}
 

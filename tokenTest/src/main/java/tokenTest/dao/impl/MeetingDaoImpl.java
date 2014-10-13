@@ -34,6 +34,10 @@ public class MeetingDaoImpl implements MeetingDao {
 		// TODO Auto-generated method stub
 		sessionFactory.getCurrentSession().delete(meeting);
 	}
+	
+	public void merge(Meeting meeting){
+		sessionFactory.getCurrentSession().merge(meeting);
+	}
 
 	public Meeting getMeetingById(Long id) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
