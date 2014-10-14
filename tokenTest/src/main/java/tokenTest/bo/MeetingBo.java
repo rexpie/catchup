@@ -2,7 +2,11 @@ package tokenTest.bo;
 
 import java.util.List;
 
+import tokenTest.Util.Status;
+import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
+import tokenTest.exception.NotAppliedException;
+import tokenTest.exception.TooManyAppliesException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;
@@ -18,8 +22,16 @@ public interface MeetingBo {
 
 	List<MeetingApply> getApplyByMeeting(Meeting meeting) throws Exception;
 
-	void applyForMeeting(User user, Meeting meeting, String applyContent);
+	MeetingApply getApplyById(Long applyId) throws ApplyNotFoundException;
 
+	void applyForMeeting(User user, Meeting meeting, String applyContent) throws TooManyAppliesException;
+
+	void withdrawMeetingApply(MeetingApply meetingApply);
+
+	void processMeetingApply(MeetingApply meetingApply, boolean approved);
+
+	Status stopMeeting(Meeting meeting, String cancelReason);
+	
 	List getMeetingList(Double longitude, Double latitude, Integer pagenum,
 			Integer sorttype, Integer range, String gender, String job,
 			String shopName) throws Exception;

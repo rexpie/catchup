@@ -3,6 +3,7 @@ package tokenTest.response;
 import java.util.Date;
 
 import tokenTest.model.Meeting;
+import tokenTest.model.Picture;
 
 public class MeetingDetail {
 	private Long meetingID;
@@ -26,7 +27,8 @@ public class MeetingDetail {
 	public MeetingDetail(Meeting meeting) {
 		this.meetingID = meeting.getId();
 		this.ownerID = meeting.getOwner().getId();
-		this.ownerPhotoID = meeting.getOwner().getPic().getId();
+		Picture pic = meeting.getOwner().getPic();
+		this.ownerPhotoID = pic != null ? pic.getId() : null;
 		this.shopID = meeting.getShop().getId();
 		this.startTime = meeting.getCreate_time();
 		this.genderConstraint = meeting.getGenderConstraint();

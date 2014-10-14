@@ -4,6 +4,7 @@ import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
 import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
+import tokenTest.response.WithdrawApplyResponse;
 
 public interface MeetingServiceInterface {
 	/* 获取附近的饭约列表 */
@@ -29,14 +30,14 @@ public interface MeetingServiceInterface {
 	NewApplyResponse applyForMeeting(Long id, String token, Long meetingid,
 			String applyContent);
 
-	/* 同意饭约申请 */
-	NewApplyResponse approveMeetingApply(Long id, String token,
-			Long applyid);
+	WithdrawApplyResponse withdrawMeetingApply(Long id, String token, Long meetingid, String withdrawReason);
 
-	/* 不同意饭约申请 */
-	NewApplyResponse disapproveMeetingApply(Long id, String token,
-			Long applyid);
-
+	StatusResponse stopMeeting(Long id, String token, Long meetingid, String stopReason);
+	
+	/* 处理饭约申请 */
+	StatusResponse processMeetingApply(Long id, String token,
+			Long applyid,Boolean approved);
+	
 	/* ���۷�Լ����ʱ���� */
 	String commentOnMeeting(Long id, String token, Long meetingid,
 			String comment);

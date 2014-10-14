@@ -12,6 +12,8 @@ public interface MeetingDao {
 
 	void delete(Meeting meeting);
 
+	void merge(Meeting meeting);
+	
 	Meeting getMeetingById(Long id);
 
 	List getMeetingList(Double longitude, Double latitude, Integer pagenum,

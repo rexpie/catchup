@@ -13,22 +13,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import tokenTest.Util.Constants;
 import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.ShopBo;
 import tokenTest.bo.UserBo;
+import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
 import tokenTest.exception.ShopNotFoundException;
+import tokenTest.exception.TooManyAppliesException;
 import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Meeting;
+import tokenTest.model.MeetingApply;
 import tokenTest.model.Shop;
 import tokenTest.model.User;
+import tokenTest.response.ApplyInfo;
 import tokenTest.response.MeetingDetail;
 import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
 import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
+import tokenTest.response.UserInfo;
+import tokenTest.response.WithdrawApplyResponse;
 import tokenTest.service.MeetingServiceInterface;
 
 /**
@@ -67,6 +74,11 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		} catch (Exception e) {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+		
+		if (user.getPic() == null){
+			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
 			return response;
 		}
 
@@ -235,12 +247,11 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		if (meeting.getOwner().equals(user)) {
 			/* 饭约基本信息 */
 			response.setMeetingDetail(new MeetingDetail(meeting));
-
 			/* 参与者信息 */
 			Iterator iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
-				response.getParticipates()
-						.add(((User) iterator.next()).getId());
+				response.getParticipates().add(
+						new UserInfo((User) iterator.next()));
 			}
 
 			/* 申请信息 */
@@ -248,13 +259,13 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 				iterator = meetingBo.getApplyByMeeting(meeting).iterator();
 				while (iterator.hasNext()) {
 					response.getApplicants().add(
-							((User) iterator.next()).getId());
+							new ApplyInfo((MeetingApply) iterator.next()));
 				}
 			} catch (Exception e) {
-				response.setStatus(Status.SERVICE_NOT_AVAILABLE);
-				return response;
+				/* 没有参与者,不做处理 */
+				// response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+				// return response;
 			}
-
 		} else if (meeting.getParticipator().contains(user)) {
 			/* 是参与者，能看到参与者信息 */
 			/* 饭约基本信息 */
@@ -263,8 +274,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			/* 参与者信息 */
 			Iterator iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
-				response.getParticipates()
-						.add(((User) iterator.next()).getId());
+				response.getParticipates().add(
+						new UserInfo((User) iterator.next()));
 			}
 		}
 		response.setStatus(Status.OK);
@@ -276,8 +287,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long meetingid,
-			@RequestParam(required = true) String applyContent) {
-		NewApplyResponse response = new NewApplyResponse();
+			@RequestParam(required = false, defaultValue = "") String applyContent) {
+		NewApplyResponse response = new NewApplyResponse(null);
 		/* 查找用户 */
 		User user = null;
 		try {
@@ -309,19 +320,21 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 
 		try {
 			meetingBo.applyForMeeting(user, meeting, applyContent);
-		} catch (Exception e) {
-			response.setStatus(Status.ERR_CAN_NOT_APPLY_FOR_THE_MEETING);
+		} catch (TooManyAppliesException e) {
+			response.setStatus(Status.ERR_TOO_MANY_APPLY);
 			return response;
 		}
 		response.setStatus(Status.OK);
 		return response;
 	}
 
-	@RequestMapping(value = { "/approveMeetingApply**" }, method = RequestMethod.GET)
-	public NewApplyResponse approveMeetingApply(@RequestParam(required = true) Long id,
+	@RequestMapping(value = { "/processMeetingApply**" }, method = RequestMethod.GET)
+	public StatusResponse processMeetingApply(
+			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) Long applyid) {
-		NewApplyResponse response = new NewApplyResponse();
+			@RequestParam(required = true) Long applyid,
+			@RequestParam(required = true) Boolean approved) {
+		StatusResponse response = new StatusResponse(null);
 		/* 查找用户 */
 		User user = null;
 		try {
@@ -336,20 +349,146 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
-		
-		
-		return null;
-	}
 
-	public NewApplyResponse disapproveMeetingApply(Long id, String token, Long applyid) {
-		// TODO Auto-generated method stub
-		return null;
+		/* 查找申请 */
+		MeetingApply meetingApply = null;
+		try {
+			meetingApply = meetingBo.getApplyById(applyid);
+		} catch (ApplyNotFoundException e) {
+			response.setStatus(Status.ERR_NO_SUCH_APPLY);
+			return response;
+		}
+
+		/* 查找饭约 */
+		Meeting meeting = meetingApply.getToMeeting();
+		if (meeting == null) {
+			response.setStatus(Status.ERR_MEETING_NOT_FOUND);
+			return response;
+		}
+
+		/* 不是饭约拥有者，不能处理饭约申请 */
+		if (!meeting.getOwner().equals(user)) {
+			response.setStatus(Status.ERR_NOT_MEETING_OWNER);
+			return response;
+		}
+		try {
+			if (approved) {
+				meetingBo.processMeetingApply(meetingApply, true);
+			} else {
+				meetingBo.processMeetingApply(meetingApply, false);
+			}
+		} catch (Exception e) {
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		response.setStatus(Status.OK);
+		return response;
 	}
 
 	public String commentOnMeeting(Long id, String token, Long meetingid,
 			String comment) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	@RequestMapping(value = { "/withdrawMeetingApply**" }, method = RequestMethod.GET)
+	public WithdrawApplyResponse withdrawMeetingApply(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long applyid,
+			@RequestParam(required = true) String withdrawReason) {
+		// TODO Auto-generated method stub
+		WithdrawApplyResponse response = new WithdrawApplyResponse(null);
+		/* 查找用户 */
+		User user = null;
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			response.setStatus(Status.ERR_USER_NOT_FOUND);
+			return response;
+		} catch (WrongTokenException e) {
+			response.setStatus(Status.ERR_WRONG_TOKEN);
+			return response;
+		} catch (Exception e) {
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		/* 查找申请 */
+		MeetingApply meetingApply = null;
+		try {
+			meetingApply = meetingBo.getApplyById(applyid);
+		} catch (ApplyNotFoundException e) {
+			response.setStatus(Status.ERR_NO_SUCH_APPLY);
+			return response;
+		}
+
+		// check if meeting apply exists and owner matches
+		if ( !user.equals(meetingApply.getFromUser()) ){
+			response.setStatus(Status.ERR_NOT_APPLIER);
+			return response;
+		}
+		
+		try {
+			meetingBo.withdrawMeetingApply(meetingApply);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		response.setStatus(Status.OK);
+		return response;
+		
+	}
+
+	@Override
+	@RequestMapping(value = { "/stopMeeting**" }, method = RequestMethod.GET)
+	public StatusResponse stopMeeting(
+			@RequestParam(required = true) Long id, 
+			@RequestParam(required = true) String token, 
+			@RequestParam(required = true) Long meetingid,
+			@RequestParam(required = false) String stopReason) {
+		StatusResponse response = new StatusResponse(null);
+		User user = null;
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			response.setStatus(Status.ERR_USER_NOT_FOUND);
+			return response;
+		} catch (WrongTokenException e) {
+			response.setStatus(Status.ERR_WRONG_TOKEN);
+			return response;
+		} catch (Exception e) {
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		Meeting meeting = null;
+		try {
+			meeting = meetingBo.getMeetingById(meetingid);
+		} catch (MeetingNotFoundException e) {
+			response.setStatus(Status.ERR_MEETING_NOT_FOUND);
+			return response;
+		}
+		
+		if (!user.equals(meeting.getOwner())){
+			response.setStatus(Status.ERR_NOT_MEETING_OWNER);
+			return response;
+		}
+
+		try {
+			meetingBo.stopMeeting(meeting, stopReason);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+		
+		response.setStatus(Status.OK);
+		return response;
 	}
 
 }

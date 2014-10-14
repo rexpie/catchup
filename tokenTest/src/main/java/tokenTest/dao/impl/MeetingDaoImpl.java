@@ -34,10 +34,20 @@ public class MeetingDaoImpl implements MeetingDao {
 		// TODO Auto-generated method stub
 		sessionFactory.getCurrentSession().delete(meeting);
 	}
+	
+	public void merge(Meeting meeting){
+		sessionFactory.getCurrentSession().merge(meeting);
+	}
 
 	public Meeting getMeetingById(Long id) {
-		return (Meeting) sessionFactory.getCurrentSession().load(Meeting.class,
-				id);
+		Query query = sessionFactory.getCurrentSession().createQuery(
+				"from Meeting where id= :id");
+		query.setLong("id", id);
+		List list = query.list();
+		if (list.size() > 0)
+			return (Meeting) list.get(0);
+		else
+			return null;
 	}
 
 	public List getMeetingList(Double longitude, Double latitude,
@@ -73,7 +83,7 @@ public class MeetingDaoImpl implements MeetingDao {
 						"SELECT m "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
 								+ "WHERE m.owner =:user "
-								+ "ORDER BY create_time DESC");
+								+ "ORDER BY m.create_time DESC");
 		/* 设置参数 */
 		query.setEntity("user", user);
 		// 分页处理
@@ -88,8 +98,8 @@ public class MeetingDaoImpl implements MeetingDao {
 				.createQuery(
 						"SELECT m "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
-								+ "WHERE :user in m.participator "
-								+ "ORDER BY create_time DESC");
+								+ "WHERE :user in elements(m.participator) "
+								+ "ORDER BY m.create_time DESC");
 		/* 设置参数 */
 		query.setEntity("user", user);
 		// 分页处理

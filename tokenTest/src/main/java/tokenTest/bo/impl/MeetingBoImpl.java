@@ -1,5 +1,6 @@
 package tokenTest.bo.impl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -7,13 +8,20 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import tokenTest.Util.Constants;
+import tokenTest.Util.MessageUtil;
+import tokenTest.Util.Messages;
+import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.dao.MeetingApplyDao;
 import tokenTest.dao.MeetingDao;
+import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
+import tokenTest.exception.TooManyAppliesException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;
+import tokenTest.response.ApplyInfo;
 
 @Service("meetingBo")
 public class MeetingBoImpl implements MeetingBo {
@@ -54,18 +62,35 @@ public class MeetingBoImpl implements MeetingBo {
 	}
 
 	@Transactional
-	public void applyForMeeting(User user, Meeting meeting, String applyContent) {
-		meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
+	public void applyForMeeting(User user, Meeting meeting, String applyContent)
+			throws TooManyAppliesException {
+		List list = meetingApplyDao.getApplyByUser(user);
+		if (list != null && list.size() <= 2) {
+			if(meetingApplyDao.getApplyByUserAndMeeting(user,meeting)==null){
+				meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
+			}
+		} else {
+			throw new TooManyAppliesException();
+		}
 	}
 
 	@Transactional
 	public List<MeetingApply> getApplyByMeeting(Meeting meeting)
 			throws Exception {
 		List<MeetingApply> applies = meetingApplyDao
-				.getApplyByMeeeting(meeting);
+				.getApplyByMeeting(meeting);
 		if (applies == null)
 			throw new Exception();
 		return applies;
+	}
+
+	@Transactional
+	public MeetingApply getApplyById(Long applyId)
+			throws ApplyNotFoundException {
+		MeetingApply apply = meetingApplyDao.getApplyById(applyId);
+		if (apply == null)
+			throw new ApplyNotFoundException();
+		return apply;
 	}
 
 	@Transactional
@@ -96,6 +121,61 @@ public class MeetingBoImpl implements MeetingBo {
 		if (list == null)
 			throw new Exception();
 		return list;
+	}
+
+	@Transactional
+	public void processMeetingApply(MeetingApply meetingApply, boolean approved) {
+
+		if (approved) {
+			meetingApply.getToMeeting().getParticipator()
+					.add(meetingApply.getFromUser());
+			meetingApply.setStatus(Constants.APPLY_STATUS_ACC);
+		} else {
+			meetingApply.setStatus(Constants.APPLY_STATUS_REJ);
+		}
+		meetingDao.update(meetingApply.getToMeeting());
+		meetingApplyDao.update(meetingApply);
+
+		/* 清除其他申请 */
+		Iterator iterator = meetingApplyDao.getApplyByUser(
+				meetingApply.getFromUser()).iterator();
+		MeetingApply otherApply = null;
+		while (iterator.hasNext()) {
+			otherApply = (MeetingApply) iterator.next();
+			otherApply.setStatus(Constants.APPLY_STATUS_WITHDRAWN_BY_SYS);
+			meetingApplyDao.update(otherApply);
+		}
+
+	}
+
+
+	@Transactional
+	@Override
+	public void withdrawMeetingApply(MeetingApply meetingApply) {
+		if ( meetingApply == null ) return;
+		meetingApply.setStatus(Constants.APPLY_STATUS_WITHDRAWN);
+		meetingApplyDao.update(meetingApply);
+	}
+
+	@Transactional
+	@Override
+	public Status stopMeeting(Meeting meeting, String cancelReason) {
+		User user = meeting.getOwner();
+		MessageUtil.notifyUser(user, Messages.WARN_STOP_WITH_APPLICANTS.toString());
+
+		
+		try {
+			for (MeetingApply apply :meetingApplyDao.getApplyByMeeting(meeting)){
+				apply.setStatus(Constants.APPLY_STATUS_STOPPED_BY_SYS);
+				meetingApplyDao.update(apply);
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		meeting.setStatus(Constants.MEETING_STATUS_STOPPED);
+		meetingDao.merge(meeting);
+		return null;
 	}
 
 }

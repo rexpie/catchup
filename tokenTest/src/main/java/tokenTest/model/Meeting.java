@@ -20,6 +20,8 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import tokenTest.Util.Constants;
+
 @Entity
 @Table(name = "meeting")
 public class Meeting {
@@ -29,7 +31,7 @@ public class Meeting {
 	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
 
-	@ManyToOne(targetEntity = User.class)
+	@ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id")
 	private User owner;
 
@@ -54,13 +56,13 @@ public class Meeting {
 	private int time_limit = 0;
 
 	@Column(name = "status")
-	private int status = 0;
+	private int status = Constants.MEETING_STATUS_NEW;
 
 	@Column(name = "description", length = 140)
 	private String description = "";
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeeting_id") }, inverseJoinColumns = { @JoinColumn(name = "use_id") })
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(name = "participate", joinColumns = { @JoinColumn(name = "meeting_id") }, inverseJoinColumns = { @JoinColumn(name = "user_id") })
 	private Set<User> participator = new HashSet<User>();
 
 	public Meeting() {
