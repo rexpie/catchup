@@ -128,11 +128,15 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		meetingListResponse.setStatus(Status.OK);
 		Iterator iterator = list.iterator();
 		Object[] objects = null;
+		int index = 0;
 		while (iterator.hasNext()) {
 			objects = (Object[]) iterator.next();
+			MeetingDetail meetingDetail = new MeetingDetail((Meeting) objects[0],
+					(Double) objects[1]);
+			meetingDetail.setIndex(index++);
+			meetingDetail.setPageNum(pagenum);
 			meetingListResponse.getMeetingList()
-					.add(new MeetingDetail((Meeting) objects[0],
-							(Double) objects[1]));
+					.add(meetingDetail);
 		}
 		return meetingListResponse;
 	}

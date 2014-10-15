@@ -36,6 +36,7 @@ import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
 import tokenTest.response.LoginResponse;
 import tokenTest.response.PicResponse;
+import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 import tokenTest.service.UserServiceInterface;
@@ -98,7 +99,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			userBo.save(user);
 		} catch (DataIntegrityViolationException e) {
 			// 不满足唯一性约束，phonenum或nickname重复,占用token做错误信息。
-			return new LoginResponse(Status.ERR_GENERIC, "phonenum或nickname重复");
+			return new LoginResponse(Status.ERR_DUPLICATE_ENTRY, null);
 		}
 		return new LoginResponse(Status.OK, user.getToken());
 	}
@@ -267,7 +268,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String, java.lang.String, java.lang.String) 修改用户信息
 	 */
 	@RequestMapping(value = { "/updateUserProfile**" }, method = RequestMethod.GET)
-	public PicResponse updateUserProfile(
+	public StatusResponse updateUserProfile(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) String nickname,
@@ -282,11 +283,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
-			return new PicResponse(Status.ERR_USER_NOT_FOUND);
+			return new StatusResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
-			return new PicResponse(Status.ERR_WRONG_TOKEN);
+			return new StatusResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
-			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
+			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
 		/* 设置新的 用户信息 */
@@ -296,8 +297,12 @@ public class UserServiceImpl implements UserServiceInterface {
 			user.setBuilding(building);
 		if (birthday != null)
 			user.setBirthday(birthday);
-		if (sex != null)
-			user.setSex(sex);
+		if (sex != null) {
+			if ( isValidSex(sex) )
+				user.setSex(sex);
+			else return new StatusResponse(Status.ERR_INVALID_GENDER);
+				
+		}
 		if (emailaddress != null)
 			user.setEmail_address(emailaddress);
 		if (company != null)
@@ -307,9 +312,15 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
-			return new PicResponse(Status.ERR_GENERIC);
+			return new StatusResponse(Status.ERR_GENERIC);
 		}
-		return new PicResponse(Status.OK);
+		return new StatusResponse(Status.OK);
+	}
+
+	private boolean isValidSex(String sex) {
+		if ( StringUtils.equalsIgnoreCase("F", sex) || StringUtils.equalsIgnoreCase("M", sex))
+			return true;
+		return false;
 	}
 
 	/*
