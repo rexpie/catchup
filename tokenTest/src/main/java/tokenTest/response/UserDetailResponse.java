@@ -16,7 +16,7 @@ public class UserDetailResponse {
 	private String phone_number;
 	private String email_address;
 	//private Picture pic;
-	private int status = 0;
+	private Status status = Status.OK;
 
 	public UserDetailResponse(User user, boolean isSelf) {
 		this.nickname = user.getNickname();
@@ -46,12 +46,8 @@ public class UserDetailResponse {
 		this.email_address = email_address;
 	}
 
-	private UserDetailResponse(int status) {
-		setStatus(status);
-	}
-
 	private UserDetailResponse(Status status) {
-		this(status.ordinal());
+		setStatus(status);
 	}
 	
 	public String getNickname() {
@@ -118,11 +114,11 @@ public class UserDetailResponse {
 		this.email_address = email_address;
 	}
 	
-	public int getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(Status status) {
 		this.status = status;
 	}
 	

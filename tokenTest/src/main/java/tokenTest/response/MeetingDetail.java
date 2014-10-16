@@ -2,22 +2,29 @@ package tokenTest.response;
 
 import java.util.Date;
 
+import tokenTest.Util.Utils;
 import tokenTest.model.Meeting;
-import tokenTest.model.Picture;
 
 public class MeetingDetail {
 	private Long meetingID;
+	private String description;
+	private Double distance;
+	private String name;
+	private String shopName;
+	private String job;
+	private String company;
+	private String ownerGender;
+	private String building;
+	private String genderConstraint;
+	private Integer age;
 	private Long ownerID;
 	private Long ownerPhotoID;
 	private Long shopID;
 	private Date startTime;
-	private String genderConstraint;
-	private String ownerGender;
-	private String description;
-	private String building;
 	private Double longitude;
 	private Double latitude;
-	private Double distance;
+	private Integer pageNum;
+	private Integer index;
 
 	public MeetingDetail() {
 		super();
@@ -25,21 +32,6 @@ public class MeetingDetail {
 	}
 
 	public MeetingDetail(Meeting meeting) {
-		this.meetingID = meeting.getId();
-		this.ownerID = meeting.getOwner().getId();
-		Picture pic = meeting.getOwner().getPic();
-		this.ownerPhotoID = pic != null ? pic.getId() : null;
-		this.shopID = meeting.getShop().getId();
-		this.startTime = meeting.getCreate_time();
-		this.genderConstraint = meeting.getGenderConstraint();
-		this.ownerGender = meeting.getOwner().getSex();
-		this.description = meeting.getDescription();
-		this.building = meeting.getOwner().getBuilding();
-		this.longitude = meeting.getShop().getLongitude();
-		this.latitude = meeting.getShop().getLatitude();
-	}
-
-	public MeetingDetail(Meeting meeting, Double distance) {
 		this.meetingID = meeting.getId();
 		this.ownerID = meeting.getOwner().getId();
 		this.ownerPhotoID = meeting.getOwner().getPic().getId();
@@ -51,6 +43,16 @@ public class MeetingDetail {
 		this.building = meeting.getOwner().getBuilding();
 		this.longitude = meeting.getShop().getLongitude();
 		this.latitude = meeting.getShop().getLatitude();
+
+		this.name = meeting.getOwner().getNickname();
+		this.shopName = meeting.getShop().getName();
+		this.job = meeting.getOwner().getRole();
+		this.company = meeting.getOwner().getCompany();
+		this.age = Utils.getAge(meeting.getOwner().getBirthday());
+	}
+
+	public MeetingDetail(Meeting meeting, Double distance) {
+		this(meeting);
 		this.distance = distance;
 	}
 
@@ -149,4 +151,61 @@ public class MeetingDetail {
 	public void setDistance(Double distance) {
 		this.distance = distance;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getShopName() {
+		return shopName;
+	}
+
+	public void setShopName(String shopName) {
+		this.shopName = shopName;
+	}
+
+	public String getJob() {
+		return job;
+	}
+
+	public void setJob(String job) {
+		this.job = job;
+	}
+
+	public String getCompany() {
+		return company;
+	}
+
+	public void setCompany(String company) {
+		this.company = company;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	public Integer getPageNum() {
+		return pageNum;
+	}
+
+	public void setPageNum(Integer pageNum) {
+		this.pageNum = pageNum;
+	}
+
+	public Integer getIndex() {
+		return index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
 }

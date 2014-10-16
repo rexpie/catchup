@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tokenTest.Util.Status;
 import tokenTest.response.LoginResponse;
 import tokenTest.response.PicResponse;
+import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 
@@ -40,7 +41,7 @@ public interface UserServiceInterface {
 	void getPicture(Long id, Integer isThumb, HttpServletResponse response);
 
 	// 后面的还没改
-	PicResponse updateUserProfile(Long id, String token, String nickname,
+	StatusResponse updateUserProfile(Long id, String token, String nickname,
 			String building, Date birthday, String sex, String emailaddress,
 			String company);
 

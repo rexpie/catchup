@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -89,6 +90,12 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		} catch (ShopNotFoundException e) {
 			response.setStatus(Status.ERR_SHOP_NOT_FOUND);
 			return response;
+		}
+		
+		if ( !StringUtils.equals("F", genderConstraint) 
+				&& !StringUtils.equals("M", genderConstraint)
+				&& !StringUtils.equals("N", genderConstraint)){
+			response.setStatus(Status.ERR_INVALID_GENDER);
 		}
 
 		/* 新建并保存Meeting */
