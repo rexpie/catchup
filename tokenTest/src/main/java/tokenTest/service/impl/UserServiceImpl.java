@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			// 不满足唯一性约束，phonenum或nickname重复,占用token做错误信息。
 			return new LoginResponse(Status.ERR_DUPLICATE_ENTRY, null);
 		}
-		return new LoginResponse(Status.OK, user.getToken());
+		return new LoginResponse(Status.OK, user.getId(), user.getToken());
 	}
 
 	/*
@@ -154,7 +154,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 用昵称查找用户不存在 */
 
 		if (user == null)
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND, null);
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD, null);
 
 		int attempts = 0;
 		attempts = user.getLogin_attempts();
@@ -173,7 +173,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 用昵称查找用户不存在 */
 
 		if (user == null || !password.equals(user.getPassword()))
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND, null);
+			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD, null);
 
 		/* 生产、更新令牌 */
 		user.setToken(RandomStringUtils.randomAlphanumeric(30));
