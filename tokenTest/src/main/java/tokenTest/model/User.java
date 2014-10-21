@@ -101,9 +101,10 @@ public class User implements Serializable {
 	@Column(name = "status")
 	private int status;
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinTable(name = "friends", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "friend_id") })
-	private Set<User> followings;
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "blacklist", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "blacklist_id") })
+	private Set<User> blacklist;
+
 
 	@Override
 	public int hashCode() {
@@ -274,11 +275,11 @@ public class User implements Serializable {
 	}
 
 	public Set<User> getFollowings() {
-		return followings;
+		return blacklist;
 	}
 
 	public void setFollowings(Set<User> followings) {
-		this.followings = followings;
+		this.blacklist = followings;
 	}
 
 	public Set<Tag> getTags() {
@@ -319,5 +320,13 @@ public class User implements Serializable {
 
 	public void setLogin_attempts(Integer login_attempts) {
 		this.login_attempts = login_attempts;
+	}
+
+	public Set<User> getBlacklist() {
+		return blacklist;
+	}
+
+	public void setBlacklist(Set<User> blacklist) {
+		this.blacklist = blacklist;
 	}
 }

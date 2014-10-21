@@ -50,4 +50,11 @@ public interface UserServiceInterface {
 	
 	LoginResponse resetPassword(String nickorphone, String newPassword, String validationCode);
 
+	BlacklistResponse blacklist(Long id, String token);
+	
+	StatusResponse block(Long id, String token, Long target);
+
+	StatusResponse unblock(Long id, String token, Long target);
+	
+	
 }

@@ -10,7 +10,7 @@ public interface MeetingServiceInterface {
 	/* 获取附近的饭约列表 */
 	MeetingListResponse getMeetingList(Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
-			String job, String shopName);
+			String job, String shopName, Long id, String token);
 
 	/* 获取自己发起的饭约列表 ,按时间排序 */
 	MeetingListResponse getMyMeetingList(Long id, String token, Integer pagenum);

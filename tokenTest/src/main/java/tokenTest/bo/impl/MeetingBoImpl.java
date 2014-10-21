@@ -8,6 +8,8 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+
 import tokenTest.Util.Constants;
 import tokenTest.Util.MessageUtil;
 import tokenTest.Util.Messages;
@@ -99,6 +101,18 @@ public class MeetingBoImpl implements MeetingBo {
 			String job, String shopName) throws Exception {
 		// TODO Auto-generated method stub
 		List list = meetingDao.getMeetingList(longitude, latitude, pagenum,
+				sorttype, range, gender, job, shopName);
+		if (list == null)
+			throw new Exception();
+		return list;
+	}
+	
+	@Transactional
+	public List getMeetingListForUser(User user, Double longitude, Double latitude,
+			Integer pagenum, Integer sorttype, Integer range, String gender,
+			String job, String shopName) throws Exception {
+		// TODO Auto-generated method stub
+		List list = meetingDao.getMeetingListWithId(user.getId(), longitude, latitude, pagenum,
 				sorttype, range, gender, job, shopName);
 		if (list == null)
 			throw new Exception();

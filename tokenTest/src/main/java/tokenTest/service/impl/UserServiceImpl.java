@@ -6,10 +6,13 @@ package tokenTest.service.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -39,6 +42,7 @@ import tokenTest.response.PicResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
+import tokenTest.service.BlacklistResponse;
 import tokenTest.service.UserServiceInterface;
 
 /**
@@ -693,6 +697,127 @@ public class UserServiceImpl implements UserServiceInterface {
 		}
 		return new LoginResponse(Status.ERR_PHONE_VALIDATION_FAIL);
 
+	}
+
+	@Override
+	@RequestMapping(value = { "/blacklist**" }, method = RequestMethod.GET)
+	public BlacklistResponse blacklist(
+			@RequestParam(required = true) Long id, 
+			@RequestParam(required = true) String token) {
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		BlacklistResponse response = new BlacklistResponse(Status.OK);
+
+		Collection<User> others = user.getBlacklist();
+		
+		for (User other :others){
+			response.blacklist.add(other.getId());
+		}
+		
+		return response;
+	}
+
+	@Override
+	@Transactional
+	@RequestMapping(value = { "/block**" }, method = RequestMethod.GET)
+	public StatusResponse block(
+			@RequestParam(required = true) Long id, 
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long target) {
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		StatusResponse response = new StatusResponse(Status.OK);
+
+		User other = null;
+		
+		try{
+			other = userBo.findByUserId(target);
+		} catch (Exception e){
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+		
+		if ( other == null ){
+			response.setStatus(Status.ERR_USER_NOT_FOUND);
+			return response;
+		}
+		
+		user.getBlacklist().add(other);
+		
+		userBo.update(user);
+		
+		return response;
+	}
+
+	@Override
+	@RequestMapping(value = { "/unblock**" }, method = RequestMethod.GET)
+	public StatusResponse unblock(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long target) {
+
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		StatusResponse response = new StatusResponse(Status.OK);
+
+		User other = null;
+		
+		try{
+			other = userBo.findByUserId(target);
+		} catch (Exception e){
+			response.setStatus(Status.ERR_USER_NOT_FOUND);
+			return response;
+		}
+		
+		Collection<User> others = user.getBlacklist();
+		
+		boolean removed = false;
+		
+		Iterator<User> otherIterator = others.iterator();
+		while(otherIterator.hasNext()){
+			User blocked = otherIterator.next();
+			if (blocked.getId() == target){
+				removed = true;
+				otherIterator.remove();
+			}
+		}
+		
+		if ( removed ){
+		userBo.update(user);
+		} else{
+			response.setStatus(Status.ERR_NOT_BLACKLISTED);
+		}
+		return response;
 	}
 
 }

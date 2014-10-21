@@ -1,5 +1,6 @@
 package tokenTest.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import tokenTest.model.Meeting;
@@ -23,4 +24,8 @@ public interface MeetingDao {
 	List getMeetingListByUser(User user, Integer pagenum);
 
 	List getMeetingListByParticipate(User user, Integer pagenum);
+
+	List getMeetingListWithId(Long userid, Double longitude, Double latitude,
+			Integer pagenum, Integer sorttype, Integer range, String gender,
+			String job, String shopName);
 }

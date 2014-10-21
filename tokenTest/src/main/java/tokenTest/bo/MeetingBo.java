@@ -36,6 +36,10 @@ public interface MeetingBo {
 			Integer sorttype, Integer range, String gender, String job,
 			String shopName) throws Exception;
 
+	List getMeetingListForUser(User user, Double longitude, Double latitude,
+			Integer pagenum, Integer sorttype, Integer range, String gender,
+			String job, String shopName) throws Exception;
+	
 	List getMeetingListByUser(User user, Integer pagenum) throws Exception;
 
 	List getMeetingListByParticipate(User user, Integer pagenum)

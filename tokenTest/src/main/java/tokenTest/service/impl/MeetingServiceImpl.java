@@ -120,14 +120,36 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = false, defaultValue = "1000") Integer range,
 			@RequestParam(required = false, defaultValue = "") String gender,
 			@RequestParam(required = false, defaultValue = "") String job,
-			@RequestParam(required = false, defaultValue = "") String shopName) {
+			@RequestParam(required = false, defaultValue = "") String shopName,
+			@RequestParam(required = false, defaultValue = "") Long id,
+			@RequestParam(required = false, defaultValue = "") String token
+			) {
 		MeetingListResponse meetingListResponse = new MeetingListResponse();
 
+		User user = null;
+		if ( id != null && token != null) {
+			try {
+				user = userBo.validateUser(id, token);
+			} catch (UserNotFoundException e) {
+				meetingListResponse.setStatus(Status.ERR_USER_NOT_FOUND);
+				return meetingListResponse;
+			} catch (WrongTokenException e) {
+				meetingListResponse.setStatus(Status.ERR_WRONG_TOKEN);
+				return meetingListResponse;
+			} catch (Exception e) {
+				meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
+				return meetingListResponse;
+			}
+		}
 		/* list元素为Object[2]中第一个对象是meeting，第二个是距离，double类型 */
 		List list = null;
 		try {
-			list = meetingBo.getMeetingList(longitude, latitude, pagenum,
-					sorttype, range, gender, job, shopName);
+			if (user == null) {
+				list = meetingBo.getMeetingList(longitude, latitude, pagenum,
+						sorttype, range, gender, job, shopName);
+			} else {
+				list = meetingBo.getMeetingListForUser(user, longitude, latitude, pagenum, sorttype, range, gender, job, shopName);
+			}
 		} catch (Exception e) {
 			meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}

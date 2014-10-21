@@ -1,11 +1,9 @@
 package tokenTest.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.List;
 
 import org.hibernate.Query;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -102,6 +100,35 @@ public class MeetingDaoImpl implements MeetingDao {
 								+ "ORDER BY m.create_time DESC");
 		/* 设置参数 */
 		query.setEntity("user", user);
+		// 分页处理
+		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
+		query.setMaxResults(Constants.NUM_PER_PAGE);
+		return (List) query.list();
+	}
+
+	@Override
+	public List getMeetingListWithId(Long userid, Double longitude,
+			Double latitude, Integer pagenum, Integer sorttype, Integer range,
+			String gender, String job, String shopName) {
+		/* 根据经纬度计算距离，6371km为地球半径，结果为m */
+		Query query = sessionFactory
+				.getCurrentSession()
+				.createQuery(
+						"SELECT m, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) +"
+								+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
+								+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
+								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
+								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.role like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
+								+ "AND m.owner not in (select blacklist.blacklist_id from blacklist where blacklist.user_id = :userid) "
+								+ "ORDER BY distance ASC");
+		/* 设置参数 */
+		query.setDouble("ulongitude", longitude);
+		query.setDouble("ulatitude", latitude);
+		query.setString("ugender", "%" + gender + "%");
+		query.setString("uname", "%" + shopName + "%");
+		query.setString("ujob", "%" + job + "%");
+		query.setDouble("urange", range);
+		query.setLong("userid", userid);
 		// 分页处理
 		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
 		query.setMaxResults(Constants.NUM_PER_PAGE);
