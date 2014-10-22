@@ -112,7 +112,7 @@ public class MeetingBoImpl implements MeetingBo {
 			Integer pagenum, Integer sorttype, Integer range, String gender,
 			String job, String shopName) throws Exception {
 		// TODO Auto-generated method stub
-		List list = meetingDao.getMeetingListWithId(user.getId(), longitude, latitude, pagenum,
+		List list = meetingDao.getMeetingListWithId(user, longitude, latitude, pagenum,
 				sorttype, range, gender, job, shopName);
 		if (list == null)
 			throw new Exception();

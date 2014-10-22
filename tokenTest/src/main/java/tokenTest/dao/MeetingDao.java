@@ -25,7 +25,7 @@ public interface MeetingDao {
 
 	List getMeetingListByParticipate(User user, Integer pagenum);
 
-	List getMeetingListWithId(Long userid, Double longitude, Double latitude,
+	List getMeetingListWithId(User user, Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
 			String job, String shopName);
 }
