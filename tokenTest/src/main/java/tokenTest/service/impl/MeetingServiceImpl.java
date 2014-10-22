@@ -82,6 +82,11 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
 			return response;
 		}
+		
+		if (StringUtils.isEmpty(user.getRole())){
+			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_JOB);
+			return response;
+		}
 
 		/* 查找店 */
 		Shop shop = null;
