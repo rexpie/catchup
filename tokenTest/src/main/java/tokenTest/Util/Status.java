@@ -71,7 +71,9 @@ public enum Status {
 	
 	ERR_ALREADY_BLACKLISTED(-31), 
 	
-	ERR_NEW_MEETING_MUST_HAVE_JOB(-32);
+	ERR_NEW_MEETING_MUST_HAVE_JOB(-32),
+	
+	ERR_BLACKLISTED(-33);
 
 	int value;
 

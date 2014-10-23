@@ -356,6 +356,12 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
+		
+		if (meeting.getOwner().getBlacklist().contains(user)){
+			response.setStatus(Status.ERR_BLACKLISTED);
+			return response;
+		}
+		
 		try {
 			meetingBo.applyForMeeting(user, meeting, applyContent);
 		} catch (TooManyAppliesException e) {
