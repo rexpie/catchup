@@ -38,6 +38,7 @@
 				<value>tokenTest.model.Tag</value>
 				<value>tokenTest.model.User</value>
 				<value>tokenTest.model.ValidationCode</value>
+				<value>tokenTest.model.Complaint</value>
 			</list>
 		</property>
 	</bean>

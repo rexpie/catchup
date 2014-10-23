@@ -28,12 +28,14 @@ import org.springframework.web.multipart.MultipartFile;
 import tokenTest.Util.Constants;
 import tokenTest.Util.SMSUtil;
 import tokenTest.Util.Status;
+import tokenTest.bo.ComplaintBo;
 import tokenTest.bo.PictureBo;
 import tokenTest.bo.UserBo;
 import tokenTest.bo.ValidationCodeBo;
 import tokenTest.exception.PictureNotFoundException;
 import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
+import tokenTest.model.Complaint;
 import tokenTest.model.Picture;
 import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
@@ -65,6 +67,17 @@ public class UserServiceImpl implements UserServiceInterface {
 	@Autowired
 	private ServletContext servletContext = null;
 
+	@Autowired
+	private ComplaintBo complaintBo;
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -816,6 +829,53 @@ public class UserServiceImpl implements UserServiceInterface {
 		userBo.update(user);
 		} else{
 			response.setStatus(Status.ERR_NOT_BLACKLISTED);
+		}
+		return response;
+	}
+
+	@Override
+	@RequestMapping(value = { "/complain**" }, method = RequestMethod.GET)
+	public StatusResponse complain(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long target,
+			@RequestParam(required = true) String reason
+			) {
+
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		StatusResponse response = new StatusResponse(Status.OK);
+
+		User other = null;
+		
+		try{
+			other = userBo.findByUserId(target);
+		} catch (Exception e){
+			response.setStatus(Status.ERR_USER_NOT_FOUND);
+			return response;
+		}
+		
+		Complaint complaint = new Complaint();
+		complaint.setOwner(user);
+		complaint.setTarget(other);
+		complaint.setReason(reason);
+		complaint.setCreate_time(new Date());
+		
+		try{
+			complaintBo.save(complaint);
+		} catch (Exception e){
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}
 		return response;
 	}

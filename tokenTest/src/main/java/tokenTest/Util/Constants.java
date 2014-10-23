@@ -24,4 +24,7 @@ public class Constants {
 	public static final int MEETING_STATUS_NEW = 0;
 	public static final int MEETING_STATUS_STOPPED = 1;
 	
+	public static final int COMPLAINT_STATUS_NEW = 0;
+	public static final int COMPLAINT_STATUS_DEALT = 1;
+	
 }
