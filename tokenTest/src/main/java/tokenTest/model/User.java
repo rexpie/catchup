@@ -105,6 +105,14 @@ public class User implements Serializable {
 	@JoinTable(name = "blacklist", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "blacklist_id") })
 	private Set<User> blacklist;
 
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "likes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "like_id") })
+	private Set<User> likes;
+
+	@OneToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "viewers", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "viewer_id") })
+	private Set<User> viewers;
+
 
 	@Override
 	public int hashCode() {
@@ -328,5 +336,21 @@ public class User implements Serializable {
 
 	public void setBlacklist(Set<User> blacklist) {
 		this.blacklist = blacklist;
+	}
+
+	public Set<User> getLikes() {
+		return likes;
+	}
+
+	public void setLikes(Set<User> likes) {
+		this.likes = likes;
+	}
+
+	public Set<User> getViewers() {
+		return viewers;
+	}
+
+	public void setViewers(Set<User> viewers) {
+		this.viewers = viewers;
 	}
 }

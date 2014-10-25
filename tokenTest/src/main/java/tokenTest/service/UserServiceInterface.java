@@ -12,6 +12,7 @@ import tokenTest.response.PicResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
+import tokenTest.response.ViewersResponse;
 
 public interface UserServiceInterface {
 	LoginResponse userRegister(String nickName, String password,
@@ -59,6 +60,12 @@ public interface UserServiceInterface {
 	StatusResponse complain(Long id, String token, Long target, String reason);
 
 	StatusResponse setTags(Long id, String token, String tags);
+
+	StatusResponse getLikeUsers(Long id, String token);
+
+	ViewersResponse getViewers(Long id, String token);
+
+	StatusResponse like(Long id, String token, Long targetId);
 	
 	
 }

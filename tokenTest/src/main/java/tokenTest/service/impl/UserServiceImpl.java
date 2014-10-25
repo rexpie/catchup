@@ -42,11 +42,13 @@ import tokenTest.model.Picture;
 import tokenTest.model.Tag;
 import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
+import tokenTest.response.LikeUsersResponse;
 import tokenTest.response.LoginResponse;
 import tokenTest.response.PicResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
+import tokenTest.response.ViewersResponse;
 import tokenTest.service.BlacklistResponse;
 import tokenTest.service.UserServiceInterface;
 
@@ -267,18 +269,23 @@ public class UserServiceImpl implements UserServiceInterface {
 			return UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 		}
 
+		User target = null;
 		/* targetId==null表示查看自己信息，否则为查看别人信息 */
 		if (targetId == null || targetId == user.getId()) {
 			return new UserDetailResponse(user, true);
 		} else {
 			try {
-				user = userBo.findByUserId(targetId);
+				target = userBo.findByUserId(targetId);
 			} catch (Exception e) {
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
-			if (user == null)
+			if (target == null)
 				UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
-			return new UserDetailResponse(user, false);
+			boolean added = target.getViewers().add(user);
+			if (added) {
+				userBo.update(target);
+			}
+			return new UserDetailResponse(target, false);
 		}
 	}
 
@@ -933,5 +940,101 @@ public class UserServiceImpl implements UserServiceInterface {
 		return response;
 	}
 
+
+
+	@Override
+	@RequestMapping(value = { "/getLikeUsers**" }, method = RequestMethod.GET)
+	public LikeUsersResponse getLikeUsers(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token
+			) {
+
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new LikeUsersResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new LikeUsersResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new LikeUsersResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		LikeUsersResponse response = new LikeUsersResponse(Status.OK);
+
+		for (User other : user.getLikes()){
+			response.ids.add(other.getId());
+		}
+		return response;
+	}
 	
+	
+
+	@Override
+	@RequestMapping(value = { "/getViewers**" }, method = RequestMethod.GET)
+	public ViewersResponse getViewers(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token
+			) {
+
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new ViewersResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new ViewersResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new ViewersResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		ViewersResponse response = new ViewersResponse(Status.OK);
+
+		for (User other : user.getViewers()){
+			response.ids.add(other.getId());
+		}
+		return response;
+	}
+	
+	@Override
+	@RequestMapping(value = { "/like**" }, method = RequestMethod.GET)
+	public StatusResponse like(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long targetId) {
+		User user = null;
+
+		/* 查找用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new StatusResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new StatusResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		User target = null;
+		/* targetId==null表示查看自己信息，否则为查看别人信息 */
+		if (targetId == null || targetId == user.getId()) {
+			return new StatusResponse(Status.ERR_THAT_IS_SO_PATHETIC);
+		} else {
+			try {
+				target = userBo.findByUserId(targetId);
+			} catch (Exception e) {
+				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
+			}
+			if (target == null)
+				UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
+			boolean added = target.getLikes().add(user);
+			if (added) {
+				userBo.update(target);
+			}
+			return new StatusResponse(Status.OK);
+		}
+	}
+
 }
