@@ -9,5 +9,5 @@ public interface TagBo {
 
 	void delete(Tag tag);
 
-	Tag findByStockCode(String name);
+	Tag findByTagName(String name);
 }

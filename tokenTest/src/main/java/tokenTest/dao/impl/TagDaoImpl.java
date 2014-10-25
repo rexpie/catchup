@@ -34,9 +34,12 @@ public class TagDaoImpl implements TagDao {
 	public Tag findByTagName(String name) {
 		// TODO Auto-generated method stub
 		Session session = sessionFactory.getCurrentSession();
-		Query query = session.createQuery("from Stock where name= :name");
+		Query query = session.createQuery("from Tag where name= :name");
 		query.setString("name", name);
 		List list = query.list();
+		if (list == null || list.size() == 0 ){
+			return null;
+		}
 		return (Tag) list.get(0);
 	}
 

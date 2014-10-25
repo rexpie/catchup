@@ -37,7 +37,7 @@ public class TagBoImpl implements TagBo {
 	}
 
 	@Transactional
-	public Tag findByStockCode(String name) {
+	public Tag findByTagName(String name) {
 		// TODO Auto-generated method stub
 		return tagDao.findByTagName(name);
 	}

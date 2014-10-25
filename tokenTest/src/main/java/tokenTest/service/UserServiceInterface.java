@@ -57,6 +57,8 @@ public interface UserServiceInterface {
 	StatusResponse unblock(Long id, String token, Long target);
 
 	StatusResponse complain(Long id, String token, Long target, String reason);
+
+	StatusResponse setTags(Long id, String token, String tags);
 	
 	
 }

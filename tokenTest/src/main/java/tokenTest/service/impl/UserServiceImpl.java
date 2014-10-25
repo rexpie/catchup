@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import tokenTest.Util.SMSUtil;
 import tokenTest.Util.Status;
 import tokenTest.bo.ComplaintBo;
 import tokenTest.bo.PictureBo;
+import tokenTest.bo.TagBo;
 import tokenTest.bo.UserBo;
 import tokenTest.bo.ValidationCodeBo;
 import tokenTest.exception.PictureNotFoundException;
@@ -37,6 +39,7 @@ import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Complaint;
 import tokenTest.model.Picture;
+import tokenTest.model.Tag;
 import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
 import tokenTest.response.LoginResponse;
@@ -46,6 +49,8 @@ import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 import tokenTest.service.BlacklistResponse;
 import tokenTest.service.UserServiceInterface;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author pengtao
@@ -70,7 +75,8 @@ public class UserServiceImpl implements UserServiceInterface {
 	@Autowired
 	private ComplaintBo complaintBo;
 	
-	
+	@Autowired
+	private TagBo tagBo;
 	
 	
 	
@@ -880,4 +886,52 @@ public class UserServiceImpl implements UserServiceInterface {
 		return response;
 	}
 
+
+	@Override
+	@RequestMapping(value = { "/setTags**" }, method = RequestMethod.GET)
+	public StatusResponse setTags(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) String tags
+			) {
+
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		StatusResponse response = new StatusResponse(Status.OK);
+
+		Set<Tag> newTags = Sets.newHashSet();
+
+		if (tags.length() > 0){
+			for (String tag : tags.split(",")){
+				Tag newTag;
+				newTag = tagBo.findByTagName(tag);
+				if (newTag == null){
+					newTag = new Tag(tag);
+				}
+				newTags.add(newTag);
+			}
+		}
+		
+		user.setTags(newTags);
+		
+		try{
+			userBo.update(user);
+		} catch (Exception e){
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+		}
+		return response;
+	}
+
+	
 }
