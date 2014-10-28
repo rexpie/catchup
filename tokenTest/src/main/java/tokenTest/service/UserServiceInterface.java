@@ -66,6 +66,8 @@ public interface UserServiceInterface {
 	ViewersResponse getViewers(Long id, String token);
 
 	StatusResponse like(Long id, String token, Long targetId);
+
+	StatusResponse report(Long id, String token, String reason);
 	
 	
 }

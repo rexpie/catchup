@@ -30,6 +30,30 @@ public class Shop implements Serializable {
 	private String type;
 	private String classtype;
 	private Double price;
+	private String url;
+	private String photoUrl;
+	
+	@Column(length=256)
+	public String getPhotoUrl() {
+		return photoUrl;
+	}
+
+	public void setPhotoUrl(String photoUrl) {
+		this.photoUrl = photoUrl;
+	}
+
+	@Column(name = "url",length=256)
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
 
 	public Shop(String dianping_id, String name, String city, String area,
 			String country, String description, double latitude,

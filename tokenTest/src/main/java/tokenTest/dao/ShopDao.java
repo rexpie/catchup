@@ -13,4 +13,6 @@ public interface ShopDao {
 	Shop findByShopName(String name);
 	
 	Shop findByShopId(Long id);
+
+	Shop findByDianpingId(Long id);
 }

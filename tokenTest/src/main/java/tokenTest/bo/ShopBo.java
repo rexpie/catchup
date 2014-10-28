@@ -13,4 +13,6 @@ public interface ShopBo {
 	Shop findByShopName(String name);
 
 	Shop findByShopId(Long id) throws ShopNotFoundException;
+
+	Shop findByDianpingId(Long id) throws ShopNotFoundException;
 }

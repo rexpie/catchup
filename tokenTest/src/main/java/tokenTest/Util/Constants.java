@@ -11,20 +11,24 @@ public class Constants {
 	public static final String RIGIN_PICTURE_PATH = "origin";
 	public static final String THUMB_PICTURE_PATH = "thumb";
 	public static final int NUM_PER_PAGE = 8;
-	
-	
+
 	public static final int APPLY_STATUS_NEW = 0;
 	public static final int APPLY_STATUS_ACC = 1;
 	public static final int APPLY_STATUS_REJ = 2;
 	public static final int APPLY_STATUS_WITHDRAWN = 3;
 	public static final int APPLY_STATUS_WITHDRAWN_BY_SYS = 4;
 	public static final int APPLY_STATUS_STOPPED_BY_SYS = 5;
-	
-	
+
 	public static final int MEETING_STATUS_NEW = 0;
 	public static final int MEETING_STATUS_STOPPED = 1;
-	
+
 	public static final int COMPLAINT_STATUS_NEW = 0;
 	public static final int COMPLAINT_STATUS_DEALT = 1;
+
+	public static final String DP_API_KEY = "5912365198";
+	public static final String DP_API_SEC = "d04763" + "003ddc4" + "8168e2d6e"
+			+ "bf8e60" + "7fc1";
 	
+	public static final int REPORT_STATUS_NEW = 0;
+
 }

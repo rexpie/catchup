@@ -56,4 +56,17 @@ public class ShopDaoImpl implements ShopDao {
 			return null;
 	}
 
+	@Override
+	public Shop findByDianpingId(Long id) {
+		// TODO Auto-generated method stub
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery("from Shop where dianping_id = :id");
+		query.setLong("id", id);
+		List list = query.list();
+		if (list.size() > 0)
+			return (Shop) list.get(0);
+		else
+			return null;
+	}
+
 }

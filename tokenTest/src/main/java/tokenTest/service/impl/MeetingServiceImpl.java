@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import tokenTest.Util.Constants;
+import tokenTest.Util.DPApiTool;
 import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.ShopBo;
@@ -93,8 +93,13 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		try {
 			shop = shopBo.findByShopId(shopid);
 		} catch (ShopNotFoundException e) {
-			response.setStatus(Status.ERR_SHOP_NOT_FOUND);
-			return response;
+			shop = DPApiTool.getBusiness(shopid);
+			if (shop == null){
+				response.setStatus(Status.ERR_SHOP_NOT_FOUND);
+				return response;
+			} else {
+				shopBo.save(shop);
+			}
 		}
 		
 		if ( !StringUtils.equals("F", genderConstraint) 

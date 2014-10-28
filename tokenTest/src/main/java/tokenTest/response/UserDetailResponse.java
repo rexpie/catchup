@@ -12,10 +12,33 @@ public class UserDetailResponse {
 	private String building;
 	private String company;
 	private Date birthday;
-	private long zan_count;
-	private String phone_number;
-	private String email_address;
-	//private Picture pic;
+	private long numOfLikes;
+	private String phonenum;
+	private boolean alreadyLiked;
+	public long getNumOfLikes() {
+		return numOfLikes;
+	}
+
+	public void setNumOfLikes(long numOfLikes) {
+		this.numOfLikes = numOfLikes;
+	}
+
+	public String getPhonenum() {
+		return phonenum;
+	}
+
+	public void setPhonenum(String phonenum) {
+		this.phonenum = phonenum;
+	}
+
+	public boolean isAlreadyLiked() {
+		return alreadyLiked;
+	}
+
+	public void setAlreadyLiked(boolean alreadyLiked) {
+		this.alreadyLiked = alreadyLiked;
+	}
+
 	private Status status = Status.OK;
 
 	public UserDetailResponse(User user, boolean isSelf) {
@@ -24,11 +47,10 @@ public class UserDetailResponse {
 		this.building = user.getBuilding();
 		this.company = user.getCompany();
 		this.birthday = user.getBirthday();
-		this.zan_count = user.getZan_count();
+		this.numOfLikes = user.getLikes().size();
 		//this.pic=user.getPic();
 		if(isSelf){
-			this.phone_number = user.getPhone_number();
-			this.email_address = user.getEmail_address();
+			this.phonenum = user.getPhone_number();
 		}
 	}
 
@@ -41,9 +63,8 @@ public class UserDetailResponse {
 		this.building = building;
 		this.company = company;
 		this.birthday = birthday;
-		this.zan_count = zan_count;
-		this.phone_number = phone_number;
-		this.email_address = email_address;
+		this.numOfLikes = zan_count;
+		this.phonenum = phone_number;
 	}
 
 	private UserDetailResponse(Status status) {
@@ -91,29 +112,12 @@ public class UserDetailResponse {
 	}
 
 	public long getZan_count() {
-		return zan_count;
+		return numOfLikes;
 	}
 
 	public void setZan_count(long zan_count) {
-		this.zan_count = zan_count;
+		this.numOfLikes = zan_count;
 	}
-
-	public String getPhone_number() {
-		return phone_number;
-	}
-
-	public void setPhone_number(String phone_number) {
-		this.phone_number = phone_number;
-	}
-
-	public String getEmail_address() {
-		return email_address;
-	}
-
-	public void setEmail_address(String email_address) {
-		this.email_address = email_address;
-	}
-	
 	public Status getStatus() {
 		return status;
 	}

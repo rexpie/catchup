@@ -51,4 +51,13 @@ public class ShopBoImpl implements ShopBo {
 			throw new ShopNotFoundException();
 		return shop;
 	}
+
+	@Override
+	public Shop findByDianpingId(Long id) throws ShopNotFoundException {
+		// TODO Auto-generated method stub
+		Shop shop = shopDao.findByDianpingId(id);
+		if (shop == null)
+			throw new ShopNotFoundException();
+		return shop;
+	}
 }

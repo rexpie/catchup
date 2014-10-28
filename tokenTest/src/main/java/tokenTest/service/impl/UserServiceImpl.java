@@ -31,6 +31,7 @@ import tokenTest.Util.SMSUtil;
 import tokenTest.Util.Status;
 import tokenTest.bo.ComplaintBo;
 import tokenTest.bo.PictureBo;
+import tokenTest.bo.ReportBo;
 import tokenTest.bo.TagBo;
 import tokenTest.bo.UserBo;
 import tokenTest.bo.ValidationCodeBo;
@@ -39,6 +40,7 @@ import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Complaint;
 import tokenTest.model.Picture;
+import tokenTest.model.Report;
 import tokenTest.model.Tag;
 import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
@@ -76,6 +78,9 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Autowired
 	private ComplaintBo complaintBo;
+
+	@Autowired
+	private ReportBo reportBo;
 	
 	@Autowired
 	private TagBo tagBo;
@@ -285,7 +290,9 @@ public class UserServiceImpl implements UserServiceInterface {
 			if (added) {
 				userBo.update(target);
 			}
-			return new UserDetailResponse(target, false);
+			UserDetailResponse response = new UserDetailResponse(target, false);
+			response.setAlreadyLiked(user.getLikes().contains(target));
+			return response;
 		}
 	}
 
@@ -1035,6 +1042,41 @@ public class UserServiceImpl implements UserServiceInterface {
 			}
 			return new StatusResponse(Status.OK);
 		}
+	}
+	@Override
+	@RequestMapping(value = { "/report**" }, method = RequestMethod.GET)
+	public StatusResponse report(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) String content
+			) {
+
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		StatusResponse response = new StatusResponse(Status.OK);
+
+		Report report = new Report();
+		report.setOwner(user);
+		report.setContent(content);
+		report.setCreate_time(new Date());
+		report.setStatus(Constants.REPORT_STATUS_NEW);
+		try{
+			reportBo.save(report);
+		} catch (Exception e){
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+		}
+		return response;
 	}
 
 }
