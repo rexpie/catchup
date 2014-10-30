@@ -45,7 +45,7 @@ public interface UserServiceInterface {
 
 	// 后面的还没改
 	StatusResponse updateUserProfile(Long id, String token, String nickname,
-			String building, Date birthday, String sex, String emailaddress,
+			String building, Date birthday, String sex, String job, String industry,
 			String company);
 
 	LoginResponse changePassword(Long id, String oldpassword, String newpassword);

@@ -20,6 +20,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -62,6 +63,7 @@ import com.google.common.collect.Sets;
  */
 @RestController
 @RequestMapping("/user")
+@Service("userService")
 public class UserServiceImpl implements UserServiceInterface {
 
 	@Autowired
@@ -120,6 +122,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			userBo.save(user);
 		} catch (DataIntegrityViolationException e) {
 			// 不满足唯一性约束，phonenum或nickname重复,占用token做错误信息。
+			e.printStackTrace();
 			return new LoginResponse(Status.ERR_DUPLICATE_ENTRY, null);
 		}
 		return new LoginResponse(Status.OK, user.getId(), user.getToken());
@@ -305,7 +308,8 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) String building,
 			@RequestParam(required = false) Date birthday,
 			@RequestParam(required = false) String sex,
-			@RequestParam(required = false) String emailaddress,
+			@RequestParam(required = false) String job,
+			@RequestParam(required = false) String industry,
 			@RequestParam(required = false) String company) {
 		User user = null;
 
@@ -334,8 +338,10 @@ public class UserServiceImpl implements UserServiceInterface {
 				return new StatusResponse(Status.ERR_INVALID_GENDER);
 
 		}
-		if (emailaddress != null)
-			user.setEmail_address(emailaddress);
+		if (job != null)
+			user.setJob(job);
+		if (industry != null)
+			user.setIndustry(industry);
 		if (company != null)
 			user.setCompany(company);
 
@@ -343,6 +349,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new StatusResponse(Status.ERR_GENERIC);
 		}
 		return new StatusResponse(Status.OK);

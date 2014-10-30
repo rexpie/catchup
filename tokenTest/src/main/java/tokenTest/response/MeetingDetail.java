@@ -46,7 +46,7 @@ public class MeetingDetail {
 
 		this.name = meeting.getOwner().getNickname();
 		this.shopName = meeting.getShop().getName();
-		this.job = meeting.getOwner().getRole();
+		this.job = meeting.getOwner().getJob();
 		this.company = meeting.getOwner().getCompany();
 		this.age = Utils.getAge(meeting.getOwner().getBirthday());
 	}

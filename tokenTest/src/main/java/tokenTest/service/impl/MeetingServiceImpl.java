@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +46,7 @@ import tokenTest.service.MeetingServiceInterface;
  */
 @RestController
 @RequestMapping("/meeting")
+@Service("meetingService")
 public class MeetingServiceImpl implements MeetingServiceInterface {
 	@Autowired
 	private UserBo userBo;
@@ -63,7 +65,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) String description) {
 		StatusResponse response = new StatusResponse(Status.OK);
 
-		/* 查找用户 */
+		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -88,7 +90,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 		
-		if (StringUtils.isEmpty(user.getRole())){
+		if (StringUtils.isEmpty(user.getJob())){
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_JOB);
 			return response;
 		}
@@ -98,7 +100,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/* 查找店 */
+		/* 鏌ユ壘搴�*/
 		Shop shop = null;
 		try {
 			shop = shopBo.findByShopId(shopid);
@@ -118,7 +120,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.ERR_INVALID_GENDER);
 		}
 
-		/* 新建并保存Meeting */
+		/* 鏂板缓骞朵繚瀛楳eeting */
 		Meeting meeting = new Meeting(user, new Date(), shop, genderConstraint,
 				description);
 		try {
@@ -161,7 +163,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 				return meetingListResponse;
 			}
 		}
-		/* list元素为Object[2]中第一个对象是meeting，第二个是距离，double类型 */
+		/* list鍏冪礌涓篛bject[2]涓涓�釜瀵硅薄鏄痬eeting锛岀浜屼釜鏄窛绂伙紝double绫诲瀷 */
 		List list = null;
 		try {
 			if (user == null) {
@@ -197,7 +199,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = false, defaultValue = "0") Integer pagenum) {
 		MeetingListResponse meetingListResponse = new MeetingListResponse();
 
-		/* 查找用户 */
+		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -212,7 +214,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return meetingListResponse;
 		}
 
-		/* list元素为Object,是meeting */
+		/* list鍏冪礌涓篛bject,鏄痬eeting */
 		List list = null;
 		try {
 			list = meetingBo.getMeetingListByUser(user, pagenum);
@@ -236,7 +238,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = false, defaultValue = "0") Integer pagenum) {
 		MeetingListResponse meetingListResponse = new MeetingListResponse();
 
-		/* 查找用户 */
+		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -251,7 +253,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return meetingListResponse;
 		}
 
-		/* list元素为Object,是meeting */
+		/* list鍏冪礌涓篛bject,鏄痬eeting */
 		List list = null;
 		try {
 			list = meetingBo.getMeetingListByParticipate(user, pagenum);
@@ -274,7 +276,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long meetingid) {
 		MeetingDetailResponse response = new MeetingDetailResponse();
-		/* 查找用户 */
+		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -296,18 +298,18 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/* 是拥有者，能看到申请信息和参与者信息 */
+		/* 鏄嫢鏈夎�锛岃兘鐪嬪埌鐢宠淇℃伅鍜屽弬涓庤�淇℃伅 */
 		if (meeting.getOwner().equals(user)) {
-			/* 饭约基本信息 */
+			/* 楗害鍩烘湰淇℃伅 */
 			response.setMeetingDetail(new MeetingDetail(meeting));
-			/* 参与者信息 */
+			/* 鍙備笌鑰呬俊鎭�*/
 			Iterator iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
 				response.getParticipates().add(
 						new UserInfo((User) iterator.next()));
 			}
 
-			/* 申请信息 */
+			/* 鐢宠淇℃伅 */
 			try {
 				iterator = meetingBo.getApplyByMeeting(meeting).iterator();
 				while (iterator.hasNext()) {
@@ -315,16 +317,16 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 							new ApplyInfo((MeetingApply) iterator.next()));
 				}
 			} catch (Exception e) {
-				/* 没有参与者,不做处理 */
+				/* 娌℃湁鍙備笌鑰�涓嶅仛澶勭悊 */
 				// response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 				// return response;
 			}
 		} else if (meeting.getParticipator().contains(user)) {
-			/* 是参与者，能看到参与者信息 */
-			/* 饭约基本信息 */
+			/* 鏄弬涓庤�锛岃兘鐪嬪埌鍙備笌鑰呬俊鎭�*/
+			/* 楗害鍩烘湰淇℃伅 */
 			response.setMeetingDetail(new MeetingDetail(meeting));
 
-			/* 参与者信息 */
+			/* 鍙備笌鑰呬俊鎭�*/
 			Iterator iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
 				response.getParticipates().add(
@@ -342,7 +344,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) Long meetingid,
 			@RequestParam(required = false, defaultValue = "") String applyContent) {
 		NewApplyResponse response = new NewApplyResponse(null);
-		/* 查找用户 */
+		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -364,7 +366,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/* 自己发起的饭约或者已经参与的饭约,不能申请 */
+		/* 鑷繁鍙戣捣鐨勯キ绾︽垨鑰呭凡缁忓弬涓庣殑楗害,涓嶈兘鐢宠 */
 		if (meeting.getOwner().equals(user)
 				|| meeting.getParticipator().contains(user)) {
 			response.setStatus(Status.ERR_CAN_NOT_APPLY_FOR_THE_MEETING);
@@ -394,7 +396,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) Long applyid,
 			@RequestParam(required = true) Boolean approved) {
 		StatusResponse response = new StatusResponse(null);
-		/* 查找用户 */
+		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -409,7 +411,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/* 查找申请 */
+		/* 鏌ユ壘鐢宠 */
 		MeetingApply meetingApply = null;
 		try {
 			meetingApply = meetingBo.getApplyById(applyid);
@@ -418,14 +420,14 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/* 查找饭约 */
+		/* 鏌ユ壘楗害 */
 		Meeting meeting = meetingApply.getToMeeting();
 		if (meeting == null) {
 			response.setStatus(Status.ERR_MEETING_NOT_FOUND);
 			return response;
 		}
 
-		/* 不是饭约拥有者，不能处理饭约申请 */
+		/* 涓嶆槸楗害鎷ユ湁鑰咃紝涓嶈兘澶勭悊楗害鐢宠 */
 		if (!meeting.getOwner().equals(user)) {
 			response.setStatus(Status.ERR_NOT_MEETING_OWNER);
 			return response;
@@ -460,7 +462,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = true) String withdrawReason) {
 		// TODO Auto-generated method stub
 		WithdrawApplyResponse response = new WithdrawApplyResponse(null);
-		/* 查找用户 */
+		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
 			user = userBo.validateUser(id, token);
@@ -475,7 +477,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		/* 查找申请 */
+		/* 鏌ユ壘鐢宠 */
 		MeetingApply meetingApply = null;
 		try {
 			meetingApply = meetingBo.getApplyById(applyid);

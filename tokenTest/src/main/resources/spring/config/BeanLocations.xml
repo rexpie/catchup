@@ -19,9 +19,12 @@
 	<bean
 		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
 
+	<bean class="org.springframework.mock.web.MockServletContext"/>
+	
 	<!-- Auto scan the components -->
 	<context:component-scan base-package="tokenTest.model" />
 	<context:component-scan base-package="tokenTest.dao" />
 	<context:component-scan base-package="tokenTest.bo" />
+	<context:component-scan base-package="tokenTest.service" />
 	<context:component-scan base-package="tokenTest.response" />
 </beans>

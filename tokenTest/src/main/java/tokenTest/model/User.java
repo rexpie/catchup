@@ -31,7 +31,7 @@ public class User implements Serializable {
 	 */
 	private static final long serialVersionUID = -6970201418868427060L;
 
-	/* 登录相关信息 */
+	/* 鐧诲綍鐩稿叧淇℃伅 */
 	@GenericGenerator(name = "generator", strategy = "increment")
 	@Id
 	@GeneratedValue(generator = "generator")
@@ -47,7 +47,7 @@ public class User implements Serializable {
 	@Column(name = "login_attempts")
 	private Integer login_attempts;
 
-	/* 必填信息 */
+	/* 蹇呭～淇℃伅 */
 	@Column(name = "nickname", unique = true, nullable = false, length = 128)
 	private String nickname;
 
@@ -61,31 +61,42 @@ public class User implements Serializable {
 	@Column(name = "sex", length = 1)
 	private String sex;
 
-	@Column(name = "building", nullable = false, length = 128)
+	@Column(name = "building", nullable = true, length = 128)
 	private String building;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	@JoinColumn(name = "pic_id", unique = true)
-	private Picture pic; // 头像
+	private Picture pic; // 澶村儚
 
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	private Set<Tag> tags;
 
-	/* 非必填信息 */
+	/* 闈炲繀濉俊鎭�*/
 	@Column(name = "company", length = 128)
 	private String company;
 
-	@Column(name = "role", length = 30)
-	private String role;
+	@Column(name = "job", length = 30)
+	private String job;
+	
+	@Column(name = "industry", length = 30)
+	private String industry;
+//
+//	@Column(name = "email_address", length = 128)
+//	private String email_address;
 
-	@Column(name = "email_address", length = 128)
-	private String email_address;
+	public String getIndustry() {
+		return industry;
+	}
 
-	/* 系统信息 */
+	public void setIndustry(String industry) {
+		this.industry = industry;
+	}
+
+	/* 绯荤粺淇℃伅 */
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
-	private Set<Picture> picture = new HashSet<>(); // 非头像照片
+	private Set<Picture> picture = new HashSet<>(); // 闈炲ご鍍忕収鐗�
 
 	@Column(name = "zan_count")
 	private long zan_count;
@@ -155,8 +166,7 @@ public class User implements Serializable {
 	}
 
 	public User(String password, String nickname, String sex, String building,
-			String company, Date birthday, long zan_count, String phone_number,
-			String email_address) {
+			String company, Date birthday, long zan_count, String phone_number) {
 		super();
 		this.password = password;
 		this.nickname = nickname;
@@ -166,7 +176,7 @@ public class User implements Serializable {
 		this.birthday = birthday;
 		this.zan_count = zan_count;
 		this.phone_number = phone_number;
-		this.email_address = email_address;
+//		this.email_address = email_address;
 		this.status = 1;
 	}
 
@@ -265,14 +275,14 @@ public class User implements Serializable {
 	public void setPhone_number(String phone_number) {
 		this.phone_number = phone_number;
 	}
-
-	public String getEmail_address() {
-		return email_address;
-	}
-
-	public void setEmail_address(String email_address) {
-		this.email_address = email_address;
-	}
+//
+//	public String getEmail_address() {
+//		return email_address;
+//	}
+//
+//	public void setEmail_address(String email_address) {
+//		this.email_address = email_address;
+//	}
 
 	public int getStatus() {
 		return status;
@@ -306,12 +316,12 @@ public class User implements Serializable {
 		this.token = token;
 	}
 
-	public String getRole() {
-		return role;
+	public String getJob() {
+		return job;
 	}
 
-	public void setRole(String role) {
-		this.role = role;
+	public void setJob(String role) {
+		this.job = role;
 	}
 
 	public Set<Picture> getPicture() {
