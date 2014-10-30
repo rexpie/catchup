@@ -83,8 +83,18 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 		
+		if (StringUtils.isEmpty(user.getSex())){
+			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_GENDER);
+			return response;
+		}
+		
 		if (StringUtils.isEmpty(user.getRole())){
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_JOB);
+			return response;
+		}
+		
+		if (StringUtils.isEmpty(user.getBuilding())){
+			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_BUILDING);
 			return response;
 		}
 

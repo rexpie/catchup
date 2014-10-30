@@ -1,9 +1,8 @@
-package tokenTest.service;
+package tokenTest.response;
 
 import java.util.List;
 
 import tokenTest.Util.Status;
-import tokenTest.response.StatusResponse;
 
 import com.google.common.collect.Lists;
 

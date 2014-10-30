@@ -44,6 +44,7 @@ import tokenTest.model.Report;
 import tokenTest.model.Tag;
 import tokenTest.model.User;
 import tokenTest.model.ValidationCode;
+import tokenTest.response.BlacklistResponse;
 import tokenTest.response.LikeUsersResponse;
 import tokenTest.response.LoginResponse;
 import tokenTest.response.PicResponse;
@@ -51,7 +52,6 @@ import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 import tokenTest.response.ViewersResponse;
-import tokenTest.service.BlacklistResponse;
 import tokenTest.service.UserServiceInterface;
 
 import com.google.common.collect.Sets;
@@ -81,16 +81,10 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Autowired
 	private ReportBo reportBo;
-	
+
 	@Autowired
 	private TagBo tagBo;
-	
-	
-	
-	
-	
-	
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -103,11 +97,10 @@ public class UserServiceImpl implements UserServiceInterface {
 	public LoginResponse userRegister(
 			@RequestParam(required = true) String nickName,
 			@RequestParam(required = true) String password,
-			@RequestParam(required = true) String building,
-			@RequestParam(required = true) String phoneNum,
-			@RequestParam(required = true) String gender,
+			@RequestParam(required = false) String building,
+			@RequestParam(required = false) String phoneNum,
+			@RequestParam(required = false) String gender,
 			@RequestParam(required = false) Date birthday,
-			@RequestParam(required = false) String emailaddress,
 			@RequestParam(required = false) String company) {
 		/* 必填信息 */
 		User user = new User(password, nickName, gender, building, phoneNum);
@@ -115,8 +108,6 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 非必填信息 */
 		if (birthday != null)
 			user.setBirthday(birthday);
-		if (emailaddress != null)
-			user.setEmail_address(emailaddress);
 		if (company != null)
 			user.setCompany(company);
 
@@ -184,7 +175,8 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 用昵称查找用户不存在 */
 
 		if (user == null)
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD, null);
+			return new LoginResponse(
+					Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD, null);
 
 		int attempts = 0;
 		attempts = user.getLogin_attempts();
@@ -203,7 +195,8 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 用昵称查找用户不存在 */
 
 		if (user == null || !password.equals(user.getPassword()))
-			return new LoginResponse(Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD, null);
+			return new LoginResponse(
+					Status.ERR_USER_NOT_FOUND_OR_WRONG_PASSWORD, null);
 
 		/* 生产、更新令牌 */
 		user.setToken(RandomStringUtils.randomAlphanumeric(30));
@@ -335,10 +328,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (birthday != null)
 			user.setBirthday(birthday);
 		if (sex != null) {
-			if ( isValidSex(sex) )
+			if (isValidSex(sex))
 				user.setSex(sex);
-			else return new StatusResponse(Status.ERR_INVALID_GENDER);
-				
+			else
+				return new StatusResponse(Status.ERR_INVALID_GENDER);
+
 		}
 		if (emailaddress != null)
 			user.setEmail_address(emailaddress);
@@ -355,7 +349,8 @@ public class UserServiceImpl implements UserServiceInterface {
 	}
 
 	private boolean isValidSex(String sex) {
-		if ( StringUtils.equalsIgnoreCase("F", sex) || StringUtils.equalsIgnoreCase("M", sex))
+		if (StringUtils.equalsIgnoreCase("F", sex)
+				|| StringUtils.equalsIgnoreCase("M", sex))
 			return true;
 		return false;
 	}
@@ -428,7 +423,8 @@ public class UserServiceImpl implements UserServiceInterface {
 		if (user == null)
 			return new ValidatePhoneResponse(Status.ERR_USER_NOT_FOUND);
 
-		return _doValidate(user.getPhone_number(), ValidationCodeStatus.PASSWD_RESET);
+		return _doValidate(user.getPhone_number(),
+				ValidationCodeStatus.PASSWD_RESET);
 
 	}
 
@@ -581,7 +577,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			/* 删除图片数据和文件 */
 			pictureBo.delete(user, picture, path);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 		return new PicResponse(Status.OK);
@@ -617,7 +613,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			picture = pictureBo.findById(picId);
 		} catch (PictureNotFoundException e) {
-			// TODO: handle exception
+			e.printStackTrace();
 			return;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -636,7 +632,7 @@ public class UserServiceImpl implements UserServiceInterface {
 				FileInputStream is = new FileInputStream(file);
 				IOUtils.copy(is, response.getOutputStream());
 			} catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 				return;
 			}
 		}
@@ -656,21 +652,22 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return;
 		}
-		
-		if(user!=null){
+
+		if (user != null) {
 			/* 返回原图或者小图 */
 			if (isThumb == null || isThumb != 1) {
 				path += File.separator + Constants.RIGIN_PICTURE_PATH;
 			} else {
 				path += File.separator + Constants.THUMB_PICTURE_PATH;
 			}
-			File file = new File(path + File.separator + user.getPic().getFilename());
+			File file = new File(path + File.separator
+					+ user.getPic().getFilename());
 			if (file.exists()) {
 				try {
 					FileInputStream is = new FileInputStream(file);
 					IOUtils.copy(is, response.getOutputStream());
 				} catch (Exception e) {
-					// TODO: handle exception
+					e.printStackTrace();
 					return;
 				}
 			}
@@ -678,7 +675,8 @@ public class UserServiceImpl implements UserServiceInterface {
 	}
 
 	@RequestMapping(value = { "/resetPassword**" }, method = RequestMethod.GET)
-	public LoginResponse resetPassword(@RequestParam(required = true) String nickorphone,
+	public LoginResponse resetPassword(
+			@RequestParam(required = true) String nickorphone,
 			@RequestParam(required = true) String newPassword,
 			@RequestParam(required = true) String code) {
 		User user = null;
@@ -734,8 +732,7 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Override
 	@RequestMapping(value = { "/blacklist**" }, method = RequestMethod.GET)
-	public BlacklistResponse blacklist(
-			@RequestParam(required = true) Long id, 
+	public BlacklistResponse blacklist(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token) {
 		User user = null;
 		/* 验证用户 */
@@ -748,23 +745,22 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		BlacklistResponse response = new BlacklistResponse(Status.OK);
 
 		Collection<User> others = user.getBlacklist();
-		
-		for (User other :others){
+
+		for (User other : others) {
 			response.blacklist.add(other.getId());
 		}
-		
+
 		return response;
 	}
 
 	@Override
 	@Transactional
 	@RequestMapping(value = { "/block**" }, method = RequestMethod.GET)
-	public StatusResponse block(
-			@RequestParam(required = true) Long id, 
+	public StatusResponse block(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long target) {
 		User user = null;
@@ -778,34 +774,33 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		StatusResponse response = new StatusResponse(Status.OK);
 
 		User other = null;
-		
-		try{
+
+		try {
 			other = userBo.findByUserId(target);
-		} catch (Exception e){
+		} catch (Exception e) {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
-		
-		if ( other == null ){
+
+		if (other == null) {
 			response.setStatus(Status.ERR_USER_NOT_FOUND);
 			return response;
 		}
-		
+
 		user.getBlacklist().add(other);
-		
+
 		userBo.update(user);
-		
+
 		return response;
 	}
 
 	@Override
 	@RequestMapping(value = { "/unblock**" }, method = RequestMethod.GET)
-	public StatusResponse unblock(
-			@RequestParam(required = true) Long id,
+	public StatusResponse unblock(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long target) {
 
@@ -820,34 +815,34 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		StatusResponse response = new StatusResponse(Status.OK);
 
 		User other = null;
-		
-		try{
+
+		try {
 			other = userBo.findByUserId(target);
-		} catch (Exception e){
+		} catch (Exception e) {
 			response.setStatus(Status.ERR_USER_NOT_FOUND);
 			return response;
 		}
-		
+
 		Collection<User> others = user.getBlacklist();
-		
+
 		boolean removed = false;
-		
+
 		Iterator<User> otherIterator = others.iterator();
-		while(otherIterator.hasNext()){
+		while (otherIterator.hasNext()) {
 			User blocked = otherIterator.next();
-			if (blocked.getId() == target){
+			if (blocked.getId() == target) {
 				removed = true;
 				otherIterator.remove();
 			}
 		}
-		
-		if ( removed ){
-		userBo.update(user);
-		} else{
+
+		if (removed) {
+			userBo.update(user);
+		} else {
 			response.setStatus(Status.ERR_NOT_BLACKLISTED);
 		}
 		return response;
@@ -855,12 +850,10 @@ public class UserServiceImpl implements UserServiceInterface {
 
 	@Override
 	@RequestMapping(value = { "/complain**" }, method = RequestMethod.GET)
-	public StatusResponse complain(
-			@RequestParam(required = true) Long id,
+	public StatusResponse complain(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long target,
-			@RequestParam(required = true) String reason
-			) {
+			@RequestParam(required = true) String reason) {
 
 		User user = null;
 		/* 验证用户 */
@@ -873,41 +866,38 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		StatusResponse response = new StatusResponse(Status.OK);
 
 		User other = null;
-		
-		try{
+
+		try {
 			other = userBo.findByUserId(target);
-		} catch (Exception e){
+		} catch (Exception e) {
 			response.setStatus(Status.ERR_USER_NOT_FOUND);
 			return response;
 		}
-		
+
 		Complaint complaint = new Complaint();
 		complaint.setOwner(user);
 		complaint.setTarget(other);
 		complaint.setReason(reason);
 		complaint.setCreate_time(new Date());
-		
-		try{
+
+		try {
 			complaintBo.save(complaint);
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}
 		return response;
 	}
 
-
 	@Override
 	@RequestMapping(value = { "/setTags**" }, method = RequestMethod.GET)
-	public StatusResponse setTags(
-			@RequestParam(required = true) Long id,
+	public StatusResponse setTags(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) String tags
-			) {
+			@RequestParam(required = true) String tags) {
 
 		User user = null;
 		/* 验证用户 */
@@ -920,41 +910,38 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		StatusResponse response = new StatusResponse(Status.OK);
 
 		Set<Tag> newTags = Sets.newHashSet();
 
-		if (tags.length() > 0){
-			for (String tag : tags.split(",")){
+		if (tags.length() > 0) {
+			for (String tag : tags.split(",")) {
 				Tag newTag;
 				newTag = tagBo.findByTagName(tag);
-				if (newTag == null){
+				if (newTag == null) {
 					newTag = new Tag(tag);
 				}
 				newTags.add(newTag);
 			}
 		}
-		
+
 		user.setTags(newTags);
-		
-		try{
+
+		try {
 			userBo.update(user);
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}
 		return response;
 	}
 
-
-
 	@Override
 	@RequestMapping(value = { "/getLikeUsers**" }, method = RequestMethod.GET)
 	public LikeUsersResponse getLikeUsers(
 			@RequestParam(required = true) Long id,
-			@RequestParam(required = true) String token
-			) {
+			@RequestParam(required = true) String token) {
 
 		User user = null;
 		/* 验证用户 */
@@ -967,23 +954,19 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new LikeUsersResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		LikeUsersResponse response = new LikeUsersResponse(Status.OK);
 
-		for (User other : user.getLikes()){
+		for (User other : user.getLikes()) {
 			response.ids.add(other.getId());
 		}
 		return response;
 	}
-	
-	
 
 	@Override
 	@RequestMapping(value = { "/getViewers**" }, method = RequestMethod.GET)
-	public ViewersResponse getViewers(
-			@RequestParam(required = true) Long id,
-			@RequestParam(required = true) String token
-			) {
+	public ViewersResponse getViewers(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token) {
 
 		User user = null;
 		/* 验证用户 */
@@ -996,19 +979,18 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new ViewersResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		ViewersResponse response = new ViewersResponse(Status.OK);
 
-		for (User other : user.getViewers()){
+		for (User other : user.getViewers()) {
 			response.ids.add(other.getId());
 		}
 		return response;
 	}
-	
+
 	@Override
 	@RequestMapping(value = { "/like**" }, method = RequestMethod.GET)
-	public StatusResponse like(
-			@RequestParam(required = true) Long id,
+	public StatusResponse like(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long targetId) {
 		User user = null;
@@ -1043,13 +1025,12 @@ public class UserServiceImpl implements UserServiceInterface {
 			return new StatusResponse(Status.OK);
 		}
 	}
+
 	@Override
 	@RequestMapping(value = { "/report**" }, method = RequestMethod.GET)
-	public StatusResponse report(
-			@RequestParam(required = true) Long id,
+	public StatusResponse report(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) String content
-			) {
+			@RequestParam(required = true) String content) {
 
 		User user = null;
 		/* 验证用户 */
@@ -1062,7 +1043,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
+
 		StatusResponse response = new StatusResponse(Status.OK);
 
 		Report report = new Report();
@@ -1070,9 +1051,9 @@ public class UserServiceImpl implements UserServiceInterface {
 		report.setContent(content);
 		report.setCreate_time(new Date());
 		report.setStatus(Constants.REPORT_STATUS_NEW);
-		try{
+		try {
 			reportBo.save(report);
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}

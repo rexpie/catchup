@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import tokenTest.Util.Status;
+import tokenTest.response.BlacklistResponse;
 import tokenTest.response.LoginResponse;
 import tokenTest.response.PicResponse;
 import tokenTest.response.StatusResponse;
@@ -17,14 +18,14 @@ import tokenTest.response.ViewersResponse;
 public interface UserServiceInterface {
 	LoginResponse userRegister(String nickName, String password,
 			String building, String phoneNum, String gender, Date birthday,
-			String emailaddress, String company);
+			String company);
 
 	/* LoginResponse userLogin(Long id, String password); */
 
 	LoginResponse userLogin(String nickorphone, String password);
 
 	ValidatePhoneResponse validatePhone(String phoneNum);
-	
+
 	ValidatePhoneResponse validateReset(String phoneNum);
 
 	LoginResponse userLogout(Long id, String token);
@@ -36,9 +37,10 @@ public interface UserServiceInterface {
 
 	PicResponse deletePhoto(Long id, String token, Long picId);
 
-	void getPhoto(Long id, String token, Long picId, Integer isThumb, HttpServletResponse response);
-	
-	/*获取头像*/
+	void getPhoto(Long id, String token, Long picId, Integer isThumb,
+			HttpServletResponse response);
+
+	/* 获取头像 */
 	void getPicture(Long id, Integer isThumb, HttpServletResponse response);
 
 	// 后面的还没改
@@ -47,12 +49,12 @@ public interface UserServiceInterface {
 			String company);
 
 	LoginResponse changePassword(Long id, String oldpassword, String newpassword);
-	
-	
-	LoginResponse resetPassword(String nickorphone, String newPassword, String validationCode);
+
+	LoginResponse resetPassword(String nickorphone, String newPassword,
+			String validationCode);
 
 	BlacklistResponse blacklist(Long id, String token);
-	
+
 	StatusResponse block(Long id, String token, Long target);
 
 	StatusResponse unblock(Long id, String token, Long target);
@@ -68,6 +70,5 @@ public interface UserServiceInterface {
 	StatusResponse like(Long id, String token, Long targetId);
 
 	StatusResponse report(Long id, String token, String reason);
-	
-	
+
 }
