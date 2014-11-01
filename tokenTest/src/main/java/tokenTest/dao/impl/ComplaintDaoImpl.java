@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import tokenTest.dao.ComplaintDao;
 import tokenTest.model.Complaint;
-import tokenTest.model.FriendApply;
 import tokenTest.model.User;
 
 @Repository("complaintDao")

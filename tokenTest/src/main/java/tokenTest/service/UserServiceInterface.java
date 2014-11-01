@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tokenTest.Util.Status;
 import tokenTest.response.BlacklistResponse;
 import tokenTest.response.LoginResponse;
+import tokenTest.response.PhotoListResponse;
 import tokenTest.response.PicResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
@@ -43,11 +44,6 @@ public interface UserServiceInterface {
 	/* 获取头像 */
 	void getPicture(Long id, Integer isThumb, HttpServletResponse response);
 
-	// 后面的还没改
-	StatusResponse updateUserProfile(Long id, String token, String nickname,
-			String building, Date birthday, String sex, String job, String industry,
-			String company);
-
 	LoginResponse changePassword(Long id, String oldpassword, String newpassword);
 
 	LoginResponse resetPassword(String nickorphone, String newPassword,
@@ -70,5 +66,13 @@ public interface UserServiceInterface {
 	StatusResponse like(Long id, String token, Long targetId);
 
 	StatusResponse report(Long id, String token, String reason);
+
+	PhotoListResponse listPhoto(Long id, String token);
+
+	StatusResponse updateUserProfile(Long id, String token, String nickname,
+			String building, String birthday, String sex, String job,
+			String industry, String company);
+
+	StatusResponse cancelLike(Long id, String token, Long targetId);
 
 }

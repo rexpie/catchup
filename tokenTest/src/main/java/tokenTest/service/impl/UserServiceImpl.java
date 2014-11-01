@@ -6,6 +6,8 @@ package tokenTest.service.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -48,6 +50,7 @@ import tokenTest.model.ValidationCode;
 import tokenTest.response.BlacklistResponse;
 import tokenTest.response.LikeUsersResponse;
 import tokenTest.response.LoginResponse;
+import tokenTest.response.PhotoListResponse;
 import tokenTest.response.PicResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
@@ -87,6 +90,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	@Autowired
 	private TagBo tagBo;
 
+	private SimpleDateFormat birthdayFormat = new SimpleDateFormat("yyyyMMdd");
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -256,7 +260,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	public UserDetailResponse getUserDetail(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = false) Long targetId) {
+			@RequestParam(required = false) Long target) {
 		User user = null;
 
 		/* 查找用户 */
@@ -270,24 +274,24 @@ public class UserServiceImpl implements UserServiceInterface {
 			return UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 		}
 
-		User target = null;
+		User theTarget = null;
 		/* targetId==null表示查看自己信息，否则为查看别人信息 */
-		if (targetId == null || targetId == user.getId()) {
+		if (target == null || target == user.getId()) {
 			return new UserDetailResponse(user, true);
 		} else {
 			try {
-				target = userBo.findByUserId(targetId);
+				theTarget = userBo.findByUserId(target);
 			} catch (Exception e) {
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
-			if (target == null)
+			if (theTarget == null)
 				UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
-			boolean added = target.getViewers().add(user);
+			boolean added = theTarget.getViewers().add(user);
 			if (added) {
-				userBo.update(target);
+				userBo.update(theTarget);
 			}
-			UserDetailResponse response = new UserDetailResponse(target, false);
-			response.setAlreadyLiked(user.getLikes().contains(target));
+			UserDetailResponse response = new UserDetailResponse(theTarget, false);
+			response.setAlreadyLiked(user.getLikes().contains(theTarget));
 			return response;
 		}
 	}
@@ -300,13 +304,14 @@ public class UserServiceImpl implements UserServiceInterface {
 	 * java.lang.String, java.lang.String, java.lang.String, java.util.Date,
 	 * java.lang.String, java.lang.String, java.lang.String) 修改用户信息
 	 */
+	@Override
 	@RequestMapping(value = { "/updateUserProfile**" }, method = RequestMethod.GET)
 	public StatusResponse updateUserProfile(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) String nickname,
 			@RequestParam(required = false) String building,
-			@RequestParam(required = false) Date birthday,
+			@RequestParam(required = false) String birthday,
 			@RequestParam(required = false) String sex,
 			@RequestParam(required = false) String job,
 			@RequestParam(required = false) String industry,
@@ -329,8 +334,14 @@ public class UserServiceImpl implements UserServiceInterface {
 			user.setNickname(nickname);
 		if (building != null)
 			user.setBuilding(building);
-		if (birthday != null)
-			user.setBirthday(birthday);
+		if (birthday != null){
+			try {
+				user.setBirthday(birthdayFormat.parse(birthday));
+			} catch (ParseException e) {
+				e.printStackTrace();
+				return new StatusResponse(Status.ERR_INVALID_DATE_FORMAT);
+			}
+		}
 		if (sex != null) {
 			if (isValidSex(sex))
 				user.setSex(sex);
@@ -534,13 +545,13 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		return new PicResponse(Status.OK);
+		return new PicResponse(Status.OK,user.getPic().getId());
 	}
 
 	@RequestMapping(value = { "/deletePhoto**" }, method = RequestMethod.GET)
 	public PicResponse deletePhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) Long picId) {
+			@RequestParam(required = true) Long picid) {
 		// TODO Auto-generated method stub
 		String path = servletContext.getRealPath("/") + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
@@ -559,7 +570,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 查找图片 */
 		Picture picture = null;
 		try {
-			picture = pictureBo.findById(picId);
+			picture = pictureBo.findById(picid);
 		} catch (Exception e) {
 			// TODO: handle exception
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
@@ -643,6 +654,28 @@ public class UserServiceImpl implements UserServiceInterface {
 				return;
 			}
 		}
+	}
+	
+	@Override
+	@RequestMapping(value = { "/listPhoto**" }, method = RequestMethod.GET)
+	public PhotoListResponse listPhoto(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token) {
+		User user = null; 
+		PhotoListResponse response = new PhotoListResponse(Status.OK);
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new PhotoListResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new PhotoListResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new PhotoListResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		
+		user.getPicture();
+		//TODO
+		return response;
 	}
 
 	@RequestMapping(value = { "/getPicture**" }, method = RequestMethod.GET)
@@ -758,7 +791,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		Collection<User> others = user.getBlacklist();
 
 		for (User other : others) {
-			response.blacklist.add(other.getId());
+			response.ids.add(other.getId());
 		}
 
 		return response;
@@ -971,7 +1004,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	}
 
 	@Override
-	@RequestMapping(value = { "/getViewers**" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/visitors**" }, method = RequestMethod.GET)
 	public ViewersResponse getViewers(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token) {
 
@@ -999,7 +1032,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	@RequestMapping(value = { "/like**" }, method = RequestMethod.GET)
 	public StatusResponse like(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) Long targetId) {
+			@RequestParam(required = true) Long target) {
 		User user = null;
 
 		/* 查找用户 */
@@ -1013,21 +1046,59 @@ public class UserServiceImpl implements UserServiceInterface {
 			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
-		User target = null;
+		User theTarget = null;
 		/* targetId==null表示查看自己信息，否则为查看别人信息 */
-		if (targetId == null || targetId == user.getId()) {
+		if (target == null || target == user.getId()) {
 			return new StatusResponse(Status.ERR_THAT_IS_SO_PATHETIC);
 		} else {
 			try {
-				target = userBo.findByUserId(targetId);
+				theTarget = userBo.findByUserId(target);
 			} catch (Exception e) {
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
-			if (target == null)
+			if (theTarget == null)
 				UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
-			boolean added = target.getLikes().add(user);
+			boolean added = theTarget.getLikes().add(user);
 			if (added) {
-				userBo.update(target);
+				userBo.update(theTarget);
+			}
+			return new StatusResponse(Status.OK);
+		}
+	}
+	
+	@Override
+	@RequestMapping(value = { "/cancelLike**" }, method = RequestMethod.GET)
+	public StatusResponse cancelLike(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long target) {
+		User user = null;
+
+		/* 查找用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new StatusResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new StatusResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		User theTarget = null;
+		/* targetId==null表示查看自己信息，否则为查看别人信息 */
+		if (target == null || target == user.getId()) {
+			return new StatusResponse(Status.ERR_THAT_IS_SO_PATHETIC);
+		} else {
+			try {
+				theTarget = userBo.findByUserId(target);
+			} catch (Exception e) {
+				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
+			}
+			if (theTarget == null)
+				UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
+			boolean removed = theTarget.getLikes().remove(user);
+			if (removed) {
+				userBo.update(theTarget);
 			}
 			return new StatusResponse(Status.OK);
 		}

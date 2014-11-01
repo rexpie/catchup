@@ -79,44 +79,44 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
-		
-		if (user.getPic() == null){
+
+		if (user.getPic() == null) {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
 			return response;
 		}
-		
-		if (StringUtils.isEmpty(user.getSex())){
+
+		if (StringUtils.isEmpty(user.getSex())) {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_GENDER);
 			return response;
 		}
-		
-		if (StringUtils.isEmpty(user.getJob())){
+
+		if (StringUtils.isEmpty(user.getJob())) {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_JOB);
 			return response;
 		}
-		
-		if (StringUtils.isEmpty(user.getBuilding())){
+
+		if (StringUtils.isEmpty(user.getBuilding())) {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_BUILDING);
 			return response;
 		}
 
-		/* 鏌ユ壘搴�*/
+		/* 鏌ユ壘搴� */
 		Shop shop = null;
 		try {
 			shop = shopBo.findByShopId(shopid);
 		} catch (ShopNotFoundException e) {
 			shop = DPApiTool.getBusiness(shopid);
-			if (shop == null){
+			if (shop == null) {
 				response.setStatus(Status.ERR_SHOP_NOT_FOUND);
 				return response;
 			} else {
 				shopBo.save(shop);
 			}
 		}
-		
-		if ( !StringUtils.equals("F", genderConstraint) 
+
+		if (!StringUtils.equals("F", genderConstraint)
 				&& !StringUtils.equals("M", genderConstraint)
-				&& !StringUtils.equals("N", genderConstraint)){
+				&& !StringUtils.equals("N", genderConstraint)) {
 			response.setStatus(Status.ERR_INVALID_GENDER);
 		}
 
@@ -144,12 +144,11 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			@RequestParam(required = false, defaultValue = "") String job,
 			@RequestParam(required = false, defaultValue = "") String shopName,
 			@RequestParam(required = false, defaultValue = "") Long id,
-			@RequestParam(required = false, defaultValue = "") String token
-			) {
+			@RequestParam(required = false, defaultValue = "") String token) {
 		MeetingListResponse meetingListResponse = new MeetingListResponse();
 
 		User user = null;
-		if ( id != null && token != null) {
+		if (id != null && token != null) {
 			try {
 				user = userBo.validateUser(id, token);
 			} catch (UserNotFoundException e) {
@@ -164,30 +163,36 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			}
 		}
 		/* list鍏冪礌涓篛bject[2]涓涓�釜瀵硅薄鏄痬eeting锛岀浜屼釜鏄窛绂伙紝double绫诲瀷 */
+		@SuppressWarnings("rawtypes")
 		List list = null;
 		try {
 			if (user == null) {
 				list = meetingBo.getMeetingList(longitude, latitude, pagenum,
 						sorttype, range, gender, job, shopName);
 			} else {
-				list = meetingBo.getMeetingListForUser(user, longitude, latitude, pagenum, sorttype, range, gender, job, shopName);
+				list = meetingBo.getMeetingListForUser(user, longitude,
+						latitude, pagenum, sorttype, range, gender, job,
+						shopName);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}
 
 		meetingListResponse.setStatus(Status.OK);
-		Iterator iterator = list.iterator();
-		Object[] objects = null;
-		int index = 0;
-		while (iterator.hasNext()) {
-			objects = (Object[]) iterator.next();
-			MeetingDetail meetingDetail = new MeetingDetail((Meeting) objects[0],
-					(Double) objects[1]);
-			meetingDetail.setIndex(index++);
-			meetingDetail.setPageNum(pagenum);
-			meetingListResponse.getMeetingList()
-					.add(meetingDetail);
+		if (list != null) {
+			@SuppressWarnings("rawtypes")
+			Iterator iterator = list.iterator();
+			Object[] objects = null;
+			int index = 0;
+			while (iterator.hasNext()) {
+				objects = (Object[]) iterator.next();
+				MeetingDetail meetingDetail = new MeetingDetail(
+						(Meeting) objects[0], (Double) objects[1]);
+				meetingDetail.setIndex(index++);
+				meetingDetail.setPageNum(pagenum);
+				meetingListResponse.getMeetingList().add(meetingDetail);
+			}
 		}
 		return meetingListResponse;
 	}
@@ -215,6 +220,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		}
 
 		/* list鍏冪礌涓篛bject,鏄痬eeting */
+		@SuppressWarnings("rawtypes")
 		List list = null;
 		try {
 			list = meetingBo.getMeetingListByUser(user, pagenum);
@@ -222,15 +228,21 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}
 		meetingListResponse.setStatus(Status.OK);
+		@SuppressWarnings("rawtypes")
 		Iterator iterator = list.iterator();
-		Object[] objects = null;
+		int index = 0;
 		while (iterator.hasNext()) {
-			meetingListResponse.getMeetingList().add(
-					new MeetingDetail((Meeting) iterator.next()));
+			MeetingDetail meetingDetail = new MeetingDetail(
+					(Meeting) iterator.next());
+			meetingDetail.setIndex(index);
+			meetingDetail.setPageNum(pagenum);
+			meetingListResponse.getMeetingList().add(meetingDetail);
+			index++;
 		}
 		return meetingListResponse;
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = { "/getMyPartMeetingList**" }, method = RequestMethod.GET)
 	public MeetingListResponse getMyPartMeetingList(
 			@RequestParam(required = true) Long id,
@@ -254,18 +266,21 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		}
 
 		/* list鍏冪礌涓篛bject,鏄痬eeting */
-		List list = null;
+		List<Meeting> list = null;
 		try {
 			list = meetingBo.getMeetingListByParticipate(user, pagenum);
 		} catch (Exception e) {
 			meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}
 		meetingListResponse.setStatus(Status.OK);
-		Iterator iterator = list.iterator();
-		Object[] objects = null;
+		Iterator<Meeting> iterator = list.iterator();
+		int index = 0;
 		while (iterator.hasNext()) {
-			meetingListResponse.getMeetingList().add(
-					new MeetingDetail((Meeting) iterator.next()));
+			MeetingDetail meetingDetail = new MeetingDetail(iterator.next());
+			meetingDetail.setPageNum(pagenum);
+			meetingDetail.setIndex(index);
+			meetingListResponse.getMeetingList().add(meetingDetail);
+			index++;
 		}
 		return meetingListResponse;
 	}
@@ -302,19 +317,20 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		if (meeting.getOwner().equals(user)) {
 			/* 楗害鍩烘湰淇℃伅 */
 			response.setMeetingDetail(new MeetingDetail(meeting));
-			/* 鍙備笌鑰呬俊鎭�*/
-			Iterator iterator = meeting.getParticipator().iterator();
-			while (iterator.hasNext()) {
+			/* 鍙備笌鑰呬俊鎭� */
+			Iterator<User> userIterator = meeting.getParticipator().iterator();
+			while (userIterator.hasNext()) {
 				response.getParticipates().add(
-						new UserInfo((User) iterator.next()));
+						new UserInfo(userIterator.next()));
 			}
 
 			/* 鐢宠淇℃伅 */
 			try {
-				iterator = meetingBo.getApplyByMeeting(meeting).iterator();
+				Iterator<MeetingApply> iterator = meetingBo.getApplyByMeeting(
+						meeting).iterator();
 				while (iterator.hasNext()) {
-					response.getApplicants().add(
-							new ApplyInfo((MeetingApply) iterator.next()));
+					response.getApplicants()
+							.add(new ApplyInfo(iterator.next()));
 				}
 			} catch (Exception e) {
 				/* 娌℃湁鍙備笌鑰�涓嶅仛澶勭悊 */
@@ -322,15 +338,14 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 				// return response;
 			}
 		} else if (meeting.getParticipator().contains(user)) {
-			/* 鏄弬涓庤�锛岃兘鐪嬪埌鍙備笌鑰呬俊鎭�*/
+			/* 鏄弬涓庤�锛岃兘鐪嬪埌鍙備笌鑰呬俊鎭� */
 			/* 楗害鍩烘湰淇℃伅 */
 			response.setMeetingDetail(new MeetingDetail(meeting));
 
-			/* 鍙備笌鑰呬俊鎭�*/
-			Iterator iterator = meeting.getParticipator().iterator();
+			/* 鍙備笌鑰呬俊鎭� */
+			Iterator<User> iterator = meeting.getParticipator().iterator();
 			while (iterator.hasNext()) {
-				response.getParticipates().add(
-						new UserInfo((User) iterator.next()));
+				response.getParticipates().add(new UserInfo(iterator.next()));
 			}
 		}
 		response.setStatus(Status.OK);
@@ -373,12 +388,11 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			return response;
 		}
 
-		
-		if (meeting.getOwner().getBlacklist().contains(user)){
+		if (meeting.getOwner().getBlacklist().contains(user)) {
 			response.setStatus(Status.ERR_BLACKLISTED);
 			return response;
 		}
-		
+
 		try {
 			meetingBo.applyForMeeting(user, meeting, applyContent);
 		} catch (TooManyAppliesException e) {
@@ -487,11 +501,11 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		}
 
 		// check if meeting apply exists and owner matches
-		if ( !user.equals(meetingApply.getFromUser()) ){
+		if (!user.equals(meetingApply.getFromUser())) {
 			response.setStatus(Status.ERR_NOT_APPLIER);
 			return response;
 		}
-		
+
 		try {
 			meetingBo.withdrawMeetingApply(meetingApply);
 		} catch (Exception e) {
@@ -502,14 +516,13 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 
 		response.setStatus(Status.OK);
 		return response;
-		
+
 	}
 
 	@Override
 	@RequestMapping(value = { "/stopMeeting**" }, method = RequestMethod.GET)
-	public StatusResponse stopMeeting(
-			@RequestParam(required = true) Long id, 
-			@RequestParam(required = true) String token, 
+	public StatusResponse stopMeeting(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long meetingid,
 			@RequestParam(required = false) String stopReason) {
 		StatusResponse response = new StatusResponse(null);
@@ -534,8 +547,8 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.ERR_MEETING_NOT_FOUND);
 			return response;
 		}
-		
-		if (!user.equals(meeting.getOwner())){
+
+		if (!user.equals(meeting.getOwner())) {
 			response.setStatus(Status.ERR_NOT_MEETING_OWNER);
 			return response;
 		}
@@ -547,7 +560,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
-		
+
 		response.setStatus(Status.OK);
 		return response;
 	}

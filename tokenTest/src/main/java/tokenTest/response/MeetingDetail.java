@@ -6,7 +6,7 @@ import tokenTest.Util.Utils;
 import tokenTest.model.Meeting;
 
 public class MeetingDetail {
-	private Long meetingID;
+	private Long meetingid;
 	private String description;
 	private Double distance;
 	private String name;
@@ -17,9 +17,9 @@ public class MeetingDetail {
 	private String building;
 	private String genderConstraint;
 	private Integer age;
-	private Long ownerID;
-	private Long ownerPhotoID;
-	private Long shopID;
+	private Long ownerid;
+	private Long ownerPhotoid;
+	private Long shopid;
 	private Date startTime;
 	private Double longitude;
 	private Double latitude;
@@ -32,10 +32,10 @@ public class MeetingDetail {
 	}
 
 	public MeetingDetail(Meeting meeting) {
-		this.meetingID = meeting.getId();
-		this.ownerID = meeting.getOwner().getId();
-		this.ownerPhotoID = meeting.getOwner().getPic().getId();
-		this.shopID = meeting.getShop().getId();
+		this.meetingid = meeting.getId();
+		this.ownerid = meeting.getOwner().getId();
+		this.ownerPhotoid = meeting.getOwner().getPic().getId();
+		this.shopid = meeting.getShop().getId();
 		this.startTime = meeting.getCreate_time();
 		this.genderConstraint = meeting.getGenderConstraint();
 		this.ownerGender = meeting.getOwner().getSex();
@@ -56,36 +56,36 @@ public class MeetingDetail {
 		this.distance = distance;
 	}
 
-	public Long getMeetingID() {
-		return meetingID;
+	public Long getMeetingid() {
+		return meetingid;
 	}
 
-	public void setMeetingID(Long meetingID) {
-		this.meetingID = meetingID;
+	public void setMeetingid(Long meetingid) {
+		this.meetingid = meetingid;
 	}
 
-	public Long getOwnerID() {
-		return ownerID;
+	public Long getOwnerid() {
+		return ownerid;
 	}
 
-	public void setOwnerID(Long ownerID) {
-		this.ownerID = ownerID;
+	public void setOwnerid(Long ownerid) {
+		this.ownerid = ownerid;
 	}
 
-	public Long getOwnerPhotoID() {
-		return ownerPhotoID;
+	public Long getOwnerPhotoid() {
+		return ownerPhotoid;
 	}
 
-	public void setOwnerPhotoID(Long ownerPhotoID) {
-		this.ownerPhotoID = ownerPhotoID;
+	public void setOwnerPhotoid(Long ownerPhotoid) {
+		this.ownerPhotoid = ownerPhotoid;
 	}
 
-	public Long getShopID() {
-		return shopID;
+	public Long getShopid() {
+		return shopid;
 	}
 
-	public void setShopID(Long shopID) {
-		this.shopID = shopID;
+	public void setShopid(Long shopid) {
+		this.shopid = shopid;
 	}
 
 	public Date getStartTime() {

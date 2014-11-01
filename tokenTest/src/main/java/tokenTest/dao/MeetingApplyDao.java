@@ -2,7 +2,6 @@ package tokenTest.dao;
 
 import java.util.List;
 
-import tokenTest.model.FriendApply;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;

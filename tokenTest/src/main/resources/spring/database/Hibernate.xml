@@ -30,7 +30,6 @@
 
 		<property name="annotatedClasses">
 			<list>
-				<value>tokenTest.model.FriendApply</value>
 				<value>tokenTest.model.Meeting</value>
 				<value>tokenTest.model.MeetingApply</value>
 				<value>tokenTest.model.Picture</value>

@@ -6,12 +6,12 @@ import tokenTest.Util.Status;
 
 import com.google.common.collect.Lists;
 
-public class BlacklistResponse extends StatusResponse {
+public class PhotoListResponse extends StatusResponse {
 
 	public List<Long> ids = Lists.newArrayList();
 	
-	public BlacklistResponse(Enum<Status> status) {
+	public PhotoListResponse(Enum<Status> status) {
 		super(status);
 	}
-	
+
 }

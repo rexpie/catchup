@@ -62,7 +62,7 @@ public class MeetingDaoImpl implements MeetingDao {
 								+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
 								+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
-								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.role like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
+								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.job like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
 								+ "ORDER BY distance ASC");
 		/* 设置参数 */
 		query.setDouble("ulongitude", longitude);
@@ -127,7 +127,7 @@ public class MeetingDaoImpl implements MeetingDao {
 								+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
 								+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
-								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.role like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
+								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.job like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
 								+ "AND m.owner.id not in (" + idStr +")"
 								+ "ORDER BY distance ASC");
 		/* 设置参数 */

@@ -3,10 +3,63 @@ package tokenTest.response;
 import java.util.Date;
 
 import tokenTest.Util.Status;
+import tokenTest.Util.Utils;
 import tokenTest.model.Picture;
 import tokenTest.model.User;
 
-public class UserDetailResponse {
+public class UserDetailResponse extends StatusResponse{
+	
+	UserDetailInnerResponse user = null;
+	
+	public UserDetailInnerResponse getUser() {
+		return user;
+	}
+
+
+	public void setUser(UserDetailInnerResponse user) {
+		this.user = user;
+	}
+
+
+	public UserDetailResponse(User _user, boolean isSelf) {
+		super(Status.OK);
+		user = new UserDetailInnerResponse(_user, isSelf);
+	}
+	
+
+	public UserDetailResponse(Enum<Status> status) {
+		super(status);
+		// TODO Auto-generated constructor stub
+	}
+	
+		
+
+	/*public Picture getPic() {
+		return pic;
+	}
+
+	public void setPic(Picture pic) {
+		this.pic = pic;
+	}*/
+	
+	public static UserDetailResponse getError(Status status) {
+		if (status!=Status.OK)
+			return new UserDetailResponse(status);
+		else {
+			return new UserDetailResponse(Status.ERR_GENERIC);
+		}
+	}
+
+
+	public void setAlreadyLiked(boolean flag) {
+		if (user!=null){
+			user.setAlreadyLiked(flag);
+		}
+	}
+
+}
+
+class UserDetailInnerResponse{
 	private String nickname;
 	private String sex;
 	private String building;
@@ -15,6 +68,15 @@ public class UserDetailResponse {
 	private long numOfLikes;
 	private String phonenum;
 	private boolean alreadyLiked;
+	private int age;
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
 	public long getNumOfLikes() {
 		return numOfLikes;
 	}
@@ -39,38 +101,20 @@ public class UserDetailResponse {
 		this.alreadyLiked = alreadyLiked;
 	}
 
-	private Status status = Status.OK;
-
-	public UserDetailResponse(User user, boolean isSelf) {
+	public UserDetailInnerResponse(User user, boolean isSelf) {
 		this.nickname = user.getNickname();
 		this.sex = user.getSex();
 		this.building = user.getBuilding();
 		this.company = user.getCompany();
 		this.birthday = user.getBirthday();
 		this.numOfLikes = user.getLikes().size();
+		this.age = Utils.getAge(birthday);
 		//this.pic=user.getPic();
 		if(isSelf){
 			this.phonenum = user.getPhone_number();
 		}
 	}
 
-	public UserDetailResponse(String nickname, String sex, String building,
-			String company, Date birthday, long zan_count, String phone_number,
-			String email_address) {
-		super();
-		this.nickname = nickname;
-		this.sex = sex;
-		this.building = building;
-		this.company = company;
-		this.birthday = birthday;
-		this.numOfLikes = zan_count;
-		this.phonenum = phone_number;
-	}
-
-	private UserDetailResponse(Status status) {
-		setStatus(status);
-	}
-	
 	public String getNickname() {
 		return nickname;
 	}
@@ -118,27 +162,5 @@ public class UserDetailResponse {
 	public void setZan_count(long zan_count) {
 		this.numOfLikes = zan_count;
 	}
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
 	
-	public static UserDetailResponse getError(Status status) {
-		if (status!=Status.OK)
-			return new UserDetailResponse(status);
-		else {
-			return new UserDetailResponse(Status.ERR_GENERIC);
-		}
-	}
-
-	/*public Picture getPic() {
-		return pic;
-	}
-
-	public void setPic(Picture pic) {
-		this.pic = pic;
-	}*/
 }

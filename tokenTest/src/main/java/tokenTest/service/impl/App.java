@@ -3,6 +3,7 @@ package tokenTest.service.impl;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import tokenTest.bo.MeetingBo;
 import tokenTest.bo.UserBo;
 import tokenTest.model.User;
 import tokenTest.service.MeetingServiceInterface;
@@ -15,12 +16,20 @@ public class App {
 		ApplicationContext appContext = new ClassPathXmlApplicationContext(
 				"spring/config/BeanLocations.xml");
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
+		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
 		UserServiceInterface userService = (UserServiceInterface) appContext.getBean("userService");
 		MeetingServiceInterface meetingService = (MeetingServiceInterface) appContext.getBean("meetingService");
 		
-		genUsers(userBo, userService);
+//		genUsers(userBo, userService);
+		
+		genMeetings(meetingBo, meetingService);
 		
 		System.out.println("Done");
+	}
+
+	private static void genMeetings(MeetingBo meetingBo,
+			MeetingServiceInterface meetingService) {
+		
 	}
 
 	private static void genUsers(UserBo userBo, UserServiceInterface service) {
