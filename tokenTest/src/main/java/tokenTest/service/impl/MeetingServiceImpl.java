@@ -103,7 +103,7 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 		/* 鏌ユ壘搴� */
 		Shop shop = null;
 		try {
-			shop = shopBo.findByShopId(shopid);
+			shop = shopBo.findByDianpingId(shopid);
 		} catch (ShopNotFoundException e) {
 			shop = DPApiTool.getBusiness(shopid);
 			if (shop == null) {

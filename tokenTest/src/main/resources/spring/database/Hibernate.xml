@@ -24,6 +24,8 @@
 				<prop key="hibernate.hbm2ddl.auto">update</prop>
 				<prop key="hibernate.current_session_context_class">org.springframework.orm.hibernate4.SpringSessionContext
 				</prop>
+				<prop key="hibernate.connection.charSet">UTF-8</prop>
+				<prop key="hibernate.connection.characterEncoding">UTF-8</prop>
 				<prop key="hibernate.connection.autocommit">false</prop>
 			</props>
 		</property>
@@ -49,8 +51,8 @@
 		<property name="nestedTransactionAllowed" value="true" />
 	</bean>
 	<tx:annotation-driven transaction-manager="txManager" />
-	
-	<bean id="persistenceExceptionTranslationPostProcessor" 
-       class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<bean id="persistenceExceptionTranslationPostProcessor"
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
 </beans>     

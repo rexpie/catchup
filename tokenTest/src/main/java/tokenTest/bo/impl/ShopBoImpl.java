@@ -53,6 +53,7 @@ public class ShopBoImpl implements ShopBo {
 	}
 
 	@Override
+	@Transactional
 	public Shop findByDianpingId(Long id) throws ShopNotFoundException {
 		// TODO Auto-generated method stub
 		Shop shop = shopDao.findByDianpingId(id);

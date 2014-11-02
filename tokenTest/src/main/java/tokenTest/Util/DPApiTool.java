@@ -18,16 +18,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.util.URIUtil;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import tokenTest.model.Shop;
 
 /**
- * Java版本示例代码，使用见{@link DemoApiToolTest.java}
+ * Java鐗堟湰绀轰緥浠ｇ爜锛屼娇鐢ㄨ{@link DemoApiToolTest.java}
  * <p>
  * 
  * @author : xiaopeng.li
@@ -51,11 +49,11 @@ public class DPApiTool {
 
 	public static String sign(String appKey, String secret,
 			Map<String, String> paramMap) {
-		// 对参数名进行字典排序
+		// 瀵瑰弬鏁板悕杩涜瀛楀吀鎺掑簭
 		String[] keyArray = paramMap.keySet().toArray(new String[0]);
 		Arrays.sort(keyArray);
 
-		// 拼接有序的参数名-值串
+		// 鎷兼帴鏈夊簭鐨勫弬鏁板悕-鍊间覆
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(appKey);
 		for (String key : keyArray) {
@@ -65,10 +63,10 @@ public class DPApiTool {
 		stringBuilder.append(secret);
 		String codes = stringBuilder.toString();
 
-		// SHA-1编码， 这里使用的是Apache
-		// codec，即可获得签名(shaHex()会首先将中文转换为UTF8编码然后进行sha1计算，使用其他的工具包请注意UTF8编码转换)
+		// SHA-1缂栫爜锛�杩欓噷浣跨敤鐨勬槸Apache
+		// codec锛屽嵆鍙幏寰楃鍚�shaHex()浼氶鍏堝皢涓枃杞崲涓篣TF8缂栫爜鐒跺悗杩涜sha1璁＄畻锛屼娇鐢ㄥ叾浠栫殑宸ュ叿鍖呰娉ㄦ剰UTF8缂栫爜杞崲)
 		/*
-		 * 以下sha1签名代码效果等同 byte[] sha =
+		 * 浠ヤ笅sha1绛惧悕浠ｇ爜鏁堟灉绛夊悓 byte[] sha =
 		 * org.apache.commons.codec.digest.DigestUtils
 		 * .sha(org.apache.commons.codec
 		 * .binary.StringUtils.getBytesUtf8(codes)); String sign =
@@ -85,7 +83,7 @@ public class DPApiTool {
 			Map<String, String> paramMap) {
 		String sign = sign(appKey, secret, paramMap);
 
-		// 添加签名
+		// 娣诲姞绛惧悕
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("appkey=").append(appKey).append("&sign=")
 				.append(sign);
@@ -101,26 +99,30 @@ public class DPApiTool {
 			String secret, Map<String, String> paramMap) {
 		String queryString = getQueryString(appKey, secret, paramMap);
 
-		StringBuffer response = new StringBuffer();
-		HttpClientParams httpConnectionParams = new HttpClientParams();
-		httpConnectionParams.setConnectionManagerTimeout(1000);
-		HttpClient client = new HttpClient(httpConnectionParams);
-		HttpMethod method = new GetMethod(apiUrl);
-
+		StringBuffer responseStr = new StringBuffer();
+//		HttpClientParams httpConnectionParams = new HttpClientParams();
+//		httpConnectionParams.setConnectionManagerTimeout(1000);
+//		HttpClient client = new HttpClient(httpConnectionParams);
+//		HttpMethod method = new GetMethod(apiUrl);
+//		
+		HttpGet httpget = null;
 		try {
 			if (StringUtils.isNotBlank(queryString)) {
 				// Encode query string with UTF-8
 				String encodeQuery = URIUtil.encodeQuery(queryString, "UTF-8");
-				LOGGER.debug("Encoded Query:" + encodeQuery);
-				method.setQueryString(encodeQuery);
+				httpget = new HttpGet(apiUrl + "?" + encodeQuery);
+				System.out.println("URL:" + httpget.getURI());
+				httpget.setHeader("accept", "application/json");
 			}
 
-			client.executeMethod(method);
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			CloseableHttpResponse response = httpclient.execute(httpget);
+			
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					method.getResponseBodyAsStream(), "UTF-8"));
+					response.getEntity().getContent(), "UTF-8"));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
-				response.append(line).append(
+				responseStr.append(line).append(
 						System.getProperty("line.separator"));
 			}
 			reader.close();
@@ -130,13 +132,13 @@ public class DPApiTool {
 		} catch (IOException e) {
 			LOGGER.error("Request URL: " + apiUrl + " failed. ", e);
 		} finally {
-			method.releaseConnection();
+			httpget.completed();
 		}
-		return response.toString();
+		return responseStr.toString();
 
 	}
 
-	public static String requestPostApi(String apiUrl, String appKey,
+	/*public static String requestPostApi(String apiUrl, String appKey,
 			String secret, Map<String, String> paramMap) {
 		StringBuffer response = new StringBuffer();
 		HttpClientParams httpConnectionParams = new HttpClientParams();
@@ -148,7 +150,7 @@ public class DPApiTool {
 			String sign = sign(appKey, secret, paramMap);
 			paramMap.put("sign", sign);
 			paramMap.put("appkey", appKey);
-			// 设置HTTP Post数据
+			// 璁剧疆HTTP Post鏁版嵁
 			for (Map.Entry<String, String> entry : paramMap.entrySet()) {
 				method.addParameter(entry.getKey(), entry.getValue());
 			}
@@ -171,7 +173,7 @@ public class DPApiTool {
 		}
 		return response.toString();
 
-	}
+	}*/
 
 	
 	public static Shop getBusiness(Long id) {
@@ -194,7 +196,7 @@ public class DPApiTool {
 
 		String requestResult = requestApi(apiUrl, Constants.DP_API_KEY,
 				Constants.DP_API_SEC, paramMap);
-		LOGGER.info(requestResult);
+		System.out.println(requestResult);
 
 		Shop shop = null;
 		try {
