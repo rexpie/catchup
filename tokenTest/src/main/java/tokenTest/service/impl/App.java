@@ -6,6 +6,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.UserBo;
 import tokenTest.model.User;
+import tokenTest.response.MeetingDetail;
+import tokenTest.response.MeetingDetailResponse;
+import tokenTest.response.MeetingListResponse;
 import tokenTest.service.MeetingServiceInterface;
 import tokenTest.service.UserServiceInterface;
 
@@ -22,14 +25,31 @@ public class App {
 		
 //		genUsers(userBo, userService);
 		
-		genMeetings(meetingBo, meetingService);
+		genMeetings(userBo,meetingBo, meetingService);
 		
 		System.out.println("Done");
 	}
 
-	private static void genMeetings(MeetingBo meetingBo,
+	private static void genMeetings(UserBo userBo, MeetingBo meetingBo,
 			MeetingServiceInterface meetingService) {
+		User user1 = userBo.findByUserId(1L);
+		User user2 = userBo.findByUserId(2L);
+		User user3 = userBo.findByUserId(3L);
+		User user4 = userBo.findByUserId(4L);
+		User user5 = userBo.findByUserId(5L);
+		meetingService.newMeeting(user1.getId(), user1.getToken(), 6162303L, "F", "hi");
+		meetingService.newMeeting(user2.getId(), user2.getToken(), 6013798L, "M", "hi");
 		
+		MeetingListResponse meetings = meetingService.getMeetingList(121.38308, 31.245836, 0, 1, 1000, "", "", "", user3.getId(), user3.getToken());
+		
+		for (MeetingDetail meeting:meetings.getMeetingList()){
+			meetingService.applyForMeeting(user3.getId(), user3.getToken(), meeting.getMeetingid(), "apply content");
+			meetingService.applyForMeeting(user4.getId(), user4.getToken(), meeting.getMeetingid(), "apply content");
+		}
+
+		MeetingDetailResponse meetingDetail = meetingService.getMeetingDetail(user1.getId(), user1.getToken(), meetings.getMeetingList().get(0).getMeetingid());
+		
+		meetingService.processMeetingApply(user1.getId(), user1.getToken(), meetingDetail.getApplicants().get(0).getApplyId(), true);
 	}
 
 	private static void genUsers(UserBo userBo, UserServiceInterface service) {
