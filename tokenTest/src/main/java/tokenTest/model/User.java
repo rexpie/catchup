@@ -2,7 +2,7 @@ package tokenTest.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -16,12 +16,14 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.GenericGenerator;
+
+import com.google.common.collect.Lists;
 
 @Entity
 @Table(name = "user")
@@ -96,7 +98,8 @@ public class User implements Serializable {
 	/* 绯荤粺淇℃伅 */
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
-	private Set<Picture> picture = new HashSet<>(); // 闈炲ご鍍忕収鐗�
+	@OrderBy("create_time DESC")
+	private List<Picture> picture = Lists.newArrayList(); // 闈炲ご鍍忕収鐗�
 
 	@Column(name = "zan_count")
 	private long zan_count;
@@ -324,11 +327,11 @@ public class User implements Serializable {
 		this.job = role;
 	}
 
-	public Set<Picture> getPicture() {
+	public List<Picture> getPicture() {
 		return picture;
 	}
 
-	public void setPicture(Set<Picture> picture) {
+	public void setPicture(List<Picture> picture) {
 		this.picture = picture;
 	}
 

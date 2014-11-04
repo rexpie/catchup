@@ -545,7 +545,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		return new PicResponse(Status.OK,user.getPic().getId());
+		if (isProfile){
+			return new PicResponse(Status.OK, user.getPic().getId());
+		} else {
+			return new PicResponse(Status.OK);
+		}
 	}
 
 	@RequestMapping(value = { "/deletePhoto**" }, method = RequestMethod.GET)
@@ -673,7 +677,9 @@ public class UserServiceImpl implements UserServiceInterface {
 			return new PhotoListResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 		
-		user.getPicture();
+		for (Picture pic :user.getPicture()){
+			response.ids.add(pic.getId());
+		}
 		//TODO
 		return response;
 	}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>addphoto.html</title>
+
+<meta name="content-type" content="text/html; charset=UTF-8">
+
+<!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+</head>
+
+<body>
+	This is my HTML page.
+	<br>
+	<form action="http://127.0.0.1:8080/tokenTest/user/addPhoto" method="post"
+		enctype="multipart/form-data">
+		<br><input name="file" id="file" type="file" />
+		<br>ID:<input name="id" type="text"   id="id" /><br>Token:
+		<input name="token" type="text"   id="token" ><br>
+		Description:<input name="description" type="text"   id="token" ><br>
+		isProfile:<input name="isProfile" type="text"   id="token" >
+		<input type="submit" value="submit" >
+	</form>
+</body>
+</html>
