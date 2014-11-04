@@ -18,7 +18,7 @@ public class MeetingDetail {
 	private String genderConstraint;
 	private Integer age;
 	private Long ownerid;
-	private Long ownerPhotoid;
+	private String ownerPhotoid;
 	private Long shopid;
 	private Date startTime;
 	private Double longitude;
@@ -72,11 +72,11 @@ public class MeetingDetail {
 		this.ownerid = ownerid;
 	}
 
-	public Long getOwnerPhotoid() {
+	public String getOwnerPhotoid() {
 		return ownerPhotoid;
 	}
 
-	public void setOwnerPhotoid(Long ownerPhotoid) {
+	public void setOwnerPhotoid(String ownerPhotoid) {
 		this.ownerPhotoid = ownerPhotoid;
 	}
 

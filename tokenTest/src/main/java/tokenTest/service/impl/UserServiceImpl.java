@@ -6,6 +6,7 @@ package tokenTest.service.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -91,6 +92,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	private TagBo tagBo;
 
 	private SimpleDateFormat birthdayFormat = new SimpleDateFormat("yyyyMMdd");
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -110,6 +112,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = false) String company) {
 		/* 必填信息 */
 		User user = new User(password, nickName, gender, building, phoneNum);
+		user.setLogin_attempts(0);
 
 		/* 非必填信息 */
 		if (birthday != null)
@@ -290,7 +293,8 @@ public class UserServiceImpl implements UserServiceInterface {
 			if (added) {
 				userBo.update(theTarget);
 			}
-			UserDetailResponse response = new UserDetailResponse(theTarget, false);
+			UserDetailResponse response = new UserDetailResponse(theTarget,
+					false);
 			response.setAlreadyLiked(user.getLikes().contains(theTarget));
 			return response;
 		}
@@ -334,7 +338,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			user.setNickname(nickname);
 		if (building != null)
 			user.setBuilding(building);
-		if (birthday != null){
+		if (birthday != null) {
 			try {
 				user.setBirthday(birthdayFormat.parse(birthday));
 			} catch (ParseException e) {
@@ -545,7 +549,7 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		if (isProfile){
+		if (isProfile) {
 			return new PicResponse(Status.OK, user.getPic().getId());
 		} else {
 			return new PicResponse(Status.OK);
@@ -609,7 +613,7 @@ public class UserServiceImpl implements UserServiceInterface {
 	@RequestMapping(value = { "/getPhoto**" }, method = RequestMethod.GET)
 	public void getPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) Long picId,
+			@RequestParam(required = true) Long picid,
 			@RequestParam(required = false) Integer isThumb,
 			HttpServletResponse response) {
 		String path = servletContext.getRealPath("/") + File.separator
@@ -618,6 +622,13 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
+			response.setStatus(404);
+			try {
+				new PrintStream(response.getOutputStream()).println("x");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return;
 			// TODO: handle exception
 			// return Status.ERR_USER_NOT_FOUND;
@@ -633,12 +644,17 @@ public class UserServiceImpl implements UserServiceInterface {
 		/* 查找图片 */
 		Picture picture = null;
 		try {
-			picture = pictureBo.findById(picId);
+			picture = pictureBo.findById(picid);
 		} catch (PictureNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("PictureNotFoundException:" + picid + "user:"
+					+ id);
+			response.setStatus(404);
 			return;
 		} catch (Exception e) {
-			// TODO: handle exception
+			System.out.println("UnknownException:" + picid + "user:"
+					+ id);
+			response.setStatus(500);
+			e.printStackTrace();
 			return;
 		}
 
@@ -659,12 +675,12 @@ public class UserServiceImpl implements UserServiceInterface {
 			}
 		}
 	}
-	
+
 	@Override
 	@RequestMapping(value = { "/listPhoto**" }, method = RequestMethod.GET)
 	public PhotoListResponse listPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token) {
-		User user = null; 
+		User user = null;
 		PhotoListResponse response = new PhotoListResponse(Status.OK);
 		/* 验证用户 */
 		try {
@@ -676,11 +692,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		} catch (Exception e) {
 			return new PhotoListResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
-		
-		for (Picture pic :user.getPicture()){
+
+		for (Picture pic : user.getPicture()) {
 			response.ids.add(pic.getId());
 		}
-		//TODO
+		// TODO
 		return response;
 	}
 
@@ -950,11 +966,11 @@ public class UserServiceImpl implements UserServiceInterface {
 		try {
 			user = userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
-			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
+			return new StatusResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
-			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
+			return new StatusResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
-			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
+			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
 		StatusResponse response = new StatusResponse(Status.OK);
@@ -1071,7 +1087,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return new StatusResponse(Status.OK);
 		}
 	}
-	
+
 	@Override
 	@RequestMapping(value = { "/cancelLike**" }, method = RequestMethod.GET)
 	public StatusResponse cancelLike(@RequestParam(required = true) Long id,

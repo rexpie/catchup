@@ -4,12 +4,12 @@ import tokenTest.Util.Status;
 
 public class PicResponse {
 	private Enum<Status> status;
-	private Long picid;
+	private String picid;
 	
-	public Long getPicid() {
+	public String getPicid() {
 		return picid;
 	}
-	public void setPicid(Long picid) {
+	public void setPicid(String picid) {
 		this.picid = picid;
 	}
 	public PicResponse(Enum<Status> status) {
@@ -17,7 +17,7 @@ public class PicResponse {
 		this.status = status;
 	}
 	
-	public PicResponse(Status status, Long picid){
+	public PicResponse(Status status, String picid){
 		this(status);
 		setPicid(picid);
 	}

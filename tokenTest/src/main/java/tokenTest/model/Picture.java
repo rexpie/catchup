@@ -20,7 +20,7 @@ public class Picture implements Serializable {
 	 */
 	private static final long serialVersionUID = -9000760920068463356L;
 
-	private Long id;
+	private String id;
 	/* private User owner; */
 	private String description;
 	private String name;
@@ -43,15 +43,15 @@ public class Picture implements Serializable {
 		this.description = description;
 	}
 
-	@GenericGenerator(name = "generator", strategy = "increment")
+	@GenericGenerator(name = "generator", strategy = "guid")
 	@Id
 	@GeneratedValue(generator = "generator")
 	@Column(name = "id", unique = true, nullable = false)
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
