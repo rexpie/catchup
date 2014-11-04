@@ -128,7 +128,7 @@ public class MeetingDaoImpl implements MeetingDao {
 								+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
 								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.job like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
-								+ "AND m.owner.id not in (" + idStr +")"
+								+ "AND not exists (select u from User u inner join u.blacklist where u=:user and m.owner in elements(u.blacklist)) "
 								+ "ORDER BY distance ASC");
 		/* 设置参数 */
 		query.setDouble("ulongitude", longitude);
@@ -137,6 +137,7 @@ public class MeetingDaoImpl implements MeetingDao {
 		query.setString("uname", "%" + shopName + "%");
 		query.setString("ujob", "%" + job + "%");
 		query.setDouble("urange", range);
+		query.setEntity("user", user);
 		// 分页处理
 		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
 		query.setMaxResults(Constants.NUM_PER_PAGE);
