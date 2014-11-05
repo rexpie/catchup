@@ -1,5 +1,7 @@
 package tokenTest.Util;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
@@ -10,89 +12,65 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 import com.google.common.collect.Lists;
 
 public class SMSUtil {
-	
-	private static final String Url = "http://106.ihuyi.cn/webservice/sms.php?method=Submit";
-	
-	public static void send(String mobile_code) {
-		
-        CloseableHttpClient client = HttpClients.createDefault();
-		HttpPost method = new HttpPost(Url); 
-			
-		//client.getParams().setContentCharset("GBK");		
-//		client.getParams().setContentCharset("UTF-8");
-		method.setHeader("ContentType","application/x-www-form-urlencoded;charset=UTF-8");
 
-		
-		//System.out.println(mobile);
-		
-	    String content = new String(mobile_code + "是你的验证码"); 
+	private static final String url = "http://utf8.sms.webchinese.cn";
 
-		NameValuePair[] data = {
-			    new BasicNameValuePair("account", "用户名"), 
-			    new BasicNameValuePair("password", "密码"),
-			    //new NameValuePair("password", util.StringUtil.MD5Encode("密码")),
-			    new BasicNameValuePair("mobile", "手机号"), 
-			    new BasicNameValuePair("content", content),
-		};
-		
+	public static void send(String mobile_code, String phoneNum) {
+
+		CloseableHttpClient client = HttpClients.createDefault();
+		HttpPost method = new HttpPost(url);
+
+		// client.getParams().setContentCharset("GBK");
+		// client.getParams().setContentCharset("UTF-8");
+		method.setHeader("ContentType",
+				"application/x-www-form-urlencoded;charset=UTF-8");
+
+		// System.out.println(mobile);
+
+		String content = new String(mobile_code + "是你的验证码，请勿泄露");
+
+		NameValuePair[] data = { new BasicNameValuePair("Uid", "rexpie"),
+				new BasicNameValuePair("Key", "d6603cde51c6607c2cee"),
+				new BasicNameValuePair("smsMob", phoneNum),
+				new BasicNameValuePair("smsText", content), };
+
 		try {
 
-			method.setEntity(new UrlEncodedFormEntity(Lists.newArrayList(data),"UTF-8"));
-			CloseableHttpResponse response = client.execute(method);	
-			
-			String SubmitResult = response.getEntity().toString();
-			//System.out.println(SubmitResult);
+			method.setEntity(new UrlEncodedFormEntity(Lists.newArrayList(data),
+					"UTF-8"));
+			CloseableHttpResponse response = client.execute(method);
 
-			Document doc = DocumentHelper.parseText(SubmitResult); 
-			Element root = doc.getRootElement();
+			InputStream is = response.getEntity().getContent();
+			System.out.println("Response by SMSUtil");
+			IOUtils.copy(is, System.out);
 
-
-			String code = root.elementText("code");	
-			String msg = root.elementText("msg");	
-			String smsid = root.elementText("smsid");	
-			
-			
-			System.out.println(code);
-			System.out.println(msg);
-			System.out.println(smsid);
-						
-			if(code == "2"){
-				System.out.println("提交成功");
-			}
-			
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}	
-		
+		}
+
 	}
-	
-	public static String genCode(){
+
+	public static String genCode() {
 		int code = Math.abs(ran.nextInt());
 		String str = String.valueOf(code % Constants.MAX_VALIDATION_CODE);
-		if (code < 1000){
+		if (code < 1000) {
 			str = '0' + str;
 		}
 		return str;
 	}
-	
+
 	private static Random ran = new Random();
-	
-	
-	public static String doValidate(){
+
+	public static String doValidate(String phoneNum) {
 		String code = genCode();
-		send(code);
+		send(code, phoneNum);
 		return code;
 	}
 }

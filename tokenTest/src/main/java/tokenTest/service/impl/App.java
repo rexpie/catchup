@@ -9,8 +9,8 @@ import tokenTest.model.User;
 import tokenTest.response.MeetingDetail;
 import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
-import tokenTest.service.MeetingServiceInterface;
-import tokenTest.service.UserServiceInterface;
+import tokenTest.service.IMeetingService;
+import tokenTest.service.IUserService;
 
 /*预埋数据,Picture不能独立存在,通过User来操作*/
 public class App {
@@ -20,8 +20,8 @@ public class App {
 				"spring/config/BeanLocations.xml");
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
 		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
-		UserServiceInterface userService = (UserServiceInterface) appContext.getBean("userService");
-		MeetingServiceInterface meetingService = (MeetingServiceInterface) appContext.getBean("meetingService");
+		IUserService userService = (IUserService) appContext.getBean("userService");
+		IMeetingService meetingService = (IMeetingService) appContext.getBean("meetingService");
 		
 //		genUsers(userBo, userService);
 		
@@ -31,7 +31,7 @@ public class App {
 	}
 
 	private static void genMeetings(UserBo userBo, MeetingBo meetingBo,
-			MeetingServiceInterface meetingService) {
+			IMeetingService meetingService) {
 		User user1 = userBo.findByUserId(1L);
 		User user2 = userBo.findByUserId(2L);
 		User user3 = userBo.findByUserId(3L);
@@ -52,7 +52,7 @@ public class App {
 		meetingService.processMeetingApply(user1.getId(), user1.getToken(), meetingDetail.getApplicants().get(0).getApplyId(), true);
 	}
 
-	private static void genUsers(UserBo userBo, UserServiceInterface service) {
+	private static void genUsers(UserBo userBo, IUserService service) {
 		//gen rex
 		service.userRegister("rexpie", "pass", null, "13818860403", null, null,null);
 

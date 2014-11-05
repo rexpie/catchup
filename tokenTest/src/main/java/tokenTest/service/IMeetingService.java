@@ -6,20 +6,20 @@ import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.WithdrawApplyResponse;
 
-public interface MeetingServiceInterface {
-	/* 获取附近的饭约列表 */
+public interface IMeetingService {
+	/* 获取附近的饭约列�?*/
 	MeetingListResponse getMeetingList(Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
 			String job, String shopName, Long id, String token);
 
-	/* 获取自己发起的饭约列表 ,按时间排序 */
+	/* 获取自己发起的饭约列�?,按时间排�?*/
 	MeetingListResponse getMyMeetingList(Long id, String token, Integer pagenum);
 
-	/* 获取自己参见的饭约列表 ,按时间排序 */
+	/* 获取自己参见的饭约列�?,按时间排�?*/
 	MeetingListResponse getMyPartMeetingList(Long id, String token,
 			Integer pagenum);
 
-	/* 获取自己饭约详细信息,包括参与人 */
+	/* 获取自己饭约详细信息,包括参与�?*/
 	MeetingDetailResponse getMeetingDetail(Long id, String token, Long meetingid);
 
 	/* 发起饭约 */

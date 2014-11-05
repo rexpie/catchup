@@ -57,7 +57,7 @@ import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 import tokenTest.response.ViewersResponse;
-import tokenTest.service.UserServiceInterface;
+import tokenTest.service.IUserService;
 
 import com.google.common.collect.Sets;
 
@@ -68,7 +68,7 @@ import com.google.common.collect.Sets;
 @RestController
 @RequestMapping("/user")
 @Service("userService")
-public class UserServiceImpl implements UserServiceInterface {
+public class UserServiceImpl implements IUserService {
 
 	@Autowired
 	private UserBo userBo;
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			@RequestParam(required = true) String nickName,
 			@RequestParam(required = true) String password,
 			@RequestParam(required = false) String building,
-			@RequestParam(required = false) String phoneNum,
+			@RequestParam(required = true) String phoneNum,
 			@RequestParam(required = false) String gender,
 			@RequestParam(required = false) Date birthday,
 			@RequestParam(required = false) String company) {
@@ -487,7 +487,7 @@ public class UserServiceImpl implements UserServiceInterface {
 			return new ValidatePhoneResponse(Status.ERR_PHONE_VALIDATION_FAIL);
 		}
 
-		String secret = SMSUtil.doValidate();
+		String secret = SMSUtil.doValidate(phoneNum);
 		validationCode.setCode(secret);
 		validationCode.setUpdateTime(time);
 		validationCode.setStatus(inputStatus);

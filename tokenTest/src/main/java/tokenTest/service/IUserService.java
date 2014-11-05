@@ -16,7 +16,7 @@ import tokenTest.response.UserDetailResponse;
 import tokenTest.response.ValidatePhoneResponse;
 import tokenTest.response.ViewersResponse;
 
-public interface UserServiceInterface {
+public interface IUserService {
 	LoginResponse userRegister(String nickName, String password,
 			String building, String phoneNum, String gender, Date birthday,
 			String company);

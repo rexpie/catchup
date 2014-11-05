@@ -118,7 +118,6 @@ public class MeetingDaoImpl implements MeetingDao {
 		for (User other: user.getBlacklist()){
 			ids.add(String.valueOf(other.getId()));
 		}
-		String idStr = "'" + StringUtils.join(ids, "','") + "'";
 
 		Query query = sessionFactory
 				.getCurrentSession()

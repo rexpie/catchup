@@ -38,7 +38,7 @@ import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserInfo;
 import tokenTest.response.WithdrawApplyResponse;
-import tokenTest.service.MeetingServiceInterface;
+import tokenTest.service.IMeetingService;
 
 /**
  * @author pengtao
@@ -47,7 +47,7 @@ import tokenTest.service.MeetingServiceInterface;
 @RestController
 @RequestMapping("/meeting")
 @Service("meetingService")
-public class MeetingServiceImpl implements MeetingServiceInterface {
+public class MeetingServiceImpl implements IMeetingService {
 	@Autowired
 	private UserBo userBo;
 
