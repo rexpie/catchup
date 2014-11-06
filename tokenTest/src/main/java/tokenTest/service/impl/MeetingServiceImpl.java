@@ -177,6 +177,7 @@ public class MeetingServiceImpl implements IMeetingService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return meetingListResponse;
 		}
 
 		meetingListResponse.setStatus(Status.OK);

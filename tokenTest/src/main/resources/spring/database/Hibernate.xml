@@ -41,6 +41,7 @@
 				<value>tokenTest.model.ValidationCode</value>
 				<value>tokenTest.model.Complaint</value>
 				<value>tokenTest.model.Report</value>
+				<value>tokenTest.model.Event</value>
 			</list>
 		</property>
 	</bean>

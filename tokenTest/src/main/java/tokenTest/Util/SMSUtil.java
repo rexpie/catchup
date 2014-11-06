@@ -1,7 +1,9 @@
 package tokenTest.Util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
 
@@ -20,7 +22,7 @@ public class SMSUtil {
 
 	private static final String url = "http://utf8.sms.webchinese.cn";
 
-	public static void send(String mobile_code, String phoneNum) {
+	public static int send(String mobile_code, String phoneNum) {
 
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpPost method = new HttpPost(url);
@@ -45,16 +47,21 @@ public class SMSUtil {
 					"UTF-8"));
 			CloseableHttpResponse response = client.execute(method);
 
-			InputStream is = response.getEntity().getContent();
 			System.out.println("Response by SMSUtil");
-			IOUtils.copy(is, System.out);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					response.getEntity().getContent(), "UTF-8"));
+			String line = reader.readLine();
+			System.out.println(line);
+			return Integer.valueOf(line);
 
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (NumberFormatException e){
+			e.printStackTrace();
 		}
-
+		return 0;
 	}
 
 	public static String genCode() {
@@ -68,9 +75,8 @@ public class SMSUtil {
 
 	private static Random ran = new Random();
 
-	public static String doValidate(String phoneNum) {
-		String code = genCode();
-		send(code, phoneNum);
-		return code;
+	public static int doValidate(String phoneNum, String code) {
+		int retval = send(code, phoneNum);
+		return retval;
 	}
 }

@@ -30,5 +30,7 @@ public class Constants {
 			+ "bf8e60" + "7fc1";
 	
 	public static final int REPORT_STATUS_NEW = 0;
+	
+	public static final Integer EVENT_RANGE = 30000;
 
 }

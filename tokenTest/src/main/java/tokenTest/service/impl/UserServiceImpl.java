@@ -105,8 +105,8 @@ public class UserServiceImpl implements IUserService {
 	public LoginResponse userRegister(
 			@RequestParam(required = true) String nickName,
 			@RequestParam(required = true) String password,
-			@RequestParam(required = false) String building,
 			@RequestParam(required = true) String phoneNum,
+			@RequestParam(required = false) String building,
 			@RequestParam(required = false) String gender,
 			@RequestParam(required = false) Date birthday,
 			@RequestParam(required = false) String company) {
@@ -487,7 +487,11 @@ public class UserServiceImpl implements IUserService {
 			return new ValidatePhoneResponse(Status.ERR_PHONE_VALIDATION_FAIL);
 		}
 
-		String secret = SMSUtil.doValidate(phoneNum);
+		String secret =  SMSUtil.genCode();
+		int retval = SMSUtil.doValidate(phoneNum, secret);
+		if (retval < 0){
+			return new ValidatePhoneResponse(Status.ERR_PHONE_VALIDATION_FAIL);
+		}
 		validationCode.setCode(secret);
 		validationCode.setUpdateTime(time);
 		validationCode.setStatus(inputStatus);
