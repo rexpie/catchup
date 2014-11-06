@@ -20,4 +20,6 @@ public interface EventBo {
 	List<Event> getEventListByUser(User user, Double longitude,
 			Double latitude, Integer pagenum, Integer range);
 
+	Event findByEventIdWithParticipants(Long eventid);
+
 }

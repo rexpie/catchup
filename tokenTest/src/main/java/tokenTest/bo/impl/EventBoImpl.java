@@ -17,7 +17,7 @@ public class EventBoImpl implements EventBo {
 
 	@Autowired
 	EventDao eventDao;
-	
+
 	@Override
 	@Transactional
 	public void save(Event e) {
@@ -49,11 +49,21 @@ public class EventBoImpl implements EventBo {
 		return eventDao.getEventList(longitude, latitude, pagenum, range);
 	}
 
+	@Override
+	@Transactional
+	public List<Event> getEventListByUser(User user, Double longitude,
+			Double latitude, Integer pagenum, Integer range) {
+		return eventDao.getEventListByUser(user, longitude, latitude, pagenum,
+				range);
+	}
 
 	@Override
 	@Transactional
-	public List<Event> getEventListByUser(User user, Double longitude, Double latitude,
-			Integer pagenum, Integer range) {
-		return eventDao.getEventListByUser(user, longitude, latitude, pagenum, range);
+	public Event findByEventIdWithParticipants(Long eventid) {
+		Event e = eventDao.findByEventId(eventid);
+		if ( e != null ){
+			e.getParticipants().iterator();
+		}
+		return e;
 	}
 }

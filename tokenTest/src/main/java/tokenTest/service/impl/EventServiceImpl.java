@@ -14,7 +14,11 @@ import tokenTest.Util.Constants;
 import tokenTest.Util.Status;
 import tokenTest.bo.EventBo;
 import tokenTest.bo.UserBo;
+import tokenTest.exception.UserNotFoundException;
+import tokenTest.exception.WrongTokenException;
 import tokenTest.model.Event;
+import tokenTest.model.User;
+import tokenTest.response.EventDetail;
 import tokenTest.response.EventDetailResponse;
 import tokenTest.response.EventInfo;
 import tokenTest.response.EventListResponse;
@@ -68,22 +72,95 @@ public class EventServiceImpl implements IEventService {
 	}
 
 	@Override
-	public EventDetailResponse getEventDetail(Long id, String token,
-			Long eventid) {
-		// TODO Auto-generated method stub
-		return null;
+	@RequestMapping(value = { "/getEventDetail**" }, method = RequestMethod.GET)
+	public EventDetailResponse getEventDetail(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long eventid) {
+		User user = null;
+		EventDetailResponse response = new EventDetailResponse(Status.OK);
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new EventDetailResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new EventDetailResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new EventDetailResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		Event event = eventBo.findByEventIdWithParticipants(eventid);
+		if (event != null) {
+			response.setEvent(new EventDetail(event, event.getParticipants()
+					.contains(user)));
+		} else {
+			response.setStatus(Status.ERR_NO_SUCH_EVENT);
+			response.setEvent(null);
+		}
+		return response;
 	}
 
 	@Override
+	@RequestMapping(value = { "/withdrawFromEvent**" }, method = RequestMethod.GET)
 	public StatusResponse withdrawFromEvent(Long id, String token, Long eventid) {
-		// TODO Auto-generated method stub
-		return null;
+		User user = null;
+		StatusResponse response = new StatusResponse(Status.OK);
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new EventDetailResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new EventDetailResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new EventDetailResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		Event event = eventBo.findByEventIdWithParticipants(eventid);
+
+		boolean removed = event.getParticipants().remove(user);
+		if (removed) {
+			try {
+				eventBo.update(event);
+			} catch (Exception e) {
+				e.printStackTrace();
+				response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			}
+		} else {
+			response.setStatus(Status.ERR_NOT_APPLIER);
+		}
+		return response;
 	}
 
 	@Override
+	@RequestMapping(value = { "/applyForEvent**" }, method = RequestMethod.GET)
 	public StatusResponse applyForEvent(Long id, String token, Long eventid) {
-		// TODO Auto-generated method stub
-		return null;
+		User user = null;
+		StatusResponse response = new StatusResponse(Status.OK);
+		/* 验证用户 */
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new EventDetailResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new EventDetailResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new EventDetailResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		Event event = eventBo.findByEventIdWithParticipants(eventid);
+
+		boolean added = event.getParticipants().add(user);
+		if (added) {
+			try {
+				eventBo.update(event);
+			} catch (Exception e) {
+				e.printStackTrace();
+				response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			}
+		}
+		return response;
 	}
 
 	@Override
@@ -92,5 +169,4 @@ public class EventServiceImpl implements IEventService {
 		return null;
 	}
 
-	
 }
