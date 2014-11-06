@@ -1,6 +1,7 @@
 package tokenTest.dao.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -47,8 +48,7 @@ public class UserDaoImpl implements UserDao {
 	public User findById(Long id) {
 		// TODO Auto-generated method stub
 		Session session = sessionFactory.getCurrentSession();
-		Query query = session
-				.createQuery("from User where id= :id");
+		Query query = session.createQuery("from User where id= :id");
 		query.setLong("id", id);
 		List list = query.list();
 		if (list.size() > 0)
@@ -68,6 +68,13 @@ public class UserDaoImpl implements UserDao {
 			return (User) list.get(0);
 		else
 			return null;
+	}
+
+	public Set<User> getBlackList(Long id) {
+		// TODO Auto-generated method stub
+		User user = (User)sessionFactory.getCurrentSession().load(User.class, id);
+		Set<User> blackList = user.getBlacklist();
+		return blackList;
 	}
 
 }

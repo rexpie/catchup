@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tokenTest.Util.DPApiTool;
 import tokenTest.Util.Status;
+import tokenTest.Util.StringUtil;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.ShopBo;
 import tokenTest.bo.UserBo;
@@ -390,6 +391,14 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
 
 		if (meeting.getOwner().getBlacklist().contains(user)) {
 			response.setStatus(Status.ERR_BLACKLISTED);
+			return response;
+		}
+
+		if (meeting.getGenderConstraint() != null
+				&& !StringUtils.equals("N", meeting.getGenderConstraint())
+				&& !StringUtils.equals(user.getSex(),
+						meeting.getGenderConstraint())) {
+			response.setStatus(Status.ERR_INVALID_GENDER);
 			return response;
 		}
 

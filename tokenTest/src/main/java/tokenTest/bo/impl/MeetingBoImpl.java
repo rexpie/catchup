@@ -2,6 +2,7 @@ package tokenTest.bo.impl;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -17,6 +18,7 @@ import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.dao.MeetingApplyDao;
 import tokenTest.dao.MeetingDao;
+import tokenTest.dao.UserDao;
 import tokenTest.exception.ApplyNotFoundException;
 import tokenTest.exception.MeetingNotFoundException;
 import tokenTest.exception.TooManyAppliesException;
@@ -29,6 +31,9 @@ import tokenTest.response.ApplyInfo;
 public class MeetingBoImpl implements MeetingBo {
 	@Autowired
 	private MeetingDao meetingDao;
+	
+	@Autowired
+	private UserDao userDao;
 
 	@Autowired
 	private MeetingApplyDao meetingApplyDao;
@@ -69,7 +74,10 @@ public class MeetingBoImpl implements MeetingBo {
 		List list = meetingApplyDao.getApplyByUser(user);
 		if (list != null && list.size() <= 2) {
 			if(meetingApplyDao.getApplyByUserAndMeeting(user,meeting)==null){
-				meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
+				Set<User> blacklist = userDao.getBlackList(meeting.getOwner().getId());
+				if(blacklist==null || !blacklist.contains(user)){
+					meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
+				}
 			}
 		} else {
 			throw new TooManyAppliesException();
