@@ -1,5 +1,7 @@
 package tokenTest.dao;
 
+import java.util.Set;
+
 import tokenTest.model.User;
 
 public interface UserDao {
@@ -14,4 +16,6 @@ public interface UserDao {
 	User findByUserPhoneNum(String phoneNum);
 	
 	User findById(Long id);
+	
+	Set<User> getBlackList(Long id);
 }
