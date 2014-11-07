@@ -17,8 +17,7 @@ public interface EventBo {
 	List<Event> getEventList(Double longitude, Double latitude,
 			Integer pagenum, Integer range);
 
-	List<Event> getEventListByUser(User user, Double longitude,
-			Double latitude, Integer pagenum, Integer range);
+	List<Event> getEventListByUser(User user, Integer pagenum);
 
 	Event findByEventIdWithParticipants(Long eventid);
 

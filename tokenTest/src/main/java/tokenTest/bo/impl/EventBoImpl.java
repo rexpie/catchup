@@ -51,17 +51,15 @@ public class EventBoImpl implements EventBo {
 
 	@Override
 	@Transactional
-	public List<Event> getEventListByUser(User user, Double longitude,
-			Double latitude, Integer pagenum, Integer range) {
-		return eventDao.getEventListByUser(user, longitude, latitude, pagenum,
-				range);
+	public List<Event> getEventListByUser(User user, Integer pagenum) {
+		return eventDao.getEventListByUser(user, pagenum);
 	}
 
 	@Override
 	@Transactional
 	public Event findByEventIdWithParticipants(Long eventid) {
 		Event e = eventDao.findByEventId(eventid);
-		if ( e != null ){
+		if (e != null) {
 			e.getParticipants().iterator();
 		}
 		return e;

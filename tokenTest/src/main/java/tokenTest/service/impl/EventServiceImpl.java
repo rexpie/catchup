@@ -103,7 +103,10 @@ public class EventServiceImpl implements IEventService {
 
 	@Override
 	@RequestMapping(value = { "/withdrawFromEvent**" }, method = RequestMethod.GET)
-	public StatusResponse withdrawFromEvent(Long id, String token, Long eventid) {
+	public StatusResponse withdrawFromEvent(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long eventid) {
 		User user = null;
 		StatusResponse response = new StatusResponse(Status.OK);
 		/* 验证用户 */
@@ -135,7 +138,9 @@ public class EventServiceImpl implements IEventService {
 
 	@Override
 	@RequestMapping(value = { "/applyForEvent**" }, method = RequestMethod.GET)
-	public StatusResponse applyForEvent(Long id, String token, Long eventid) {
+	public StatusResponse applyForEvent(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Long eventid) {
 		User user = null;
 		StatusResponse response = new StatusResponse(Status.OK);
 		/* 验证用户 */
@@ -164,9 +169,25 @@ public class EventServiceImpl implements IEventService {
 	}
 
 	@Override
-	public EventListResponse getMyEvents(Long id, String token, Integer pagenum) {
-		// TODO Auto-generated method stub
-		return null;
+	@RequestMapping(value = { "/getMyEvents**" }, method = RequestMethod.GET)
+	public EventListResponse getMyEvents(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = false, defaultValue = "0") Integer pagenum) {
+		User user = null;
+		EventListResponse response = new EventListResponse(Status.OK);
+		try {
+			user = userBo.validateUser(id, token);
+		} catch (UserNotFoundException e) {
+			return new EventListResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new EventListResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			return new EventListResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		response.setEvents(eventBo.getEventListByUser(user, pagenum));
+		return response;
 	}
 
 }

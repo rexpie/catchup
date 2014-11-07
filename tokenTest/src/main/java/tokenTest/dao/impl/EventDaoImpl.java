@@ -69,22 +69,14 @@ public class EventDaoImpl implements EventDao {
 	}
 
 	@Override
-	public List<Event> getEventListByUser(User user, Double longitude,
-			Double latitude, Integer pagenum, Integer range) {
+	public List<Event> getEventListByUser(User user, Integer pagenum) {
 		Query query = sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"SELECT e, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(e.latitude)) * pi()/180 / 2),2) +"
-								+ "COS(:ulatitude * pi()/180 ) * COS(abs(e.latitude) * pi()/180) *"
-								+ "POWER(SIN((:ulongitude - e.longitude) * pi()/180 / 2), 2))))*1000 as distance "
-								+ "CASE WHEN (:user in elements(e.participants))) THEN TRUE ELSE FALSE END as joined"
-								+ "FROM Event as e"
-								+ "WHERE (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(e.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(e.latitude) * pi()/180)*POWER(SIN((:ulongitude - e.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
-								+ "ORDER BY distance ASC");
+						"SELECT e FROM Event as e "
+								+ "WHERE :user in elements(e.participants)"
+								+ "ORDER BY e.startTime DESC");
 		/* 设置参数 */
-		query.setDouble("ulongitude", longitude);
-		query.setDouble("ulatitude", latitude);
-		query.setDouble("urange", range);
 		query.setEntity("user", user);
 		// 分页处理
 		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
