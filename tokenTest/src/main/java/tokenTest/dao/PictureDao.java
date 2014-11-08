@@ -9,5 +9,5 @@ public interface PictureDao {
 
 	void delete(Picture picture);
 	
-	Picture findPictureById(Long id);
+	Picture findPictureById(String id);
 }

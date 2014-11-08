@@ -2,8 +2,7 @@ package tokenTest.response;
 
 import tokenTest.Util.Status;
 
-public class PicResponse {
-	private Enum<Status> status;
+public class PicResponse extends StatusResponse {
 	private String picid;
 	
 	public String getPicid() {
@@ -13,18 +12,11 @@ public class PicResponse {
 		this.picid = picid;
 	}
 	public PicResponse(Enum<Status> status) {
-		super();
-		this.status = status;
+		super(status);
 	}
 	
 	public PicResponse(Status status, String picid){
 		this(status);
 		setPicid(picid);
-	}
-	public Enum<Status> getStatus() {
-		return status;
-	}
-	public void setStatus(Enum<Status> status) {
-		this.status = status;
 	}
 }

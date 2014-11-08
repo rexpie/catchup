@@ -37,7 +37,6 @@ public class PictureBoImpl implements PictureBo {
 	@Transactional(rollbackOn = { Exception.class })
 	public void save(User user, MultipartFile file, Picture picture,
 			String path, boolean isProfile) throws IOException {
-		// TODO Auto-generated method stub
 
 		/* 建立文件来存储上传的图片 */
 		File destination = new File(path + File.separator
@@ -123,7 +122,7 @@ public class PictureBoImpl implements PictureBo {
 	}
 
 	@Transactional
-	public void deleteById(Long id, String path) {
+	public void deleteById(String id, String path) {
 		// TODO Auto-generated method stub
 		if (id == null || path == null)
 			return;
@@ -135,7 +134,7 @@ public class PictureBoImpl implements PictureBo {
 	}
 
 	@Transactional
-	public Picture findById(Long id) throws PictureNotFoundException {
+	public Picture findById(String id) throws PictureNotFoundException {
 		// TODO Auto-generated method stub
 		Picture picture = pictureDao.findPictureById(id);
 		if (picture == null)
@@ -144,7 +143,7 @@ public class PictureBoImpl implements PictureBo {
 	}
 
 	@Transactional
-	public File getFileById(Long id, String path) {
+	public File getFileById(String id, String path) {
 		// TODO Auto-generated method stub
 		return null;
 	}

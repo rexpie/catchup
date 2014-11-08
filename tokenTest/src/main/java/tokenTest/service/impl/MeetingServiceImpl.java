@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import tokenTest.Util.Constants;
 import tokenTest.Util.DPApiTool;
 import tokenTest.Util.Status;
 import tokenTest.Util.StringUtil;
@@ -69,7 +70,7 @@ public class MeetingServiceImpl implements IMeetingService {
 		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token, Constants.USER_LOAD_PHOTO);
 		} catch (UserNotFoundException e) {
 			response.setStatus(Status.ERR_USER_NOT_FOUND);
 			return response;
@@ -315,16 +316,16 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
+		response.setMeetingDetail(new MeetingDetail(meeting));
+		Iterator<User> userIterator = meeting.getParticipator().iterator();
+		while (userIterator.hasNext()) {
+			response.getParticipates().add(
+					new UserInfo(userIterator.next()));
+		}
 		/* 鏄嫢鏈夎�锛岃兘鐪嬪埌鐢宠淇℃伅鍜屽弬涓庤�淇℃伅 */
 		if (meeting.getOwner().equals(user)) {
 			/* 楗害鍩烘湰淇℃伅 */
-			response.setMeetingDetail(new MeetingDetail(meeting));
 			/* 鍙備笌鑰呬俊鎭� */
-			Iterator<User> userIterator = meeting.getParticipator().iterator();
-			while (userIterator.hasNext()) {
-				response.getParticipates().add(
-						new UserInfo(userIterator.next()));
-			}
 
 			/* 鐢宠淇℃伅 */
 			try {
@@ -339,17 +340,7 @@ public class MeetingServiceImpl implements IMeetingService {
 				// response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 				// return response;
 			}
-		} else if (meeting.getParticipator().contains(user)) {
-			/* 鏄弬涓庤�锛岃兘鐪嬪埌鍙備笌鑰呬俊鎭� */
-			/* 楗害鍩烘湰淇℃伅 */
-			response.setMeetingDetail(new MeetingDetail(meeting));
-
-			/* 鍙備笌鑰呬俊鎭� */
-			Iterator<User> iterator = meeting.getParticipator().iterator();
-			while (iterator.hasNext()) {
-				response.getParticipates().add(new UserInfo(iterator.next()));
-			}
-		}
+		}  
 		response.setStatus(Status.OK);
 		return response;
 	}
@@ -390,7 +381,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
-		if (meeting.getOwner().getBlacklist().contains(user)) {
+		User owner = userBo.findByUserIdWithDetail(meeting.getOwner().getId(), Constants.USER_LOAD_BLACKLIST);
+		if (owner.getBlacklist().contains(user)) {
 			response.setStatus(Status.ERR_BLACKLISTED);
 			return response;
 		}

@@ -66,11 +66,11 @@ public class User implements Serializable {
 	@Column(name = "building", nullable = true, length = 128)
 	private String building;
 
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pic_id", unique = true)
 	private Picture pic; // 澶村儚
 
-	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	private Set<Tag> tags;
 
@@ -96,7 +96,7 @@ public class User implements Serializable {
 	}
 
 	/* 绯荤粺淇℃伅 */
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_picture", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "picture_id") })
 	@OrderBy("create_time DESC")
 	private List<Picture> picture = Lists.newArrayList(); // 闈炲ご鍍忕収鐗�
@@ -115,15 +115,15 @@ public class User implements Serializable {
 	@Column(name = "status")
 	private int status;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name = "blacklist", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "blacklist_id") })
 	private Set<User> blacklist;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name = "likes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "like_id") })
 	private Set<User> likes;
 
-	@OneToMany(fetch = FetchType.EAGER)
+	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name = "viewers", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "viewer_id") })
 	private Set<User> viewers;
 
@@ -293,14 +293,6 @@ public class User implements Serializable {
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public Set<User> getFollowings() {
-		return blacklist;
-	}
-
-	public void setFollowings(Set<User> followings) {
-		this.blacklist = followings;
 	}
 
 	public Set<Tag> getTags() {

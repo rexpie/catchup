@@ -18,18 +18,20 @@ public class UserDaoImpl implements UserDao {
 	private SessionFactory sessionFactory;
 
 	public void save(User user) {
-		// TODO Auto-generated method stub
 		sessionFactory.getCurrentSession().save(user);
 	}
 
 	public void update(User user) {
-		// TODO Auto-generated method stub
 		sessionFactory.getCurrentSession().update(user);
 	}
 
 	public void delete(User user) {
-		// TODO Auto-generated method stub
 		sessionFactory.getCurrentSession().delete(user);
+	}
+
+	@Override
+	public void merge(User user) {
+		sessionFactory.getCurrentSession().merge(user);
 	}
 
 	public User findByUserNickName(String nickName) {
@@ -76,5 +78,6 @@ public class UserDaoImpl implements UserDao {
 		Set<User> blackList = user.getBlacklist();
 		return blackList;
 	}
+
 
 }

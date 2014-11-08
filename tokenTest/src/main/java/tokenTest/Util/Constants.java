@@ -32,5 +32,14 @@ public class Constants {
 	public static final int REPORT_STATUS_NEW = 0;
 	
 	public static final Integer EVENT_RANGE = 30000;
+	
+	public static final int USER_LOAD_TAGS		= 0x1 << 0;
+	public static final int USER_LOAD_BLACKLIST	= 0x1 << 1;
+	public static final int USER_LOAD_PICTURES	= 0x1 << 2;
+	public static final int USER_LOAD_VIEWERS	= 0x1 << 3;
+	public static final int USER_LOAD_LIKES		= 0x1 << 4;
+	public static final int USER_LOAD_PHOTO		= 0x1 << 5;
+	public static final int USER_LOAD_ALL = 
+			USER_LOAD_TAGS | USER_LOAD_BLACKLIST | USER_LOAD_PICTURES | USER_LOAD_VIEWERS | USER_LOAD_LIKES | USER_LOAD_PHOTO;
 
 }

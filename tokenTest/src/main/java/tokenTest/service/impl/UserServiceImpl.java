@@ -268,12 +268,21 @@ public class UserServiceImpl implements IUserService {
 
 		/* 查找用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			if (target == null || target == id) {
+				user = userBo.validateUserWithDetail(id, token,
+						Constants.USER_LOAD_TAGS | Constants.USER_LOAD_VIEWERS
+								| Constants.USER_LOAD_LIKES);
+			} else {
+				user = userBo.validateUserWithDetail(id, token,
+						Constants.USER_LOAD_LIKES);
+			}
+
 		} catch (UserNotFoundException e) {
 			return UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
 			return UserDetailResponse.getError(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -283,7 +292,9 @@ public class UserServiceImpl implements IUserService {
 			return new UserDetailResponse(user, true);
 		} else {
 			try {
-				theTarget = userBo.findByUserId(target);
+				theTarget = userBo.findByUserIdWithDetail(target,
+						Constants.USER_LOAD_VIEWERS | Constants.USER_LOAD_TAGS
+								| Constants.USER_LOAD_LIKES);
 			} catch (Exception e) {
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
@@ -487,9 +498,9 @@ public class UserServiceImpl implements IUserService {
 			return new ValidatePhoneResponse(Status.ERR_PHONE_VALIDATION_FAIL);
 		}
 
-		String secret =  SMSUtil.genCode();
+		String secret = SMSUtil.genCode();
 		int retval = SMSUtil.doValidate(phoneNum, secret);
-		if (retval < 0){
+		if (retval < 0) {
 			return new ValidatePhoneResponse(Status.ERR_PHONE_VALIDATION_FAIL);
 		}
 		validationCode.setCode(secret);
@@ -525,7 +536,11 @@ public class UserServiceImpl implements IUserService {
 		User user = null;
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			if (isProfile != null && isProfile){
+				user = userBo.validateUserWithDetail(id, token, Constants.USER_LOAD_PHOTO);
+			}else{
+				user = userBo.validateUserWithDetail(id, token, Constants.USER_LOAD_PICTURES);
+			}
 		} catch (UserNotFoundException e) {
 			return new PicResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -549,8 +564,10 @@ public class UserServiceImpl implements IUserService {
 
 		} catch (IOException e) {
 			/* 文件IO */
+			e.printStackTrace();
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 		if (isProfile) {
@@ -563,14 +580,14 @@ public class UserServiceImpl implements IUserService {
 	@RequestMapping(value = { "/deletePhoto**" }, method = RequestMethod.GET)
 	public PicResponse deletePhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) Long picid) {
-		// TODO Auto-generated method stub
+			@RequestParam(required = true) String picid) {
 		String path = servletContext.getRealPath("/") + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
 		User user = null;
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_PICTURES | Constants.USER_LOAD_PHOTO);
 		} catch (UserNotFoundException e) {
 			return new PicResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -592,14 +609,14 @@ public class UserServiceImpl implements IUserService {
 			return new PicResponse(Status.ERR_PIC_NOT_FOUND);
 		}
 
-		/* 是头像，不能删除 */
-		if (user.getPic().equals(picture)) {
-			return new PicResponse(Status.ERR_CANNOT_DELETE_PROFILE_PHOTO);
-		}
-
 		/* 不是自己的图片，不能删除 */
 		if (!user.getPicture().contains(picture)) {
 			return new PicResponse(Status.ERR_BANNED);
+		}
+
+		/* 是头像，不能删除 */
+		if (user.getPic() != null && user.getPic().equals(picture)) {
+			return new PicResponse(Status.ERR_CANNOT_DELETE_PROFILE_PHOTO);
 		}
 
 		/* 删除图片数据和文件,头像不能删除 */
@@ -617,7 +634,7 @@ public class UserServiceImpl implements IUserService {
 	@RequestMapping(value = { "/getPhoto**" }, method = RequestMethod.GET)
 	public void getPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) Long picid,
+			@RequestParam(required = true) String picid,
 			@RequestParam(required = false) Integer isThumb,
 			HttpServletResponse response) {
 		String path = servletContext.getRealPath("/") + File.separator
@@ -655,8 +672,7 @@ public class UserServiceImpl implements IUserService {
 			response.setStatus(404);
 			return;
 		} catch (Exception e) {
-			System.out.println("UnknownException:" + picid + "user:"
-					+ id);
+			System.out.println("UnknownException:" + picid + "user:" + id);
 			response.setStatus(500);
 			e.printStackTrace();
 			return;
@@ -688,7 +704,8 @@ public class UserServiceImpl implements IUserService {
 		PhotoListResponse response = new PhotoListResponse(Status.OK);
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_PICTURES);
 		} catch (UserNotFoundException e) {
 			return new PhotoListResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -714,7 +731,7 @@ public class UserServiceImpl implements IUserService {
 		/* 验证用户 */
 		User user = null;
 		try {
-			user = userBo.findByUserId(id);
+			user = userBo.findByUserIdWithDetail(id, Constants.USER_LOAD_PHOTO);
 		} catch (Exception e) {
 			return;
 		}
@@ -725,6 +742,9 @@ public class UserServiceImpl implements IUserService {
 				path += File.separator + Constants.RIGIN_PICTURE_PATH;
 			} else {
 				path += File.separator + Constants.THUMB_PICTURE_PATH;
+			}
+			if (user.getPic() == null) {
+				return;
 			}
 			File file = new File(path + File.separator
 					+ user.getPic().getFilename());
@@ -803,7 +823,8 @@ public class UserServiceImpl implements IUserService {
 		User user = null;
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_BLACKLIST);
 		} catch (UserNotFoundException e) {
 			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -832,7 +853,8 @@ public class UserServiceImpl implements IUserService {
 		User user = null;
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_BLACKLIST);
 		} catch (UserNotFoundException e) {
 			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -873,7 +895,8 @@ public class UserServiceImpl implements IUserService {
 		User user = null;
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_BLACKLIST);
 		} catch (UserNotFoundException e) {
 			return new BlacklistResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -1012,7 +1035,8 @@ public class UserServiceImpl implements IUserService {
 		User user = null;
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_LIKES);
 		} catch (UserNotFoundException e) {
 			return new LikeUsersResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -1037,7 +1061,8 @@ public class UserServiceImpl implements IUserService {
 		User user = null;
 		/* 验证用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_VIEWERS);
 		} catch (UserNotFoundException e) {
 			return new ViewersResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
@@ -1078,7 +1103,8 @@ public class UserServiceImpl implements IUserService {
 			return new StatusResponse(Status.ERR_THAT_IS_SO_PATHETIC);
 		} else {
 			try {
-				theTarget = userBo.findByUserId(target);
+				theTarget = userBo.findByUserIdWithDetail(target,
+						Constants.USER_LOAD_LIKES);
 			} catch (Exception e) {
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
@@ -1116,7 +1142,8 @@ public class UserServiceImpl implements IUserService {
 			return new StatusResponse(Status.ERR_THAT_IS_SO_PATHETIC);
 		} else {
 			try {
-				theTarget = userBo.findByUserId(target);
+				theTarget = userBo.findByUserIdWithDetail(target,
+						Constants.USER_LOAD_LIKES);
 			} catch (Exception e) {
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}

@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import tokenTest.Util.Status;
 import tokenTest.response.BlacklistResponse;
+import tokenTest.response.LikeUsersResponse;
 import tokenTest.response.LoginResponse;
 import tokenTest.response.PhotoListResponse;
 import tokenTest.response.PicResponse;
@@ -18,7 +18,7 @@ import tokenTest.response.ViewersResponse;
 
 public interface IUserService {
 	LoginResponse userRegister(String nickName, String password,
-			String building, String phoneNum, String gender, Date birthday,
+			String phoneNum, String building, String gender, Date birthday,
 			String company);
 
 	/* LoginResponse userLogin(Long id, String password); */
@@ -36,9 +36,9 @@ public interface IUserService {
 	PicResponse addPhoto(Long id, String token, MultipartFile file,
 			String description, Boolean isProfile);
 
-	PicResponse deletePhoto(Long id, String token, Long picId);
+	PicResponse deletePhoto(Long id, String token, String picId);
 
-	void getPhoto(Long id, String token, Long picId, Integer isThumb,
+	void getPhoto(Long id, String token, String picId, Integer isThumb,
 			HttpServletResponse response);
 
 	/* 获取头像 */
@@ -59,7 +59,7 @@ public interface IUserService {
 
 	StatusResponse setTags(Long id, String token, String tags);
 
-	StatusResponse getLikeUsers(Long id, String token);
+	LikeUsersResponse getLikeUsers(Long id, String token);
 
 	ViewersResponse getViewers(Long id, String token);
 

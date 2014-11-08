@@ -17,11 +17,11 @@ public interface PictureBo {
 
 	void delete(User user, Picture picture, String path);
 
-	void deleteById(Long id, String path);
+	void deleteById(String id, String path);
 
-	Picture findById(Long id) throws PictureNotFoundException;
+	Picture findById(String id) throws PictureNotFoundException;
 
-	File getFileById(Long id, String path);
+	File getFileById(String id, String path);
 
 	void deletePictureFile(Picture picture, String path);
 

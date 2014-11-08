@@ -37,7 +37,7 @@ public class Complaint {
 	@Column(name = "id", unique = true, nullable = false)
 	private Long id;
 
-	@ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+	@ManyToOne(targetEntity = User.class)
 	@JoinColumn(name = "owner_id")
 	private User owner;
 
@@ -47,7 +47,7 @@ public class Complaint {
 	@Column(name = "status")
 	private int status = Constants.COMPLAINT_STATUS_NEW;
 	
-	@OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+	@OneToOne(targetEntity = User.class)
 	@JoinColumn(name = "target_id")
 	private User target;
 

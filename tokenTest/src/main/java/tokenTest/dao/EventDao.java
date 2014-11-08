@@ -13,10 +13,13 @@ public interface EventDao {
 
 	void delete(Event e);
 
+	void merge(Event e);
+
 	Event findByEventId(Long id);
 
 	List<Event> getEventList(Double longitude, Double latitude,
 			Integer pagenum, Integer range);
 
 	List<Event> getEventListByUser(User user, Integer pagenum);
+
 }

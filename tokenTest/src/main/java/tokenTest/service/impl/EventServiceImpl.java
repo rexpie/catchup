@@ -92,8 +92,7 @@ public class EventServiceImpl implements IEventService {
 
 		Event event = eventBo.findByEventIdWithParticipants(eventid);
 		if (event != null) {
-			response.setEvent(new EventDetail(event, event.getParticipants()
-					.contains(user)));
+			response.setEvent(new EventDetail(event, eventBo.isUserParticipantOfEvent(event, user)));
 		} else {
 			response.setStatus(Status.ERR_NO_SUCH_EVENT);
 			response.setEvent(null);

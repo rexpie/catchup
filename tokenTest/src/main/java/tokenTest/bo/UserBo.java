@@ -11,6 +11,8 @@ public interface UserBo {
 
 	void delete(User user);
 
+	void merge(User user);
+
 	User validateUser(Long id, String token) throws UserNotFoundException, WrongTokenException;
 
 	User findByUserNickName(String nickName);
@@ -20,4 +22,17 @@ public interface UserBo {
 	User findByUserId(Long id);
 	
 	User findByNickOrPhone(String nickorphone);
+
+	User validateUserWithDetail(Long id, String token);
+
+	User validateUserWithDetail(Long id, String token, int loadFlags);
+
+	User findByUserNickNameWithDetail(String nickName, int flag);
+
+	User findByUserIdWithDetail(Long id, int loadFlags);
+
+	User findByUserPhoneNumWithDetail(String phoneNum, int loadFlags);
+
+	User findByNickOrPhoneWithDetail(String nickorphone, int loadFlags);
+
 }

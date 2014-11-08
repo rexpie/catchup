@@ -21,4 +21,6 @@ public interface EventBo {
 
 	Event findByEventIdWithParticipants(Long eventid);
 
+	boolean isUserParticipantOfEvent(Event e, User u);
+
 }

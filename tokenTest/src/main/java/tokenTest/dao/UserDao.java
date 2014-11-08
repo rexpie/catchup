@@ -11,6 +11,8 @@ public interface UserDao {
 
 	void delete(User user);
 
+	void merge(User user);
+
 	User findByUserNickName(String nickName);
 	
 	User findByUserPhoneNum(String phoneNum);

@@ -31,12 +31,12 @@ public class PictureDaoImpl implements PictureDao {
 		sessionFactory.getCurrentSession().delete(picture);
 	}
 
-	public Picture findPictureById(Long id) {
+	public Picture findPictureById(String id) {
 		// TODO Auto-generated method stub
 		Session session = sessionFactory.getCurrentSession();
 		Query query = session
 				.createQuery("from Picture where id= :id");
-		query.setLong("id", id);
+		query.setString("id", id);
 		List list = query.list();
 		if (list.size() > 0)
 			return (Picture) list.get(0);

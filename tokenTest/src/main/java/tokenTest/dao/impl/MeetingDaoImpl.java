@@ -114,10 +114,6 @@ public class MeetingDaoImpl implements MeetingDao {
 			Double latitude, Integer pagenum, Integer sorttype, Integer range,
 			String gender, String job, String shopName) {
 		/* 根据经纬度计算距离，6371km为地球半径，结果为m */
-		List<String> ids = Lists.newArrayList();
-		for (User other: user.getBlacklist()){
-			ids.add(String.valueOf(other.getId()));
-		}
 
 		Query query = sessionFactory
 				.getCurrentSession()

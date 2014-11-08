@@ -33,6 +33,11 @@ public class EventDaoImpl implements EventDao {
 	public void delete(Event e) {
 		sessionFactory.getCurrentSession().delete(e);
 	}
+	
+	@Override
+	public void merge(Event e){
+		sessionFactory.getCurrentSession().merge(e);
+	}
 
 	@Override
 	public Event findByEventId(Long id) {

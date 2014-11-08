@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,8 +61,22 @@ public class EventBoImpl implements EventBo {
 	public Event findByEventIdWithParticipants(Long eventid) {
 		Event e = eventDao.findByEventId(eventid);
 		if (e != null) {
-			e.getParticipants().iterator();
+			Hibernate.initialize(e.getParticipants());
+			Hibernate.initialize(e.getPics());
 		}
+		System.out.println(e.getParticipants().size());
 		return e;
 	}
+
+	@Override
+	@Transactional
+	public boolean isUserParticipantOfEvent(Event e, User u) {
+		if (e != null) {
+			eventDao.merge(e);
+			return e.getParticipants().contains(u);
+		} else {
+			return false;
+		}
+	}
+
 }
