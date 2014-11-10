@@ -18,7 +18,7 @@ import tokenTest.response.ViewersResponse;
 
 public interface IUserService {
 	LoginResponse userRegister(String nickName, String password,
-			String phoneNum, String building, String gender, Date birthday,
+			String phoneNum, String code, String building, String gender, Date birthday,
 			String company);
 
 	/* LoginResponse userLogin(Long id, String password); */

@@ -13,6 +13,22 @@ import tokenTest.Util.ValidationCodeStatus;
 @Table(name = "ValidationCode")
 public class ValidationCode {
 
+	public ValidationCode(){
+		Date d = new Date();
+		setCreateTime(d);
+		setCreateTime(d);
+	}
+	
+	public ValidationCode(String code, Date createTime, String phoneNum,
+			int status, Date updateTime) {
+		super();
+		this.code = code;
+		this.createTime = createTime;
+		this.phoneNum = phoneNum;
+		this.status = status;
+		this.updateTime = updateTime;
+	}
+
 	private String code;
 	private Date createTime;
 	private String phoneNum;

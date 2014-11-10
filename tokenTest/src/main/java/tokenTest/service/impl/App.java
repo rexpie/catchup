@@ -1,11 +1,15 @@
 package tokenTest.service.impl;
 
+import java.util.Date;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.UserBo;
+import tokenTest.bo.ValidationCodeBo;
 import tokenTest.model.User;
+import tokenTest.model.ValidationCode;
 import tokenTest.response.MeetingDetail;
 import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
@@ -22,16 +26,17 @@ public class App {
 		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
 		IUserService userService = (IUserService) appContext.getBean("userService");
 		IMeetingService meetingService = (IMeetingService) appContext.getBean("meetingService");
+		ValidationCodeBo validationCodeBo = (ValidationCodeBo) appContext.getBean("validationCodeBo");
+
+		genUsers(userBo,validationCodeBo, userService);
 		
-//		genUsers(userBo, userService);
-		
-		genMeetings(userBo,meetingBo, meetingService);
+		genMeetings(userBo,meetingBo,validationCodeBo, meetingService);
 		
 		System.out.println("Done");
 	}
 
 	private static void genMeetings(UserBo userBo, MeetingBo meetingBo,
-			IMeetingService meetingService) {
+			ValidationCodeBo validationCodeBo, IMeetingService meetingService) {
 		User user1 = userBo.findByUserId(1L);
 		User user2 = userBo.findByUserId(2L);
 		User user3 = userBo.findByUserId(3L);
@@ -52,22 +57,27 @@ public class App {
 		meetingService.processMeetingApply(user1.getId(), user1.getToken(), meetingDetail.getApplicants().get(0).getApplyId(), true);
 	}
 
-	private static void genUsers(UserBo userBo, IUserService service) {
+	private static void genUsers(UserBo userBo, ValidationCodeBo validationCodeBo, IUserService service) {
+		Date d = new Date();
+		validationCodeBo.save(new ValidationCode("8888", d, "13818860403", 0, d));
+
 		//gen rex
-		service.userRegister("rexpie", "pass", null, "13818860403", null, null,null);
+		service.userRegister("rexpie", "pass", "13818860403", "8888", null, null, null,null);
 
 		User rexpie = userBo.findByNickOrPhone("rexpie");
 		service.updateUserProfile(rexpie.getId(), rexpie.getToken(), null, "嘉里城", null, "M", "analyst","IT", "MS");
 		
 		//gen peach
-		service.userRegister("peach", "ppass", null, "13818860404", null, null,null);
+		validationCodeBo.save(new ValidationCode("8888", d, "13818860404", 0, d));
+		service.userRegister("peach", "ppass", "13818860404", "8888", null, null, null,null);
 
 		User peach = userBo.findByNickOrPhone("peach");
 		service.updateUserProfile(peach.getId(), peach.getToken(), null, "??", null, "M", "analyst","IT", "CCB");
 		
 		//gen NPC
 		for (int i = 0;i <20;i++){
-			service.userRegister("NPC"+i, "ppass", null, (13818800000L + i) + "", null, null,null);
+			validationCodeBo.save(new ValidationCode("8888", d, "" + (13818800000L + i), 0, d));
+			service.userRegister("NPC"+i, "ppass", (13818800000L + i) + "", "8888", null, null, null,null);
 
 			User npc = userBo.findByNickOrPhone("NPC"+i);
 			service.updateUserProfile(npc.getId(), npc.getToken(), null, "building"+i, null, i%2==0?"M":"F", "job"+i,"IT", "?");

@@ -3,6 +3,7 @@ package tests;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Date;
 
 import junit.framework.Assert;
 
@@ -16,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 import tokenTest.Util.Constants;
 import tokenTest.Util.Status;
 import tokenTest.bo.UserBo;
+import tokenTest.bo.ValidationCodeBo;
 import tokenTest.model.User;
+import tokenTest.model.ValidationCode;
 import tokenTest.response.StatusResponse;
 import tokenTest.response.UserDetailResponse;
 import tokenTest.service.IUserService;
@@ -31,6 +34,7 @@ public class UserTest {
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
 		IUserService userService = (IUserService) appContext
 				.getBean("userService");
+		ValidationCodeBo validationCodeBo = (ValidationCodeBo) appContext.getBean("validationCodeBo");
 
 		// register and login
 		String nickName1 = RandomStringUtils
@@ -46,11 +50,12 @@ public class UserTest {
 		String pass2 = RandomStringUtils
 				.randomAlphanumeric(Constants.TOKEN_LENGTH);
 		String phone2 = RandomStringUtils.randomNumeric(11);
-		
-		
-		ok(userService.userRegister(nickName1, pass1, phone1, null, null, null,
+		Date d = new Date();
+		validationCodeBo.save(new ValidationCode("8888", d, phone1, 0, d));
+		validationCodeBo.save(new ValidationCode("8888", d, phone2, 0, d));
+		ok(userService.userRegister(nickName1, pass1, phone1,"8888", null, null, null,
 				null));
-		ok(userService.userRegister(nickName2, pass2, phone2, null, null, null,
+		ok(userService.userRegister(nickName2, pass2, phone2, "8888", null, null, null,
 				null));
 
 		User user1 = userBo.findByNickOrPhone(nickName1);

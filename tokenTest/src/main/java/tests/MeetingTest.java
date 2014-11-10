@@ -18,10 +18,11 @@ import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.ShopBo;
 import tokenTest.bo.UserBo;
-import tokenTest.exception.MeetingNotFoundException;
+import tokenTest.bo.ValidationCodeBo;
 import tokenTest.model.Meeting;
 import tokenTest.model.Shop;
 import tokenTest.model.User;
+import tokenTest.model.ValidationCode;
 import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
 import tokenTest.response.StatusResponse;
@@ -35,6 +36,7 @@ public class MeetingTest {
 				"spring/config/BeanLocations.xml");
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
 		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
+		ValidationCodeBo validationCodeBo = (ValidationCodeBo) appContext.getBean("validationCodeBo");
 		for (long i = 0; i < 10; i++) {
 			try {
 				Meeting m = meetingBo.getMeetingById(i);
@@ -63,7 +65,11 @@ public class MeetingTest {
 			pass[i] = RandomStringUtils
 					.randomAlphanumeric(Constants.TOKEN_LENGTH);
 			phone[i] = RandomStringUtils.randomNumeric(11);
-			ok(userService.userRegister(nickName[i], pass[i], phone[i], null,
+			ValidationCode code = new ValidationCode();
+			code.setCode("8888");
+			code.setPhoneNum(phone[i]);
+			validationCodeBo.save(code);
+			ok(userService.userRegister(nickName[i], pass[i], phone[i], "8888", null,
 					null, null, null));
 			user[i] = userBo.findByNickOrPhone(nickName[i]);
 		}

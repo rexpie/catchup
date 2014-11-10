@@ -107,12 +107,45 @@ public class UserServiceImpl implements IUserService {
 			@RequestParam(required = true) String nickName,
 			@RequestParam(required = true) String password,
 			@RequestParam(required = true) String phoneNum,
+			@RequestParam(required = true) String code,
 			@RequestParam(required = false) String building,
 			@RequestParam(required = false) String gender,
 			@RequestParam(required = false) Date birthday,
 			@RequestParam(required = false) String company) {
 		/* 必填信息 */
 		User user = new User(password, nickName, gender, building, phoneNum);
+		
+		ValidationCode validationCode = null;
+		try {
+			validationCode = validationCodeBo.findByPhoneNum(phoneNum);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		if (validationCode == null) {
+			// no validation code found, notify to validate code first
+			return new LoginResponse(Status.ERR_WRONG_VALIDATION_CODE);
+		}
+
+		// code found, check status
+		if (validationCode.getStatus() == ValidationCodeStatus.NEW
+				.getValue()) {
+			// valid status
+			if (StringUtils.equals(validationCode.getCode(), code)) {
+				// matching code, clear validatino status
+				validationCode.setStatus(ValidationCodeStatus.INVALID);
+				validationCodeBo.update(validationCode);
+			} else {
+				// code not matching
+				return new LoginResponse(Status.ERR_WRONG_VALIDATION_CODE);
+			}
+		} else {
+			// code not matching
+			return new LoginResponse(Status.ERR_WRONG_VALIDATION_CODE);
+		}
+		
+		
 		user.setLogin_attempts(0);
 
 		/* 非必填信息 */
@@ -215,6 +248,7 @@ public class UserServiceImpl implements IUserService {
 		try {
 			userBo.update(user);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, null);
 		}
 		return new LoginResponse(Status.OK, user.getId(), user.getToken());
@@ -297,6 +331,7 @@ public class UserServiceImpl implements IUserService {
 						Constants.USER_LOAD_VIEWERS | Constants.USER_LOAD_TAGS
 								| Constants.USER_LOAD_LIKES);
 			} catch (Exception e) {
+				e.printStackTrace();
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
 			if (theTarget == null)
@@ -342,6 +377,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new StatusResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -547,6 +583,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new PicResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -594,6 +631,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new PicResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -602,7 +640,7 @@ public class UserServiceImpl implements IUserService {
 		try {
 			picture = pictureBo.findById(picid);
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 		if (picture == null) {
@@ -656,11 +694,10 @@ public class UserServiceImpl implements IUserService {
 			// return Status.ERR_USER_NOT_FOUND;
 		} catch (WrongTokenException e) {
 			return;
-			// TODO: handle exception
 			// return Status.ERR_WRONG_TOKEN;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return;
-			// TODO: handle exception
 			// return Status.SERVICE_NOT_AVAILABLE;
 		}
 		/* 查找图片 */
@@ -712,6 +749,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new PhotoListResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new PhotoListResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -772,6 +810,7 @@ public class UserServiceImpl implements IUserService {
 		try {
 			user = userBo.findByNickOrPhone(nickorphone);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -831,6 +870,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -861,6 +901,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -871,6 +912,7 @@ public class UserServiceImpl implements IUserService {
 		try {
 			other = userBo.findByUserId(target);
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
@@ -903,6 +945,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -954,6 +997,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -998,6 +1042,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new StatusResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -1043,6 +1088,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new LikeUsersResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new LikeUsersResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -1069,6 +1115,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new ViewersResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new ViewersResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -1095,6 +1142,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new StatusResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -1107,6 +1155,7 @@ public class UserServiceImpl implements IUserService {
 				theTarget = userBo.findByUserIdWithDetail(target,
 						Constants.USER_LOAD_LIKES);
 			} catch (Exception e) {
+				e.printStackTrace();
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
 			if (theTarget == null)
@@ -1134,6 +1183,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new StatusResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
@@ -1146,6 +1196,7 @@ public class UserServiceImpl implements IUserService {
 				theTarget = userBo.findByUserIdWithDetail(target,
 						Constants.USER_LOAD_LIKES);
 			} catch (Exception e) {
+				e.printStackTrace();
 				UserDetailResponse.getError(Status.SERVICE_NOT_AVAILABLE);
 			}
 			if (theTarget == null)
@@ -1173,6 +1224,7 @@ public class UserServiceImpl implements IUserService {
 		} catch (WrongTokenException e) {
 			return new BlacklistResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
+			e.printStackTrace();
 			return new BlacklistResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
