@@ -4,24 +4,19 @@ import java.util.ArrayList;
 
 import tokenTest.Util.Status;
 
-public class MeetingDetailResponse {
-	private Enum<Status> status;
+public class MeetingDetailResponse extends StatusResponse{
+
+	public MeetingDetailResponse(Enum<Status> status) {
+		super(status);
+	}
+
+	public MeetingDetailResponse() {
+		super(Status.OK);
+	}
+
 	private MeetingDetail meetingDetail;
 	private ArrayList<ApplyInfo> applicants = new ArrayList<ApplyInfo>();
 	private ArrayList<UserInfo> participates = new ArrayList<UserInfo>();
-
-	public MeetingDetailResponse() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	public Enum<Status> getStatus() {
-		return status;
-	}
-
-	public void setStatus(Enum<Status> status) {
-		this.status = status;
-	}
 
 	public MeetingDetail getMeetingDetail() {
 		return meetingDetail;

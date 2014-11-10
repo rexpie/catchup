@@ -1,4 +1,4 @@
-package tokenTest.service.impl;
+package tokenTest.Util;
 
 public enum ValidationCodeStatus {
 

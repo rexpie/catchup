@@ -45,4 +45,5 @@ public interface MeetingBo {
 	List getMeetingListByParticipate(User user, Integer pagenum)
 			throws Exception;
 
+	boolean testIfApplied(Meeting m, User u);
 }

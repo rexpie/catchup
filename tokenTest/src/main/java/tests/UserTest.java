@@ -31,7 +31,6 @@ public class UserTest {
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
 		IUserService userService = (IUserService) appContext
 				.getBean("userService");
-		String token = "token";
 
 		// register and login
 		String nickName1 = RandomStringUtils

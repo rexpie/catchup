@@ -25,6 +25,7 @@ public class MeetingDetail {
 	private Double latitude;
 	private Integer pageNum;
 	private Integer index;
+	private Boolean joined;
 
 	public MeetingDetail() {
 		super();
@@ -206,6 +207,14 @@ public class MeetingDetail {
 
 	public void setIndex(Integer index) {
 		this.index = index;
+	}
+
+	public Boolean getJoined() {
+		return joined;
+	}
+
+	public void setJoined(Boolean joined) {
+		this.joined = joined;
 	}
 
 }

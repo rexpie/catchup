@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import tokenTest.service.impl.ValidationCodeStatus;
+import tokenTest.Util.ValidationCodeStatus;
 
 @Entity
 @Table(name = "ValidationCode")

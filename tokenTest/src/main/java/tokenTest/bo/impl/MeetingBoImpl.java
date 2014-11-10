@@ -31,7 +31,7 @@ import tokenTest.response.ApplyInfo;
 public class MeetingBoImpl implements MeetingBo {
 	@Autowired
 	private MeetingDao meetingDao;
-	
+
 	@Autowired
 	private UserDao userDao;
 
@@ -44,19 +44,16 @@ public class MeetingBoImpl implements MeetingBo {
 
 	@Transactional
 	public void save(Meeting meeting) {
-		// TODO Auto-generated method stub
 		meetingDao.save(meeting);
 	}
 
 	@Transactional
 	public void update(Meeting meeting) {
-		// TODO Auto-generated method stub
 		meetingDao.update(meeting);
 	}
 
 	@Transactional
 	public void delete(Meeting meeting) {
-		// TODO Auto-generated method stub
 		meetingDao.delete(meeting);
 	}
 
@@ -73,11 +70,9 @@ public class MeetingBoImpl implements MeetingBo {
 			throws TooManyAppliesException {
 		List list = meetingApplyDao.getApplyByUser(user);
 		if (list != null && list.size() <= 2) {
-			if(meetingApplyDao.getApplyByUserAndMeeting(user,meeting)==null){
-				Set<User> blacklist = userDao.getBlackList(meeting.getOwner().getId());
-				if(blacklist==null || !blacklist.contains(user)){
-					meetingApplyDao.save(new MeetingApply(user, meeting, applyContent));
-				}
+			if (meetingApplyDao.getApplyByUserAndMeeting(user, meeting) == null) {
+				meetingApplyDao.save(new MeetingApply(user, meeting,
+						applyContent));
 			}
 		} else {
 			throw new TooManyAppliesException();
@@ -87,8 +82,7 @@ public class MeetingBoImpl implements MeetingBo {
 	@Transactional
 	public List<MeetingApply> getApplyByMeeting(Meeting meeting)
 			throws Exception {
-		List<MeetingApply> applies = meetingApplyDao
-				.getApplyByMeeting(meeting);
+		List<MeetingApply> applies = meetingApplyDao.getApplyByMeeting(meeting);
 		if (applies == null)
 			throw new Exception();
 		return applies;
@@ -107,21 +101,19 @@ public class MeetingBoImpl implements MeetingBo {
 	public List getMeetingList(Double longitude, Double latitude,
 			Integer pagenum, Integer sorttype, Integer range, String gender,
 			String job, String shopName) throws Exception {
-		// TODO Auto-generated method stub
 		List list = meetingDao.getMeetingList(longitude, latitude, pagenum,
 				sorttype, range, gender, job, shopName);
 		if (list == null)
 			throw new Exception();
 		return list;
 	}
-	
+
 	@Transactional
-	public List getMeetingListForUser(User user, Double longitude, Double latitude,
-			Integer pagenum, Integer sorttype, Integer range, String gender,
-			String job, String shopName) throws Exception {
-		// TODO Auto-generated method stub
-		List list = meetingDao.getMeetingListWithId(user, longitude, latitude, pagenum,
-				sorttype, range, gender, job, shopName);
+	public List getMeetingListForUser(User user, Double longitude,
+			Double latitude, Integer pagenum, Integer sorttype, Integer range,
+			String gender, String job, String shopName) throws Exception {
+		List list = meetingDao.getMeetingListWithId(user, longitude, latitude,
+				pagenum, sorttype, range, gender, job, shopName);
 		if (list == null)
 			throw new Exception();
 		return list;
@@ -167,14 +159,15 @@ public class MeetingBoImpl implements MeetingBo {
 			otherApply.setStatus(Constants.APPLY_STATUS_WITHDRAWN_BY_SYS);
 			meetingApplyDao.update(otherApply);
 		}
+		// TODO rex send messages
 
 	}
-
 
 	@Transactional
 	@Override
 	public void withdrawMeetingApply(MeetingApply meetingApply) {
-		if ( meetingApply == null ) return;
+		if (meetingApply == null)
+			return;
 		meetingApply.setStatus(Constants.APPLY_STATUS_WITHDRAWN);
 		meetingApplyDao.update(meetingApply);
 	}
@@ -183,21 +176,40 @@ public class MeetingBoImpl implements MeetingBo {
 	@Override
 	public Status stopMeeting(Meeting meeting, String cancelReason) {
 		User user = meeting.getOwner();
-		MessageUtil.notifyUser(user, Messages.WARN_STOP_WITH_APPLICANTS.toString());
+		MessageUtil.notifyUser(user,
+				Messages.WARN_STOP_WITH_APPLICANTS.toString());
 
-		
 		try {
-			for (MeetingApply apply :meetingApplyDao.getApplyByMeeting(meeting)){
+			for (MeetingApply apply : meetingApplyDao
+					.getApplyByMeeting(meeting)) {
 				apply.setStatus(Constants.APPLY_STATUS_STOPPED_BY_SYS);
 				meetingApplyDao.update(apply);
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		
+
 		meeting.setStatus(Constants.MEETING_STATUS_STOPPED);
 		meetingDao.merge(meeting);
 		return null;
+	}
+
+	@Override
+	@Transactional
+	public boolean testIfApplied(Meeting m, User u) {
+		if (u == null || m == null) {
+			return false;
+		}
+
+		List<MeetingApply> list = meetingApplyDao.getApplyByMeeting(m);
+		if (list != null && list.size() != 0) {
+			for (MeetingApply apply : list) {
+				if (apply.getFromUser().equals(u)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 }

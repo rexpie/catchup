@@ -78,6 +78,7 @@ public class MeetingServiceImpl implements IMeetingService {
 			response.setStatus(Status.ERR_WRONG_TOKEN);
 			return response;
 		} catch (Exception e) {
+			e.printStackTrace();
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
@@ -120,6 +121,7 @@ public class MeetingServiceImpl implements IMeetingService {
 				&& !StringUtils.equals("M", genderConstraint)
 				&& !StringUtils.equals("N", genderConstraint)) {
 			response.setStatus(Status.ERR_INVALID_GENDER);
+			return response;
 		}
 
 		/* 鏂板缓骞朵繚瀛楳eeting */
@@ -147,7 +149,7 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = false, defaultValue = "") String shopName,
 			@RequestParam(required = false, defaultValue = "") Long id,
 			@RequestParam(required = false, defaultValue = "") String token) {
-		MeetingListResponse meetingListResponse = new MeetingListResponse();
+		MeetingListResponse meetingListResponse = new MeetingListResponse(Status.OK);
 
 		User user = null;
 		if (id != null && token != null) {
@@ -190,10 +192,12 @@ public class MeetingServiceImpl implements IMeetingService {
 			int index = 0;
 			while (iterator.hasNext()) {
 				objects = (Object[]) iterator.next();
+				Meeting meeting = (Meeting) objects[0];
 				MeetingDetail meetingDetail = new MeetingDetail(
-						(Meeting) objects[0], (Double) objects[1]);
+						meeting, (Double) objects[1]);
 				meetingDetail.setIndex(index++);
 				meetingDetail.setPageNum(pagenum);
+				meetingDetail.setJoined(meetingBo.testIfApplied(meeting, user));
 				meetingListResponse.getMeetingList().add(meetingDetail);
 			}
 		}
@@ -205,7 +209,7 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false, defaultValue = "0") Integer pagenum) {
-		MeetingListResponse meetingListResponse = new MeetingListResponse();
+		MeetingListResponse meetingListResponse = new MeetingListResponse(Status.OK);
 
 		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
@@ -251,7 +255,7 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false, defaultValue = "0") Integer pagenum) {
-		MeetingListResponse meetingListResponse = new MeetingListResponse();
+		MeetingListResponse meetingListResponse = new MeetingListResponse(Status.OK);
 
 		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;

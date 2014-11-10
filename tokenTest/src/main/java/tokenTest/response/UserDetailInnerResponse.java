@@ -141,14 +141,6 @@ public class UserDetailInnerResponse {
 		this.birthday = birthday;
 	}
 
-	public long getZan_count() {
-		return numOfLikes;
-	}
-
-	public void setZan_count(long zan_count) {
-		this.numOfLikes = zan_count;
-	}
-
 	public synchronized String getIndustry() {
 		return industry;
 	}
