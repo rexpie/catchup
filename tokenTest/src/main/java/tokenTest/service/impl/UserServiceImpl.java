@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tokenTest.Util.Constants;
 import tokenTest.Util.SMSUtil;
 import tokenTest.Util.Status;
+import tokenTest.Util.Utils;
 import tokenTest.Util.ValidationCodeStatus;
 import tokenTest.bo.ComplaintBo;
 import tokenTest.bo.PictureBo;
@@ -558,7 +560,7 @@ public class UserServiceImpl implements IUserService {
 	@RequestMapping(value = { "/addPhoto**" }, method = RequestMethod.POST)
 	public PicResponse addPhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
-			@RequestParam(required = true) MultipartFile file,
+			@RequestBody(required = true) MultipartFile file,
 			@RequestParam(required = false) String description,
 			@RequestParam(required = false) Boolean isProfile) {
 
@@ -846,6 +848,7 @@ public class UserServiceImpl implements IUserService {
 				// get user new token
 				user.setToken(RandomStringUtils
 						.randomAlphanumeric(Constants.TOKEN_LENGTH));
+				user.setLogin_attempts(0);
 				userBo.update(user);
 				return new LoginResponse(Status.OK, user.getId(),
 						user.getToken());
@@ -1095,7 +1098,7 @@ public class UserServiceImpl implements IUserService {
 		LikeUsersResponse response = new LikeUsersResponse(Status.OK);
 
 		for (User other : user.getLikes()) {
-			response.ids.add(other.getId());
+			response.add(other.getNickname(), Utils.getAge(other.getBirthday()), other.getSex(), other.getId());
 		}
 		return response;
 	}
@@ -1122,7 +1125,7 @@ public class UserServiceImpl implements IUserService {
 		ViewersResponse response = new ViewersResponse(Status.OK);
 
 		for (User other : user.getViewers()) {
-			response.ids.add(other.getId());
+			response.add(other.getNickname(), Utils.getAge(other.getBirthday()), other.getSex(), other.getId());
 		}
 		return response;
 	}

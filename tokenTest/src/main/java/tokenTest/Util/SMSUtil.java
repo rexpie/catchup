@@ -34,7 +34,7 @@ public class SMSUtil {
 
 		// System.out.println(mobile);
 
-		String content = new String(mobile_code + "ÊÇÄãµÄÑéÖ¤Âë£¬ÇëÎğĞ¹Â¶");
+		String content = new String(mobile_code + "æ˜¯æ‚¨çš„éªŒè¯ç ï¼Œåˆ‡å‹¿éšæ„åˆ†äº«ã€‚");
 
 		NameValuePair[] data = { new BasicNameValuePair("Uid", "rexpie"),
 				new BasicNameValuePair("Key", "d6603cde51c6607c2cee"),

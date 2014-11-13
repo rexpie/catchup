@@ -14,10 +14,10 @@ public interface EventBo {
 
 	Event findByEventId(Long id);
 
-	List<Event> getEventList(Double longitude, Double latitude,
+	List getEventList(Double longitude, Double latitude,
 			Integer pagenum, Integer range);
 
-	List<Event> getEventListByUser(User user, Integer pagenum);
+	List getEventListByUser(User user, Integer pagenum);
 
 	Event findByEventIdWithParticipants(Long eventid);
 

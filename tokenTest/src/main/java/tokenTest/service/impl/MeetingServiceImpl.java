@@ -192,6 +192,12 @@ public class MeetingServiceImpl implements IMeetingService {
 			int index = 0;
 			while (iterator.hasNext()) {
 				objects = (Object[]) iterator.next();
+				Long totalNum = (Long) objects[2];
+				int totalPage = (int) Math.ceil(totalNum / (double) Constants.NUM_PER_PAGE);
+				if (totalNum == 0){
+					meetingListResponse.setTotal(totalPage);
+					break;
+				}
 				Meeting meeting = (Meeting) objects[0];
 				MeetingDetail meetingDetail = new MeetingDetail(
 						meeting, (Double) objects[1]);
@@ -199,6 +205,7 @@ public class MeetingServiceImpl implements IMeetingService {
 				meetingDetail.setPageNum(pagenum);
 				meetingDetail.setJoined(meetingBo.testIfApplied(meeting, user));
 				meetingListResponse.getMeetingList().add(meetingDetail);
+				meetingListResponse.setTotal(totalPage);
 			}
 		}
 		return meetingListResponse;
@@ -238,12 +245,21 @@ public class MeetingServiceImpl implements IMeetingService {
 		@SuppressWarnings("rawtypes")
 		Iterator iterator = list.iterator();
 		int index = 0;
+		Object[] objects = null;
 		while (iterator.hasNext()) {
+			objects = (Object[]) iterator.next();
+			Long totalNum = (Long) objects[1];
+			int totalPage = (int) Math.ceil(totalNum / (double) Constants.NUM_PER_PAGE);
+			if (totalNum == 0){
+				meetingListResponse.setTotal(totalPage);
+				break;
+			}
 			MeetingDetail meetingDetail = new MeetingDetail(
-					(Meeting) iterator.next());
+					(Meeting) objects[0]);
 			meetingDetail.setIndex(index);
 			meetingDetail.setPageNum(pagenum);
 			meetingListResponse.getMeetingList().add(meetingDetail);
+			meetingListResponse.setTotal(totalPage);
 			index++;
 		}
 		return meetingListResponse;
@@ -280,13 +296,22 @@ public class MeetingServiceImpl implements IMeetingService {
 			meetingListResponse.setStatus(Status.SERVICE_NOT_AVAILABLE);
 		}
 		meetingListResponse.setStatus(Status.OK);
-		Iterator<Meeting> iterator = list.iterator();
+		Iterator iterator = list.iterator();
+		Object[] objects = null;
 		int index = 0;
 		while (iterator.hasNext()) {
-			MeetingDetail meetingDetail = new MeetingDetail(iterator.next());
+			objects = (Object[]) iterator.next();
+			Long totalNum = (Long) objects[1];
+			int totalPage = (int) Math.ceil(totalNum / (double) Constants.NUM_PER_PAGE);
+			if (totalNum == 0) {
+				meetingListResponse.setTotal(totalPage);
+				break;
+			}
+			MeetingDetail meetingDetail = new MeetingDetail((Meeting)objects[0]);
 			meetingDetail.setPageNum(pagenum);
 			meetingDetail.setIndex(index);
 			meetingListResponse.getMeetingList().add(meetingDetail);
+			meetingListResponse.setTotal(totalPage);
 			index++;
 		}
 		return meetingListResponse;

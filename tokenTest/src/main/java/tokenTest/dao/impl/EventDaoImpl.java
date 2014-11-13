@@ -60,6 +60,7 @@ public class EventDaoImpl implements EventDao {
 						"SELECT e, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(e.latitude)) * pi()/180 / 2),2) + "
 								+ "COS(:ulatitude * pi()/180 ) * COS(abs(e.latitude) * pi()/180) * "
 								+ "POWER(SIN((:ulongitude - e.longitude) * pi()/180 / 2), 2))))*1000 as distance "
+								+ ", count(e) as count "
 								+ "FROM Event as e "
 								+ "WHERE (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(e.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(e.latitude) * pi()/180)*POWER(SIN((:ulongitude - e.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
 								+ "ORDER BY distance ASC");
@@ -74,11 +75,11 @@ public class EventDaoImpl implements EventDao {
 	}
 
 	@Override
-	public List<Event> getEventListByUser(User user, Integer pagenum) {
+	public List getEventListByUser(User user, Integer pagenum) {
 		Query query = sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"SELECT e FROM Event as e "
+						"SELECT e , count(e) as count FROM Event as e "
 								+ "WHERE :user in elements(e.participants)"
 								+ "ORDER BY e.startTime DESC");
 		/* 设置参数 */

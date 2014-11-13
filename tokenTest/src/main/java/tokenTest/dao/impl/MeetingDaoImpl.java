@@ -61,6 +61,7 @@ public class MeetingDaoImpl implements MeetingDao {
 						"SELECT m, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) +"
 								+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
 								+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
+								+ ", count(m) as count "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
 								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.job like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
 								+ "ORDER BY distance ASC");
@@ -82,6 +83,7 @@ public class MeetingDaoImpl implements MeetingDao {
 				.getCurrentSession()
 				.createQuery(
 						"SELECT m "
+								+ ", count(m) as count "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
 								+ "WHERE m.owner =:user "
 								+ "ORDER BY m.create_time DESC");
@@ -98,6 +100,7 @@ public class MeetingDaoImpl implements MeetingDao {
 				.getCurrentSession()
 				.createQuery(
 						"SELECT m "
+								+ ", count(m) as count "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
 								+ "WHERE :user in elements(m.participator) "
 								+ "ORDER BY m.create_time DESC");
@@ -121,6 +124,7 @@ public class MeetingDaoImpl implements MeetingDao {
 						"SELECT m, (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) +"
 								+ "COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180) *"
 								+ "POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 as distance "
+								+ ", count(m) as count "
 								+ "FROM Meeting as m inner join fetch m.shop inner join fetch m.owner "
 								+ "WHERE m.genderConstraint like :ugender AND m.shop.name like :uname AND m.owner.job like :ujob AND (6371 * 2 * ASIN(SQRT(POWER(SIN((:ulatitude - abs(m.shop.latitude)) * pi()/180 / 2),2) + COS(:ulatitude * pi()/180 ) * COS(abs(m.shop.latitude) * pi()/180)*POWER(SIN((:ulongitude - m.shop.longitude) * pi()/180 / 2), 2))))*1000 < :urange "
 								+ "AND not exists (select u from User u inner join u.blacklist where u=:user and m.owner in elements(u.blacklist)) "

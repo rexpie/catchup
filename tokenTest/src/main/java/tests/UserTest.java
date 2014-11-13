@@ -86,17 +86,17 @@ public class UserTest {
 		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).ids.size(), 0);
 
 		ok(userService.getUserDetail(user1.getId(), user1.getToken(), null));
-		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).ids.size(), 0);
-		Assert.assertEquals(userService.getViewers(user1.getId(), user1.getToken()).ids.size(), 0);
+		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).users.size(), 0);
+		Assert.assertEquals(userService.getViewers(user1.getId(), user1.getToken()).users.size(), 0);
 		ok(userService.getUserDetail(user1.getId(), user1.getToken(), user2.getId()));
-		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).ids.get(0), user1.getId());
+		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).users.get(0), user1.getId());
 		
 		
-		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).ids.size(),0);
+		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).users.size(),0);
 		ok(userService.like(user2.getId(), user2.getToken(), user1.getId()));
-		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).ids.get(0),user2.getId());
+		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).users.get(0),user2.getId());
 		ok(userService.cancelLike(user2.getId(), user2.getToken(), user1.getId()));
-		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).ids.size(),0);
+		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).users.size(),0);
 		
 		userBo.update(user1);
 		ok(userService.setTags(user1.getId(), user1.getToken(), "tag1,tag2,something"));

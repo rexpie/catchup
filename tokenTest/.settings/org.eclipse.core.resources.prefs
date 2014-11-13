@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//src/main/java/tokenTest/Util/DPApiTool.java=UTF-8
+encoding//src/main/java/tokenTest/Util/SMSUtil.java=UTF-8
 encoding//src/main/java/tokenTest/model/User.java=UTF-8
 encoding//src/main/java/tokenTest/service/impl/App.java=UTF-8
 encoding//src/main/java/tokenTest/service/impl/MeetingServiceImpl.java=UTF-8

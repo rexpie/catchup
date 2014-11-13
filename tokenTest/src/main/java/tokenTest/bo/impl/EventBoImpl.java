@@ -45,14 +45,14 @@ public class EventBoImpl implements EventBo {
 
 	@Override
 	@Transactional
-	public List<Event> getEventList(Double longitude, Double latitude,
+	public List getEventList(Double longitude, Double latitude,
 			Integer pagenum, Integer range) {
 		return eventDao.getEventList(longitude, latitude, pagenum, range);
 	}
 
 	@Override
 	@Transactional
-	public List<Event> getEventListByUser(User user, Integer pagenum) {
+	public List getEventListByUser(User user, Integer pagenum) {
 		return eventDao.getEventListByUser(user, pagenum);
 	}
 

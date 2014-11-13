@@ -63,9 +63,16 @@ public class EventServiceImpl implements IEventService {
 				objects = (Object[]) iterator.next();
 				EventInfo eventInfo = new EventInfo((Event) objects[0],
 						(Double) objects[1]);
+				Long totalNum = (Long) objects[2];
+				int totalPage = (int) Math.ceil(totalNum / (double) Constants.NUM_PER_PAGE);
+				if (totalNum == 0){
+					response.setTotal(totalPage);
+					break;
+				}
 				eventInfo.setIndex(index++);
 				eventInfo.setPagenum(pagenum);
 				response.eventList.add(eventInfo);
+				response.setTotal(totalPage);
 			}
 		}
 		return response;
@@ -185,7 +192,35 @@ public class EventServiceImpl implements IEventService {
 			return new EventListResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
-		response.setEvents(eventBo.getEventListByUser(user, pagenum));
+		List list;
+		try {
+			list = eventBo.getEventListByUser(user, pagenum);
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+			return response;
+		}
+
+		if (list != null) {
+			Iterator iterator = list.iterator();
+			Object[] objects = null;
+			int index = 0;
+			while (iterator.hasNext()) {
+				objects = (Object[]) iterator.next();
+				EventInfo eventInfo = new EventInfo((Event) objects[0],
+						0);
+				Long totalNum = (Long) objects[1];
+				int totalPage = (int) Math.ceil(totalNum / (double) Constants.NUM_PER_PAGE);
+				if (totalNum == 0){
+					response.setTotal(totalPage);
+					break;
+				}
+				eventInfo.setIndex(index++);
+				eventInfo.setPagenum(pagenum);
+				response.eventList.add(eventInfo);
+				response.setTotal(totalPage);
+			}
+		}
 		return response;
 	}
 
