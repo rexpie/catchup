@@ -892,7 +892,7 @@ public class UserServiceImpl implements IUserService {
 		Collection<User> others = user.getBlacklist();
 
 		for (User other : others) {
-			response.ids.add(other.getId());
+			response.add(other.getNickname(), Utils.getAge(other.getBirthday()), other.getSex(), other.getId());
 		}
 
 		return response;

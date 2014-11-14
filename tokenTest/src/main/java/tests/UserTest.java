@@ -80,10 +80,10 @@ public class UserTest {
 		
 		ok(userService.block(user1.getId(), user1.getToken(), user2.getId()));
 		ok(userService.blacklist(user1.getId(), user1.getToken()));
-		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).ids.get(0), user2.getId());
+		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).users.get(0), user2.getId());
 		
 		ok(userService.unblock(user1.getId(), user1.getToken(), user2.getId()));
-		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).ids.size(), 0);
+		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).users.size(), 0);
 
 		ok(userService.getUserDetail(user1.getId(), user1.getToken(), null));
 		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).users.size(), 0);
