@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.test.annotation.SystemProfileValueSource;
+import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -570,7 +572,7 @@ public class UserServiceImpl implements IUserService {
 			return new PicResponse(Status.ERR_PIC_FORMAT);
 		}
 
-		String path = servletContext.getRealPath("/") + File.separator
+		String path = getPicPath() + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
 		User user = null;
 		/* 验证用户 */
@@ -621,7 +623,7 @@ public class UserServiceImpl implements IUserService {
 	public PicResponse deletePhoto(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) String picid) {
-		String path = servletContext.getRealPath("/") + File.separator
+		String path = getPicPath() + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
 		User user = null;
 		/* 验证用户 */
@@ -678,7 +680,7 @@ public class UserServiceImpl implements IUserService {
 			@RequestParam(required = true) String picid,
 			@RequestParam(required = false) Integer isThumb,
 			HttpServletResponse response) {
-		String path = servletContext.getRealPath("/") + File.separator
+		String path = getPicPath() + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
 		/* 验证用户 */
 		try {
@@ -767,7 +769,7 @@ public class UserServiceImpl implements IUserService {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = false, defaultValue = "0") Integer isThumb,
 			HttpServletResponse response) {
-		String path = servletContext.getRealPath("/") + File.separator
+		String path = getPicPath() + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
 		/* 验证用户 */
 		User user = null;
@@ -798,6 +800,14 @@ public class UserServiceImpl implements IUserService {
 					return;
 				}
 			}
+		}
+	}
+
+	private String getPicPath() {
+		if (StringUtils.containsIgnoreCase(System.getProperty("os.name"),"windows")){
+			return "E:\\";
+		} else {
+			return "/home/tomcat/data/";
 		}
 	}
 
