@@ -11,7 +11,7 @@ import com.google.common.collect.Sets;
 
 public class UserDetailInnerResponse {
 	private String nickname;
-	private String sex;
+	private String gender;
 	private String building;
 	private String company;
 	private String industry;
@@ -75,7 +75,7 @@ public class UserDetailInnerResponse {
 
 	public UserDetailInnerResponse(User user, boolean isSelf) {
 		this.nickname = user.getNickname();
-		this.sex = user.getSex();
+		this.gender = user.getSex();
 		this.building = user.getBuilding();
 		this.company = user.getCompany();
 		this.birthday = user.getBirthday();
@@ -109,12 +109,12 @@ public class UserDetailInnerResponse {
 		this.nickname = nickname;
 	}
 
-	public String getSex() {
-		return sex;
+	public String getGender() {
+		return gender;
 	}
 
-	public void setSex(String sex) {
-		this.sex = sex;
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
 	public String getBuilding() {

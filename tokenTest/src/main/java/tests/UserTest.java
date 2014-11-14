@@ -119,7 +119,7 @@ public class UserTest {
 		Assert.assertEquals(res.getUser().getAge(), 14);
 		Assert.assertEquals(res.getUser().getBuilding(), building);
 		Assert.assertEquals(res.getUser().getCompany(), company);
-		Assert.assertEquals(res.getUser().getSex(), sex);
+		Assert.assertEquals(res.getUser().getGender(), sex);
 		Assert.assertEquals(res.getUser().getIndustry(), industry);
 		Assert.assertEquals(res.getUser().getJob(), job);
 		
