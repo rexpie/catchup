@@ -80,7 +80,7 @@ public class UserTest {
 		
 		ok(userService.block(user1.getId(), user1.getToken(), user2.getId()));
 		ok(userService.blacklist(user1.getId(), user1.getToken()));
-		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).users.get(0), user2.getId());
+		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).users.get(0).getId(), user2.getId());
 		
 		ok(userService.unblock(user1.getId(), user1.getToken(), user2.getId()));
 		Assert.assertEquals(userService.blacklist(user1.getId(), user1.getToken()).users.size(), 0);
@@ -89,12 +89,12 @@ public class UserTest {
 		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).users.size(), 0);
 		Assert.assertEquals(userService.getViewers(user1.getId(), user1.getToken()).users.size(), 0);
 		ok(userService.getUserDetail(user1.getId(), user1.getToken(), user2.getId()));
-		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).users.get(0), user1.getId());
+		Assert.assertEquals(userService.getViewers(user2.getId(), user2.getToken()).users.get(0).id, user1.getId());
 		
 		
 		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).users.size(),0);
 		ok(userService.like(user2.getId(), user2.getToken(), user1.getId()));
-		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).users.get(0),user2.getId());
+		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).users.get(0).id,user2.getId());
 		ok(userService.cancelLike(user2.getId(), user2.getToken(), user1.getId()));
 		Assert.assertEquals(userService.getLikeUsers(user1.getId(), user1.getToken()).users.size(),0);
 		

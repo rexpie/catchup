@@ -466,7 +466,7 @@ public class UserServiceImpl implements IUserService {
 			return new LoginResponse(Status.ERR_GENERIC);
 		}
 
-		return new LoginResponse(Status.OK);
+		return new LoginResponse(Status.OK, user.getId(), user.getToken());
 	}
 
 	@RequestMapping(value = { "/validatePhone**" }, method = RequestMethod.GET)

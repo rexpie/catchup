@@ -171,7 +171,7 @@ public class PictureBoImpl implements PictureBo {
 		Graphics2D grph = (Graphics2D) newImg.getGraphics();
 		// grph.scale(width / oldImg.getWidth(), height / oldImg.getHeight());
 		grph.drawImage(
-				oldImg.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0,
+				oldImg.getSubimage(0, 0, oldImg.getWidth(), oldImg.getWidth()).getScaledInstance(width, height, Image.SCALE_SMOOTH), 0,
 				0, null);
 		grph.dispose();
 		ImageIO.write(newImg, "png", new File(newImage));
