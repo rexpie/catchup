@@ -85,9 +85,6 @@ public class UserServiceImpl implements IUserService {
 	private ValidationCodeBo validationCodeBo;
 
 	@Autowired
-	private ServletContext servletContext = null;
-
-	@Autowired
 	private ComplaintBo complaintBo;
 
 	@Autowired
@@ -687,19 +684,15 @@ public class UserServiceImpl implements IUserService {
 			userBo.validateUser(id, token);
 		} catch (UserNotFoundException e) {
 			response.setStatus(404);
-			try {
-				new PrintStream(response.getOutputStream()).println("x");
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			return;
 			// TODO: handle exception
 			// return Status.ERR_USER_NOT_FOUND;
 		} catch (WrongTokenException e) {
+			response.setStatus(401);
 			return;
 			// return Status.ERR_WRONG_TOKEN;
 		} catch (Exception e) {
+			response.setStatus(500);
 			e.printStackTrace();
 			return;
 			// return Status.SERVICE_NOT_AVAILABLE;
@@ -776,6 +769,8 @@ public class UserServiceImpl implements IUserService {
 		try {
 			user = userBo.findByUserIdWithDetail(id, Constants.USER_LOAD_PHOTO);
 		} catch (Exception e) {
+			e.printStackTrace();
+			response.setStatus(404);
 			return;
 		}
 

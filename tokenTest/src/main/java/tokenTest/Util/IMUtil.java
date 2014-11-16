@@ -49,6 +49,10 @@ public class IMUtil {
 		}
 	}
 
+	public static String getToken(Long id, String nick, String picURL) {
+		return getToken(String.valueOf(id), nick, picURL);
+	}
+	
 	public static String getToken(String id, String nick, String picURL) {
 		StringBuilder resultBuilder = new StringBuilder();
 		String result = "";
