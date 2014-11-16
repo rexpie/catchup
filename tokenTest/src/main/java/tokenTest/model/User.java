@@ -115,15 +115,15 @@ public class User implements Serializable {
 	@Column(name = "status")
 	private int status;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name = "blacklist", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "blacklist_id") })
 	private Set<User> blacklist;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name = "likes", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "like_id") })
 	private Set<User> likes;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinTable(name = "viewers", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "viewer_id") })
 	private Set<User> viewers;
 

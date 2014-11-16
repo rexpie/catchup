@@ -339,7 +339,7 @@ public class UserServiceImpl implements IUserService {
 				UserDetailResponse.getError(Status.ERR_USER_NOT_FOUND);
 			boolean added = theTarget.getViewers().add(user);
 			if (added) {
-				userBo.update(theTarget);
+				userBo.merge(theTarget);
 			}
 			UserDetailResponse response = new UserDetailResponse(theTarget,
 					false);
