@@ -309,8 +309,7 @@ public class UserServiceImpl implements IUserService {
 						Constants.USER_LOAD_TAGS | Constants.USER_LOAD_VIEWERS
 								| Constants.USER_LOAD_LIKES);
 			} else {
-				user = userBo.validateUserWithDetail(id, token,
-						Constants.USER_LOAD_LIKES);
+				user = userBo.validateUser(id, token);
 			}
 
 		} catch (UserNotFoundException e) {
@@ -343,7 +342,7 @@ public class UserServiceImpl implements IUserService {
 			}
 			UserDetailResponse response = new UserDetailResponse(theTarget,
 					false);
-			response.setAlreadyLiked(user.getLikes().contains(theTarget));
+			response.setAlreadyLiked(theTarget.getLikes().contains(user));
 			return response;
 		}
 	}
