@@ -1,5 +1,9 @@
 package tokenTest.Util;
 
+import java.util.Map;
+
+import com.google.common.collect.Maps;
+
 public enum Status {
 	OK(0),
 
@@ -83,15 +87,34 @@ public enum Status {
 	
 	ERR_INVALID_DATE_FORMAT(-37),
 	
-	ERR_NO_SUCH_EVENT(-38);
+	ERR_NO_SUCH_EVENT(-38),
 
+	SUCCESS(200),
+	
+	ERR_MSG_BLACKLISTED(403),
+	
+	ERR_MSG_SERVICE_UNAVAILABLE(502),
+	
+	ERR_MSG_TIMEOUT(504);
+	
 	int value;
+	
+	private static Map<Integer, Status> map = Maps.newHashMap();
 
+	static {
+		for (Status status: Status.values()){
+			map.put(status.getValue(), status);
+		}
+	}
 	public int getValue() {
 		return value;
 	}
 
 	Status(int val) {
 		value = val;
+	}
+	
+	public static Status get(int i){
+		return map.get(i);
 	}
 }

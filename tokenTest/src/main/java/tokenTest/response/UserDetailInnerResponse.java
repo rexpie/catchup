@@ -24,6 +24,7 @@ public class UserDetailInnerResponse {
 	private int age;
 	private Set<String> tags;
 	private int numOfViews;
+	private boolean blacklisted;
 
 	public synchronized int getNumOfViews() {
 		return numOfViews;
@@ -155,5 +156,13 @@ public class UserDetailInnerResponse {
 
 	public synchronized void setJob(String job) {
 		this.job = job;
+	}
+
+	public boolean isBlacklisted() {
+		return blacklisted;
+	}
+
+	public void setBlacklisted(boolean blacklisted) {
+		this.blacklisted = blacklisted;
 	}
 }

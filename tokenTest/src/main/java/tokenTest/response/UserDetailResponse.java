@@ -51,5 +51,11 @@ public class UserDetailResponse extends StatusResponse {
 			user.setAlreadyLiked(flag);
 		}
 	}
+	
+	public void setBlacklisted(boolean flag){
+		if (user !=null){
+			user.setBlacklisted(flag);
+		}
+	}
 
 }

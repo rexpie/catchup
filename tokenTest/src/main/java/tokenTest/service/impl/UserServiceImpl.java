@@ -340,8 +340,15 @@ public class UserServiceImpl implements IUserService {
 			if (added) {
 				userBo.merge(theTarget);
 			}
+			
 			UserDetailResponse response = new UserDetailResponse(theTarget,
 					false);
+			
+			user = userBo.findByUserIdWithDetail(user.getId(), Constants.USER_LOAD_BLACKLIST);
+			if (user.getBlacklist().contains(theTarget)){
+				response.setBlacklisted(true);
+			}
+			
 			response.setAlreadyLiked(theTarget.getLikes().contains(user));
 			return response;
 		}
