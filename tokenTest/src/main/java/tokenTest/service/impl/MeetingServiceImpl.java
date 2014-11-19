@@ -19,7 +19,6 @@ import tokenTest.Util.Constants;
 import tokenTest.Util.DPApiTool;
 import tokenTest.Util.IMUtil;
 import tokenTest.Util.Status;
-import tokenTest.Util.StringUtil;
 import tokenTest.bo.MeetingBo;
 import tokenTest.bo.ShopBo;
 import tokenTest.bo.UserBo;
@@ -65,7 +64,11 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long shopid,
 			@RequestParam(required = true) String genderConstraint,
-			@RequestParam(required = true) String description) {
+			@RequestParam(required = true) String description,
+			@RequestParam(required = false) String job,
+			@RequestParam(required = false) String building,
+			@RequestParam(required = false) String company
+			) {
 		StatusResponse response = new StatusResponse(Status.OK);
 
 		/* 鏌ユ壘鐢ㄦ埛 */
@@ -83,15 +86,18 @@ public class MeetingServiceImpl implements IMeetingService {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
-
-		if (user.getPic() == null) {
-			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
-			return response;
+		boolean updateFlag = false;
+		if (!StringUtils.isEmpty(job)){
+			user.setJob(job);
+			updateFlag = true;
 		}
-
-		if (StringUtils.isEmpty(user.getSex())) {
-			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_GENDER);
-			return response;
+		if (!StringUtils.isEmpty(company)){
+			user.setCompany(company);
+			updateFlag = true;
+		}
+		if (!StringUtils.isEmpty(building)){
+			user.setBuilding(building);
+			updateFlag = true;
 		}
 
 		if (StringUtils.isEmpty(user.getJob())) {
@@ -101,6 +107,16 @@ public class MeetingServiceImpl implements IMeetingService {
 
 		if (StringUtils.isEmpty(user.getBuilding())) {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_BUILDING);
+			return response;
+		}
+		
+		if (user.getPic() == null) {
+			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
+			return response;
+		}
+
+		if (StringUtils.isEmpty(user.getSex())) {
+			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_GENDER);
 			return response;
 		}
 
@@ -135,6 +151,10 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
+		//TODO async
+		if (updateFlag){
+			userBo.update(user);
+		}
 		return response;
 	}
 
@@ -603,6 +623,12 @@ public class MeetingServiceImpl implements IMeetingService {
 		}
 		response.setStatus(Status.OK);
 		return response;
+	}
+
+	@Override
+	public StatusResponse newMeeting(Long id, String token, Long shopid,
+			String genderConstraint, String description) {
+		return newMeeting(id,token,shopid,genderConstraint,description,null,null,null);
 	}
 
 }

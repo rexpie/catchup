@@ -27,6 +27,8 @@ public class UserDetailInnerResponse {
 	private int numOfViews;
 	private boolean blacklisted;
 
+	private boolean hasPic;
+	
 	public synchronized int getNumOfViews() {
 		return numOfViews;
 	}
@@ -88,6 +90,7 @@ public class UserDetailInnerResponse {
 		this.industry = user.getIndustry();
 		this.job = user.getJob();
 		this.city = user.getCity();
+		this.hasPic = user.getPic() == null ? false : user.getPic().getId() != null;
 		// this.pic=user.getPic();
 		if (isSelf) {
 			this.phonenum = user.getPhone_number();
@@ -174,5 +177,13 @@ public class UserDetailInnerResponse {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public boolean isHasPic() {
+		return hasPic;
+	}
+
+	public void setHasPic(boolean hasPic) {
+		this.hasPic = hasPic;
 	}
 }
