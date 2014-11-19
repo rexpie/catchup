@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tokenTest.Util.Constants;
 import tokenTest.Util.DPApiTool;
+import tokenTest.Util.IMUtil;
 import tokenTest.Util.Status;
 import tokenTest.Util.StringUtil;
 import tokenTest.bo.MeetingBo;
@@ -430,6 +431,7 @@ public class MeetingServiceImpl implements IMeetingService {
 			response.setStatus(Status.ERR_TOO_MANY_APPLY);
 			return response;
 		}
+		IMUtil.startTextConversation(user.getId(), meeting.getOwner().getId(), Constants.MSG_APPLY_MEETING);
 		response.setStatus(Status.OK);
 		return response;
 	}
@@ -488,6 +490,9 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
+		if (approved){
+			IMUtil.startTextConversation(user.getId(), meeting.getOwner().getId(), Constants.MSG_APPLY_APPROVED);
+		}
 		response.setStatus(Status.OK);
 		return response;
 	}
@@ -592,6 +597,10 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
+		//TODO async
+		for (User target : meeting.getParticipator()){
+			IMUtil.startTextConversation(user.getId(), target.getId(), Constants.MSG_MEETING_STOP);
+		}
 		response.setStatus(Status.OK);
 		return response;
 	}

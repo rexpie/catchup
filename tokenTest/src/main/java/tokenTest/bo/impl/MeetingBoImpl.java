@@ -2,17 +2,14 @@ package tokenTest.bo.impl;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-
 import tokenTest.Util.Constants;
-import tokenTest.Util.MessageUtil;
+import tokenTest.Util.IMUtil;
 import tokenTest.Util.Messages;
 import tokenTest.Util.Status;
 import tokenTest.bo.MeetingBo;
@@ -25,7 +22,6 @@ import tokenTest.exception.TooManyAppliesException;
 import tokenTest.model.Meeting;
 import tokenTest.model.MeetingApply;
 import tokenTest.model.User;
-import tokenTest.response.ApplyInfo;
 
 @Service("meetingBo")
 public class MeetingBoImpl implements MeetingBo {
@@ -176,8 +172,8 @@ public class MeetingBoImpl implements MeetingBo {
 	@Override
 	public Status stopMeeting(Meeting meeting, String cancelReason) {
 		User user = meeting.getOwner();
-		MessageUtil.notifyUser(user,
-				Messages.WARN_STOP_WITH_APPLICANTS.toString());
+		IMUtil.notifyUser(user,
+				Messages.WARN_STOP_WITH_APPLICANTS);
 
 		try {
 			for (MeetingApply apply : meetingApplyDao

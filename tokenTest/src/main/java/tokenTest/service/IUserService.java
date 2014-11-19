@@ -70,7 +70,7 @@ public interface IUserService {
 	PhotoListResponse listPhoto(Long id, String token);
 
 	StatusResponse updateUserProfile(Long id, String token, String nickname,
-			String building, String birthday, String sex, String job,
+			String building, String birthday, String sex, String job, String city,
 			String industry, String company);
 
 	StatusResponse cancelLike(Long id, String token, Long targetId);

@@ -41,5 +41,9 @@ public class Constants {
 	public static final int USER_LOAD_PHOTO		= 0x1 << 5;
 	public static final int USER_LOAD_ALL = 
 			USER_LOAD_TAGS | USER_LOAD_BLACKLIST | USER_LOAD_PICTURES | USER_LOAD_VIEWERS | USER_LOAD_LIKES | USER_LOAD_PHOTO;
+	
+	public static final String MSG_APPLY_MEETING = "";
+	public static final String MSG_APPLY_APPROVED = "";
+	public static final String MSG_MEETING_STOP = "";
 
 }

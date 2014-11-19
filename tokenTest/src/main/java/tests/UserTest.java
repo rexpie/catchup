@@ -111,9 +111,10 @@ public class UserTest {
 		String birthday = "20000101";
 		String sex = "M";
 		String job = "a job";
+		String city = "random.city";
 		String industry = "an ind";
 		String company = "random.co";
-		ok(userService.updateUserProfile(user1.getId(), user1.getToken(), user1.getNickname(), building, birthday, sex, job, industry, company));
+		ok(userService.updateUserProfile(user1.getId(), user1.getToken(), user1.getNickname(), building, birthday, sex, job, city, industry, company));
 		UserDetailResponse res = userService.getUserDetail(user1.getId(), user1.getToken(), user1.getId());
 		
 		Assert.assertEquals(res.getUser().getAge(), 14);

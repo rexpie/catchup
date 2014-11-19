@@ -26,6 +26,8 @@ import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.MissingNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import tokenTest.model.User;
+
 import com.google.common.collect.Lists;
 
 public class IMUtil {
@@ -52,28 +54,37 @@ public class IMUtil {
 
 		String result = "";
 		JsonNode tree = _sendRequest(URLString, nameValuePairs);
-		
+
 		if (tree.get("code").asInt() == 200) {
 			result = tree.get("token").asText();
 		}
-		
+
 		return result;
 	}
 
-	public static Status startTextConversation(String fromUserId, String toUserId, String content){
-		String contentString = "{\"content\":\"" +content+"\"}";
-		return startConversation(fromUserId, toUserId, "RC:TxtMsg", contentString);
+	public static Status startTextConversation(Long fromUserId, Long toUserId,
+			String content) {
+		return startTextConversation(String.valueOf(fromUserId),
+				String.valueOf(toUserId), content);
 	}
-	
-	public static Status startConversation(String fromUserId, String toUserId, String objectName, String content){
-		
+
+	public static Status startTextConversation(String fromUserId,
+			String toUserId, String content) {
+		String contentString = "{\"content\":\"" + content + "\"}";
+		return startConversation(fromUserId, toUserId, "RC:TxtMsg",
+				contentString);
+	}
+
+	public static Status startConversation(String fromUserId, String toUserId,
+			String objectName, String content) {
+
 		final List<NameValuePair> nameValuePairs = Lists.newArrayList();
-		
+
 		nameValuePairs.add(new BasicNameValuePair("fromUserId", fromUserId));
 		nameValuePairs.add(new BasicNameValuePair("toUserId", toUserId));
 		nameValuePairs.add(new BasicNameValuePair("objectName", objectName));
 		nameValuePairs.add(new BasicNameValuePair("content", content));
-		
+
 		String URLString = RONG_BASE_URL + "message/publish.json";
 
 		JsonNode tree = _sendRequest(URLString, nameValuePairs);
@@ -116,12 +127,11 @@ public class IMUtil {
 			reader.close();
 
 			JsonNode tree = JSON_MAPPER.readTree(resultBuilder.toString());
-			
 
 			// do something useful with the response body
 			// and ensure it is fully consumed
 			EntityUtils.consume(responseEntity);
-			
+
 			return tree;
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -142,4 +152,8 @@ public class IMUtil {
 		return String.valueOf(Math.abs(RandomUtils.nextInt(100000)));
 	}
 
+
+	public static void notifyUser(User user, Enum message){
+		// TODO
+	}
 }

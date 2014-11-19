@@ -36,7 +36,8 @@ public class MeetingTest {
 				"spring/config/BeanLocations.xml");
 		UserBo userBo = (UserBo) appContext.getBean("userBo");
 		MeetingBo meetingBo = (MeetingBo) appContext.getBean("meetingBo");
-		ValidationCodeBo validationCodeBo = (ValidationCodeBo) appContext.getBean("validationCodeBo");
+		ValidationCodeBo validationCodeBo = (ValidationCodeBo) appContext
+				.getBean("validationCodeBo");
 		for (long i = 0; i < 10; i++) {
 			try {
 				Meeting m = meetingBo.getMeetingById(i);
@@ -69,8 +70,8 @@ public class MeetingTest {
 			code.setCode("8888");
 			code.setPhoneNum(phone[i]);
 			validationCodeBo.save(code);
-			ok(userService.userRegister(nickName[i], pass[i], phone[i], "8888", null,
-					null, null, null));
+			ok(userService.userRegister(nickName[i], pass[i], phone[i], "8888",
+					null, null, null, null));
 			user[i] = userBo.findByNickOrPhone(nickName[i]);
 		}
 
@@ -102,21 +103,22 @@ public class MeetingTest {
 		String industry = "an ind";
 		String company = "random.co";
 		ok(userService.updateUserProfile(user[1].getId(), user[1].getToken(),
-				user[1].getNickname(), null, null, sex, null, null, null));
+				user[1].getNickname(), null, null, sex, null, null, null, null));
 
 		notok(service.newMeeting(user[1].getId(), user[1].getToken(),
 				10349478L, "N", "new meeting"),
 				Status.ERR_NEW_MEETING_MUST_HAVE_JOB);
 
 		ok(userService.updateUserProfile(user[1].getId(), user[1].getToken(),
-				user[1].getNickname(), null, null, null, job, null, null));
+				user[1].getNickname(), null, null, null, job, null, null, null));
 
 		notok(service.newMeeting(user[1].getId(), user[1].getToken(),
 				10349478L, "N", "new meeting"),
 				Status.ERR_NEW_MEETING_MUST_HAVE_BUILDING);
 
 		ok(userService.updateUserProfile(user[1].getId(), user[1].getToken(),
-				user[1].getNickname(), building, null, null, null, null, null));
+				user[1].getNickname(), building, null, null, null, null, null,
+				null));
 
 		notok(service.newMeeting(user[1].getId(), user[1].getToken(), -1L, "N",
 				"new meeting"), Status.ERR_SHOP_NOT_FOUND);
@@ -130,7 +132,7 @@ public class MeetingTest {
 		for (int i = 2; i < 9; i++) {
 			ok(userService.updateUserProfile(user[i].getId(),
 					user[i].getToken(), user[i].getNickname(), building, null,
-					"F", job, industry, null));
+					"F", job, null, industry, null));
 			ok(service.newMeeting(user[i].getId(), user[i].getToken(),
 					10349478L, "F", "new meeting"));
 		}
@@ -145,11 +147,11 @@ public class MeetingTest {
 		notok(service.applyForMeeting(user[9].getId(), user[9].getToken(), 2L,
 				""), Status.ERR_INVALID_GENDER);
 		ok(userService.updateUserProfile(user[9].getId(), user[9].getToken(),
-				user[9].getNickname(), null, null, "M", null, null, null));
+				user[9].getNickname(), null, null, "M", null, null, null, null));
 		notok(service.applyForMeeting(user[9].getId(), user[9].getToken(), 2L,
 				""), Status.ERR_INVALID_GENDER);
 		ok(userService.updateUserProfile(user[9].getId(), user[9].getToken(),
-				user[9].getNickname(), null, null, "F", null, null, null));
+				user[9].getNickname(), null, null, "F", null, null, null, null));
 		ok(service.applyForMeeting(user[9].getId(), user[9].getToken(), 2L, ""));
 
 		ok(userService.block(user[1].getId(), user[1].getToken(),
@@ -194,17 +196,15 @@ public class MeetingTest {
 		mlr = service.getMyPartMeetingList(applierid,
 				userBo.findByUserId(applierid).getToken(), 0);
 		Assert.assertEquals(0, mlr.getMeetingList().size());
-		
-		mlr = service.getMeetingList(
-				shop.getLongitude(), shop.getLatitude(), 0, 1, 1000, "", "",
-				"", applierid, userBo.findByUserId(applierid).getToken());
-		
-		
+
+		mlr = service.getMeetingList(shop.getLongitude(), shop.getLatitude(),
+				0, 1, 1000, "", "", "", applierid,
+				userBo.findByUserId(applierid).getToken());
+
 		ok(service.processMeetingApply(user[1].getId(), user[1].getToken(), mdr
 				.getApplicants().get(0).getApplyId(), true));
 
-		mlr = service.getMyMeetingList(user[1].getId(),
-				user[1].getToken(), 0);
+		mlr = service.getMyMeetingList(user[1].getId(), user[1].getToken(), 0);
 		mdr = service.getMeetingDetail(user[1].getId(), user[1].getToken(), mlr
 				.getMeetingList().get(0).getMeetingid());
 		ok(mdr);

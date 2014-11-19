@@ -65,14 +65,14 @@ public class App {
 		service.userRegister("rexpie", "pass", "13818860403", "8888", null, null, null,null);
 
 		User rexpie = userBo.findByNickOrPhone("rexpie");
-		service.updateUserProfile(rexpie.getId(), rexpie.getToken(), null, "嘉里城", null, "M", "analyst","IT", "MS");
+//		service.updateUserProfile(rexpie.getId(), rexpie.getToken(), null, "嘉里城", null, "M", "analyst","IT", "MS");
 		
 		//gen peach
 		validationCodeBo.save(new ValidationCode("8888", d, "13818860404", 0, d));
 		service.userRegister("peach", "ppass", "13818860404", "8888", null, null, null,null);
 
 		User peach = userBo.findByNickOrPhone("peach");
-		service.updateUserProfile(peach.getId(), peach.getToken(), null, "??", null, "M", "analyst","IT", "CCB");
+//		service.updateUserProfile(peach.getId(), peach.getToken(), null, "??", null, "M", "analyst","IT", "CCB");
 		
 		//gen NPC
 		for (int i = 0;i <20;i++){
@@ -80,7 +80,7 @@ public class App {
 			service.userRegister("NPC"+i, "ppass", (13818800000L + i) + "", "8888", null, null, null,null);
 
 			User npc = userBo.findByNickOrPhone("NPC"+i);
-			service.updateUserProfile(npc.getId(), npc.getToken(), null, "building"+i, null, i%2==0?"M":"F", "job"+i,"IT", "?");
+//			service.updateUserProfile(npc.getId(), npc.getToken(), null, "building"+i, null, i%2==0?"M":"F", "job"+i,"IT", "?");
 
 		}
 	}

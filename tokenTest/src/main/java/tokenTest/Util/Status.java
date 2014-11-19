@@ -95,7 +95,9 @@ public enum Status {
 	
 	ERR_MSG_SERVICE_UNAVAILABLE(502),
 	
-	ERR_MSG_TIMEOUT(504);
+	ERR_MSG_TIMEOUT(504),
+	
+	ERR_TAG_FORMAT(-39);
 	
 	int value;
 	

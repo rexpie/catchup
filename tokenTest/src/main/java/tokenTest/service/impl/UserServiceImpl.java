@@ -21,6 +21,9 @@ import javax.transaction.Transactional;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -94,6 +97,8 @@ public class UserServiceImpl implements IUserService {
 	private TagBo tagBo;
 
 	private SimpleDateFormat birthdayFormat = new SimpleDateFormat("yyyyMMdd");
+
+	private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
 
 	/*
 	 * (non-Javadoc)
@@ -372,6 +377,7 @@ public class UserServiceImpl implements IUserService {
 			@RequestParam(required = false) String birthday,
 			@RequestParam(required = false) String sex,
 			@RequestParam(required = false) String job,
+			@RequestParam(required = false) String city,
 			@RequestParam(required = false) String industry,
 			@RequestParam(required = false) String company) {
 		User user = null;
@@ -410,6 +416,8 @@ public class UserServiceImpl implements IUserService {
 		}
 		if (job != null)
 			user.setJob(job);
+		if (city != null)
+			user.setCity(city);
 		if (industry != null)
 			user.setIndustry(industry);
 		if (company != null)
@@ -1065,14 +1073,28 @@ public class UserServiceImpl implements IUserService {
 		Set<Tag> newTags = Sets.newHashSet();
 
 		if (tags.length() > 0) {
-			for (String tag : tags.split(",")) {
-				Tag newTag;
-				newTag = tagBo.findByTagName(tag);
-				if (newTag == null) {
-					newTag = new Tag(tag);
+			try {
+				JsonNode tree = JSON_MAPPER.readTree(tags);
+				Iterator<JsonNode> iterator = tree.iterator();
+				while (iterator.hasNext()){
+					JsonNode tagNode = iterator.next();
+					String tag = tagNode.asText();
+					Tag newTag;
+					newTag = tagBo.findByTagName(tag);
+					if (newTag == null) {
+						newTag = new Tag(tag);
+					}
+					newTags.add(newTag);
 				}
-				newTags.add(newTag);
+			} catch (JsonProcessingException e) {
+				e.printStackTrace();
+				response.setStatus(Status.ERR_TAG_FORMAT);
+			} catch (IOException e) {
+				e.printStackTrace();
+				response.setStatus(Status.ERR_TAG_FORMAT);
 			}
+
+			
 		}
 
 		user.setTags(newTags);
@@ -1136,7 +1158,9 @@ public class UserServiceImpl implements IUserService {
 		ViewersResponse response = new ViewersResponse(Status.OK);
 
 		for (User other : user.getViewers()) {
-			response.add(other.getNickname(), Utils.getAge(other.getBirthday()), other.getSex(), other.getId());
+			response.add(other.getNickname(),
+					Utils.getAge(other.getBirthday()), other.getSex(),
+					other.getId());
 		}
 		return response;
 	}

@@ -16,6 +16,7 @@ public class UserDetailInnerResponse {
 	private String company;
 	private String industry;
 	private String job;
+	private String city;
 
 	private Date birthday;
 	private long numOfLikes;
@@ -86,6 +87,7 @@ public class UserDetailInnerResponse {
 		this.age = Utils.getAge(birthday);
 		this.industry = user.getIndustry();
 		this.job = user.getJob();
+		this.city = user.getCity();
 		// this.pic=user.getPic();
 		if (isSelf) {
 			this.phonenum = user.getPhone_number();
@@ -164,5 +166,13 @@ public class UserDetailInnerResponse {
 
 	public void setBlacklisted(boolean blacklisted) {
 		this.blacklisted = blacklisted;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 }

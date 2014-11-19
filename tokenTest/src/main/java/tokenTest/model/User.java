@@ -81,6 +81,9 @@ public class User implements Serializable {
 	@Column(name = "job", length = 30)
 	private String job;
 	
+	@Column(name = "city", length = 30)
+	private String city;
+	
 	@Column(name = "industry", length = 30)
 	private String industry;
 //
@@ -357,5 +360,13 @@ public class User implements Serializable {
 
 	public void setViewers(Set<User> viewers) {
 		this.viewers = viewers;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 }
