@@ -62,6 +62,18 @@ public class IMUtil {
 		return result;
 	}
 
+	public static Status startSystemDelegateConversation(String fromUserName, Long toUserId,
+			String content) {
+		return startTextConversation(String.valueOf(Constants.MSG_SYSTEM_UID),
+				String.valueOf(toUserId), String.format(content, fromUserName));
+	}
+
+	public static Status startSystemConversation(Long toUserId,
+			String content) {
+		return startTextConversation(String.valueOf(Constants.MSG_SYSTEM_UID),
+				String.valueOf(toUserId), content);
+	}
+
 	public static Status startTextConversation(Long fromUserId, Long toUserId,
 			String content) {
 		return startTextConversation(String.valueOf(fromUserId),

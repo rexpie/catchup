@@ -619,7 +619,7 @@ public class MeetingServiceImpl implements IMeetingService {
 
 		//TODO async
 		for (User target : meeting.getParticipator()){
-			IMUtil.startTextConversation(user.getId(), target.getId(), Constants.MSG_MEETING_STOP);
+			IMUtil.startSystemDelegateConversation(user.getNickname(), target.getId(), Constants.MSG_MEETING_STOP);
 		}
 		response.setStatus(Status.OK);
 		return response;

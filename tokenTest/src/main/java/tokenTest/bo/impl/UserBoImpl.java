@@ -156,6 +156,8 @@ public class UserBoImpl implements UserBo {
 				Hibernate.initialize(user.getLikes());
 			if ((Constants.USER_LOAD_PHOTO & loadFlags) > 0)
 				Hibernate.initialize(user.getPic());
+			if ((Constants.USER_LOAD_BIZCARD & loadFlags) > 0)
+				Hibernate.initialize(user.getBizCard());
 		}
 	}
 

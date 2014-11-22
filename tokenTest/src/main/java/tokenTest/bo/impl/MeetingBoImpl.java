@@ -146,6 +146,7 @@ public class MeetingBoImpl implements MeetingBo {
 		meetingDao.update(meetingApply.getToMeeting());
 		meetingApplyDao.update(meetingApply);
 
+		//TODO async
 		/* 清除其他申请 */
 		Iterator iterator = meetingApplyDao.getApplyByUser(
 				meetingApply.getFromUser()).iterator();
@@ -154,6 +155,8 @@ public class MeetingBoImpl implements MeetingBo {
 			otherApply = (MeetingApply) iterator.next();
 			otherApply.setStatus(Constants.APPLY_STATUS_WITHDRAWN_BY_SYS);
 			meetingApplyDao.update(otherApply);
+			Long ownerid = otherApply.getToMeeting().getOwner().getId();
+			IMUtil.startSystemDelegateConversation(meetingApply.getFromUser().getNickname(), ownerid, Constants.MSG_APPLY_WITHDRAWN_BY_SYS);
 		}
 		// TODO rex send messages
 

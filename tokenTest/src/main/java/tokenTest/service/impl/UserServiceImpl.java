@@ -6,7 +6,6 @@ package tokenTest.service.impl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -14,7 +13,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
@@ -27,14 +25,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.test.annotation.SystemProfileValueSource;
-import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import tokenTest.Util.Constants;
 import tokenTest.Util.SMSUtil;
@@ -120,7 +117,7 @@ public class UserServiceImpl implements IUserService {
 			@RequestParam(required = false) String company) {
 		/* 必填信息 */
 		User user = new User(password, nickName, gender, building, phoneNum);
-		
+
 		ValidationCode validationCode = null;
 		try {
 			validationCode = validationCodeBo.findByPhoneNum(phoneNum);
@@ -135,8 +132,7 @@ public class UserServiceImpl implements IUserService {
 		}
 
 		// code found, check status
-		if (validationCode.getStatus() == ValidationCodeStatus.NEW
-				.getValue()) {
+		if (validationCode.getStatus() == ValidationCodeStatus.NEW.getValue()) {
 			// valid status
 			if (StringUtils.equals(validationCode.getCode(), code)) {
 				// matching code, clear validatino status
@@ -150,8 +146,7 @@ public class UserServiceImpl implements IUserService {
 			// code not matching
 			return new LoginResponse(Status.ERR_WRONG_VALIDATION_CODE);
 		}
-		
-		
+
 		user.setLogin_attempts(0);
 
 		/* 非必填信息 */
@@ -345,15 +340,16 @@ public class UserServiceImpl implements IUserService {
 			if (added) {
 				userBo.merge(theTarget);
 			}
-			
+
 			UserDetailResponse response = new UserDetailResponse(theTarget,
 					false);
-			
-			user = userBo.findByUserIdWithDetail(user.getId(), Constants.USER_LOAD_BLACKLIST);
-			if (user.getBlacklist().contains(theTarget)){
+
+			user = userBo.findByUserIdWithDetail(user.getId(),
+					Constants.USER_LOAD_BLACKLIST);
+			if (user.getBlacklist().contains(theTarget)) {
 				response.setBlacklisted(true);
 			}
-			
+
 			response.setAlreadyLiked(theTarget.getLikes().contains(user));
 			return response;
 		}
@@ -588,10 +584,12 @@ public class UserServiceImpl implements IUserService {
 		User user = null;
 		/* 验证用户 */
 		try {
-			if (isProfile != null && isProfile){
-				user = userBo.validateUserWithDetail(id, token, Constants.USER_LOAD_PHOTO);
-			}else{
-				user = userBo.validateUserWithDetail(id, token, Constants.USER_LOAD_PICTURES);
+			if (isProfile != null && isProfile) {
+				user = userBo.validateUserWithDetail(id, token,
+						Constants.USER_LOAD_PHOTO);
+			} else {
+				user = userBo.validateUserWithDetail(id, token,
+						Constants.USER_LOAD_PICTURES);
 			}
 		} catch (UserNotFoundException e) {
 			return new PicResponse(Status.ERR_USER_NOT_FOUND);
@@ -628,6 +626,50 @@ public class UserServiceImpl implements IUserService {
 		} else {
 			return new PicResponse(Status.OK);
 		}
+	}
+
+	@RequestMapping(value = { "/addBizcard**" }, method = RequestMethod.POST)
+	public PicResponse addBizcard(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestBody(required = true) MultipartFile file) {
+
+		/* 验证图片 */
+		if (!StringUtils.equals(file.getContentType(), "image/png")) {
+			/* 文件格式错误 */
+			return new PicResponse(Status.ERR_PIC_FORMAT);
+		}
+
+		String path = getPicPath() + File.separator
+				+ Constants.PICTURE_ROOT_PATH;
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_BIZCARD);
+		} catch (UserNotFoundException e) {
+			return new PicResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new PicResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		/* 新建图片 */
+
+		Picture picture = new Picture(new Date());
+
+		try {
+			pictureBo.saveBizcard(user, file, picture, path, true);
+		} catch (IOException e) {
+			/* 文件IO */
+			e.printStackTrace();
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new PicResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+		return new PicResponse(Status.OK);
 	}
 
 	@RequestMapping(value = { "/deletePhoto**" }, method = RequestMethod.GET)
@@ -812,8 +854,63 @@ public class UserServiceImpl implements IUserService {
 		}
 	}
 
+	@RequestMapping(value = { "/getBizcard**" }, method = RequestMethod.GET)
+	public void getBizcard(@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = false) Long target,
+			HttpServletResponse response) {
+		String path = getPicPath() + File.separator
+				+ Constants.PICTURE_ROOT_PATH;
+		/* 验证用户 */
+		User user = null;
+		/* 查找用户 */
+		try {
+			if (target == null || target == id) {
+				user = userBo.validateUserWithDetail(id, token,
+						Constants.USER_LOAD_BIZCARD);
+			} else {
+				user = userBo.validateUser(target, token);
+			}
+
+		} catch (UserNotFoundException e) {
+			response.setStatus(404);
+			return;
+			// return Status.ERR_USER_NOT_FOUND;
+		} catch (WrongTokenException e) {
+			response.setStatus(401);
+			return;
+			// return Status.ERR_WRONG_TOKEN;
+		} catch (Exception e) {
+			response.setStatus(500);
+			e.printStackTrace();
+			return;
+			// return Status.SERVICE_NOT_AVAILABLE;
+		}
+		
+		
+		if (user != null) {
+			/* 返回原图或者小图 */
+			path += File.separator + Constants.RIGIN_PICTURE_PATH;
+			if (user.getBizCard() == null) {
+				return;
+			}
+			File file = new File(path + File.separator
+					+ user.getBizCard().getFilename());
+			if (file.exists()) {
+				try {
+					FileInputStream is = new FileInputStream(file);
+					IOUtils.copy(is, response.getOutputStream());
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				}
+			}
+		}
+	}
+
 	private String getPicPath() {
-		if (StringUtils.containsIgnoreCase(System.getProperty("os.name"),"windows")){
+		if (StringUtils.containsIgnoreCase(System.getProperty("os.name"),
+				"windows")) {
 			return "E:\\";
 		} else {
 			return "/home/tomcat/data/";
@@ -901,7 +998,9 @@ public class UserServiceImpl implements IUserService {
 		Collection<User> others = user.getBlacklist();
 
 		for (User other : others) {
-			response.add(other.getNickname(), Utils.getAge(other.getBirthday()), other.getSex(), other.getId());
+			response.add(other.getNickname(),
+					Utils.getAge(other.getBirthday()), other.getSex(),
+					other.getId());
 		}
 
 		return response;
@@ -1076,7 +1175,7 @@ public class UserServiceImpl implements IUserService {
 			try {
 				JsonNode tree = JSON_MAPPER.readTree(tags);
 				Iterator<JsonNode> iterator = tree.iterator();
-				while (iterator.hasNext()){
+				while (iterator.hasNext()) {
 					JsonNode tagNode = iterator.next();
 					String tag = tagNode.asText();
 					Tag newTag;
@@ -1094,7 +1193,6 @@ public class UserServiceImpl implements IUserService {
 				response.setStatus(Status.ERR_TAG_FORMAT);
 			}
 
-			
 		}
 
 		user.setTags(newTags);
@@ -1131,7 +1229,9 @@ public class UserServiceImpl implements IUserService {
 		LikeUsersResponse response = new LikeUsersResponse(Status.OK);
 
 		for (User other : user.getLikes()) {
-			response.add(other.getNickname(), Utils.getAge(other.getBirthday()), other.getSex(), other.getId());
+			response.add(other.getNickname(),
+					Utils.getAge(other.getBirthday()), other.getSex(),
+					other.getId());
 		}
 		return response;
 	}
@@ -1281,5 +1381,10 @@ public class UserServiceImpl implements IUserService {
 		}
 		return response;
 	}
-
+	
+	
+	@RequestMapping(value = { "/validateBizcard**" }, method = RequestMethod.GET)
+	public ModelAndView validateBizcard() {
+		return new ModelAndView("validateBizcard");
+	}
 }

@@ -3,9 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>pinzhuo</groupId>
 	<artifactId>tokenTest</artifactId>
-	<version>0.0.1-SNAPSHOT</version><!-- <build > <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-		<artifactId>maven-war-plugin</artifactId> <configuration> <version>3.0</version> 
-		</configuration> </plugin> </plugins> </build> -->
+	<version>0.0.1-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>

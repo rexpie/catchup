@@ -39,11 +39,15 @@ public class Constants {
 	public static final int USER_LOAD_VIEWERS	= 0x1 << 3;
 	public static final int USER_LOAD_LIKES		= 0x1 << 4;
 	public static final int USER_LOAD_PHOTO		= 0x1 << 5;
+	public static final int USER_LOAD_BIZCARD	= 0x1 << 6;
 	public static final int USER_LOAD_ALL = 
-			USER_LOAD_TAGS | USER_LOAD_BLACKLIST | USER_LOAD_PICTURES | USER_LOAD_VIEWERS | USER_LOAD_LIKES | USER_LOAD_PHOTO;
+			USER_LOAD_TAGS | USER_LOAD_BLACKLIST | USER_LOAD_PICTURES | USER_LOAD_VIEWERS | USER_LOAD_LIKES | USER_LOAD_PHOTO | USER_LOAD_BIZCARD;
 	
-	public static final String MSG_APPLY_MEETING = "";
-	public static final String MSG_APPLY_APPROVED = "";
-	public static final String MSG_MEETING_STOP = "";
+	public static final String MSG_APPLY_MEETING = "[系统通知]Hi~我申请了你发起的约会";
+	public static final String MSG_APPLY_APPROVED = "[系统通知]Hi~很高兴能和你见面，咱去聊聊吧";
+	public static final String MSG_MEETING_STOP = "[系统通知]您好，用户[%s]挥泪与您告知不能赴约，请见谅。";
+	public static final String MSG_APPLY_WITHDRAWN_BY_SYS = "[系统通知]您好，用户[%s]挥泪与您告知不能赴约，请见谅。";
+	
+	public static final long MSG_SYSTEM_UID = -1L;
 
 }

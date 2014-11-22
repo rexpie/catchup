@@ -27,4 +27,7 @@ public interface PictureBo {
 
 	void saveScaleImage(String originalImage, String newImage, Integer width,
 			Integer height) throws IOException;
+
+	void saveBizcard(User user, MultipartFile file, Picture picture,
+			String path, boolean b) throws IOException;
 }

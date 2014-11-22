@@ -17,6 +17,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -70,25 +72,33 @@ public class User implements Serializable {
 	@JoinColumn(name = "pic_id", unique = true)
 	private Picture pic; // 澶村儚
 
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "bizCard_id", unique = true)
+	private Picture bizCard; // 澶村儚
+
+	@Column
+	private Boolean bizCardValidated;
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "user_tag", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "tag_id") })
 	private Set<Tag> tags;
 
-	/* 闈炲繀濉俊鎭�*/
+	/* 闈炲繀濉俊鎭� */
 	@Column(name = "company", length = 128)
 	private String company;
 
 	@Column(name = "job", length = 30)
 	private String job;
-	
+
 	@Column(name = "city", length = 30)
 	private String city;
-	
+
 	@Column(name = "industry", length = 30)
 	private String industry;
-//
-//	@Column(name = "email_address", length = 128)
-//	private String email_address;
+
+	//
+	// @Column(name = "email_address", length = 128)
+	// private String email_address;
 
 	public String getIndustry() {
 		return industry;
@@ -129,7 +139,6 @@ public class User implements Serializable {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "viewers", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = { @JoinColumn(name = "viewer_id") })
 	private Set<User> viewers;
-
 
 	@Override
 	public int hashCode() {
@@ -182,7 +191,7 @@ public class User implements Serializable {
 		this.birthday = birthday;
 		this.zan_count = zan_count;
 		this.phone_number = phone_number;
-//		this.email_address = email_address;
+		// this.email_address = email_address;
 		this.status = 1;
 	}
 
@@ -281,14 +290,15 @@ public class User implements Serializable {
 	public void setPhone_number(String phone_number) {
 		this.phone_number = phone_number;
 	}
-//
-//	public String getEmail_address() {
-//		return email_address;
-//	}
-//
-//	public void setEmail_address(String email_address) {
-//		this.email_address = email_address;
-//	}
+
+	//
+	// public String getEmail_address() {
+	// return email_address;
+	// }
+	//
+	// public void setEmail_address(String email_address) {
+	// this.email_address = email_address;
+	// }
 
 	public int getStatus() {
 		return status;
@@ -368,5 +378,32 @@ public class User implements Serializable {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public Picture getBizCard() {
+		return bizCard;
+	}
+
+	public void setBizCard(Picture bizCard) {
+		this.bizCard = bizCard;
+	}
+
+	public Boolean getBizCardValidated() {
+		return bizCardValidated;
+	}
+
+	public void setBizCardValidated(Boolean bizCardValidated) {
+		this.bizCardValidated = bizCardValidated;
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		create_time = new Date();
+		setBizCardValidated(false);
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		update_time = new Date();
 	}
 }

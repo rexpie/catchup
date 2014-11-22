@@ -171,9 +171,72 @@ public class PictureBoImpl implements PictureBo {
 		Graphics2D grph = (Graphics2D) newImg.getGraphics();
 		// grph.scale(width / oldImg.getWidth(), height / oldImg.getHeight());
 		grph.drawImage(
-				oldImg.getSubimage(0, 0, oldImg.getWidth(), oldImg.getWidth()).getScaledInstance(width, height, Image.SCALE_SMOOTH), 0,
-				0, null);
+				oldImg.getSubimage(0, 0, oldImg.getWidth(), oldImg.getWidth())
+						.getScaledInstance(width, height, Image.SCALE_SMOOTH),
+				0, 0, null);
 		grph.dispose();
 		ImageIO.write(newImg, "png", new File(newImage));
+	}
+
+	@Override
+	@Transactional
+	public void saveBizcard(User user, MultipartFile file, Picture picture,
+			String path, boolean b) throws IOException {
+
+		/* 建立文件来存储上传的图片 */
+		File destination = new File(path + File.separator
+				+ Constants.THUMB_PICTURE_PATH);
+		if (!destination.exists())
+			destination.mkdirs();
+
+		destination = new File(path + File.separator
+				+ Constants.RIGIN_PICTURE_PATH);
+		if (!destination.exists())
+			destination.mkdirs();
+
+		/* 随机出文件名 */
+		String filename = RandomStringUtils.randomAlphanumeric(30);
+		destination = new File(path + File.separator
+				+ Constants.RIGIN_PICTURE_PATH + File.separator + filename
+				+ "." + Constants.PICTURE_FORMAT);
+		while (destination.exists()) {
+			filename = RandomStringUtils.randomAlphanumeric(30);
+			destination = new File(path + File.separator
+					+ Constants.RIGIN_PICTURE_PATH + File.separator + filename
+					+ "." + Constants.PICTURE_FORMAT);
+		}
+
+		/* 建立原图片文件 */
+		destination.createNewFile();
+
+		/* 保存原图片文件 */
+		if (file != null)
+			file.transferTo(destination);
+//
+//		/* 生成小图片 */
+//		saveScaleImage(path + File.separator + Constants.RIGIN_PICTURE_PATH
+//				+ File.separator + filename + "." + Constants.PICTURE_FORMAT,
+//				path + File.separator + Constants.THUMB_PICTURE_PATH
+//						+ File.separator + filename + "."
+//						+ Constants.PICTURE_FORMAT, Constants.THUMBNAIL_WIDTH,
+//				Constants.THUMBNAIL_HEIGHT);
+
+		/* 将图片添加到用户 */
+
+		if (picture != null)
+			picture.setFilename(destination.getName());
+
+		Picture bizCard = null;
+		/* 新增头像，需要删除原头像 */
+		bizCard = user.getBizCard();
+		user.setBizCard(picture);
+		userDao.update(user);
+
+		/* 删除原头像及其文件 */
+		if (bizCard != null) {
+			System.out.println(bizCard);
+			deletePictureFile(bizCard, path);
+			pictureDao.delete(bizCard);
+		}
 	}
 }
