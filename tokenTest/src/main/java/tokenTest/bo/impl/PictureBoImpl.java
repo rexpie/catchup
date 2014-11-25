@@ -164,16 +164,29 @@ public class PictureBoImpl implements PictureBo {
 
 	public void saveScaleImage(String originalImage, String newImage,
 			Integer width, Integer height) throws IOException {
+		saveScaleImage(originalImage, newImage, width, height, true);
+	}
+
+	public void saveScaleImage(String originalImage, String newImage,
+			Integer width, Integer height, boolean crop) throws IOException {
 		BufferedImage oldImg = ImageIO.read(new File(originalImage));
 		BufferedImage newImg = new BufferedImage(width, height,
 				BufferedImage.TYPE_INT_ARGB);
 
 		Graphics2D grph = (Graphics2D) newImg.getGraphics();
 		// grph.scale(width / oldImg.getWidth(), height / oldImg.getHeight());
-		grph.drawImage(
-				oldImg.getSubimage(0, 0, oldImg.getWidth(), oldImg.getWidth())
-						.getScaledInstance(width, height, Image.SCALE_SMOOTH),
-				0, 0, null);
+		int shortSide = Math.min(oldImg.getWidth(), oldImg.getHeight());
+		if (crop) {
+			grph.drawImage(oldImg.getSubimage(0, 0, shortSide, shortSide)
+					.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0,
+					0, null);
+		} else {
+			int scaleHeight = (int) (width * 1.0
+					/ oldImg.getWidth() * oldImg.getHeight());
+			scaleHeight = Math.min(height, scaleHeight);
+			grph.drawImage(oldImg.getScaledInstance(width, scaleHeight, Image.SCALE_SMOOTH), 0, 0,
+					null);
+		}
 		grph.dispose();
 		ImageIO.write(newImg, "png", new File(newImage));
 	}
@@ -212,14 +225,14 @@ public class PictureBoImpl implements PictureBo {
 		/* 保存原图片文件 */
 		if (file != null)
 			file.transferTo(destination);
-//
-//		/* 生成小图片 */
-//		saveScaleImage(path + File.separator + Constants.RIGIN_PICTURE_PATH
-//				+ File.separator + filename + "." + Constants.PICTURE_FORMAT,
-//				path + File.separator + Constants.THUMB_PICTURE_PATH
-//						+ File.separator + filename + "."
-//						+ Constants.PICTURE_FORMAT, Constants.THUMBNAIL_WIDTH,
-//				Constants.THUMBNAIL_HEIGHT);
+		//
+		/* 生成小图片 */
+		saveScaleImage(path + File.separator + Constants.RIGIN_PICTURE_PATH
+				+ File.separator + filename + "." + Constants.PICTURE_FORMAT,
+				path + File.separator + Constants.THUMB_PICTURE_PATH
+						+ File.separator + filename + "."
+						+ Constants.PICTURE_FORMAT, Constants.THUMBNAIL_WIDTH,
+				Constants.THUMBNAIL_HEIGHT, false);
 
 		/* 将图片添加到用户 */
 
@@ -230,6 +243,7 @@ public class PictureBoImpl implements PictureBo {
 		/* 新增头像，需要删除原头像 */
 		bizCard = user.getBizCard();
 		user.setBizCard(picture);
+		user.setBizCardValidated(null);
 		userDao.update(user);
 
 		/* 删除原头像及其文件 */

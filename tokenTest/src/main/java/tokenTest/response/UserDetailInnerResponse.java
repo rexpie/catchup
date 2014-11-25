@@ -28,6 +28,7 @@ public class UserDetailInnerResponse {
 	private boolean blacklisted;
 
 	private boolean hasPic;
+	private boolean bizcardValidated;
 	
 	public synchronized int getNumOfViews() {
 		return numOfViews;
@@ -91,10 +92,12 @@ public class UserDetailInnerResponse {
 		this.job = user.getJob();
 		this.city = user.getCity();
 		this.hasPic = user.getPic() == null ? false : user.getPic().getId() != null;
-		// this.pic=user.getPic();
+		this.bizcardValidated = user.getBizCardValidated() == null ? false : user.getBizCardValidated();
+		
 		if (isSelf) {
 			this.phonenum = user.getPhone_number();
 		}
+		
 	}
 
 	private Set<String> convertTags(Set<Tag> tags) {
@@ -185,5 +188,13 @@ public class UserDetailInnerResponse {
 
 	public void setHasPic(boolean hasPic) {
 		this.hasPic = hasPic;
+	}
+
+	public boolean isBizcardValidated() {
+		return bizcardValidated;
+	}
+
+	public void setBizcardValidated(boolean bizcardValidated) {
+		this.bizcardValidated = bizcardValidated;
 	}
 }

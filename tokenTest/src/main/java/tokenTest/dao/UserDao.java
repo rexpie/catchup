@@ -1,5 +1,6 @@
 package tokenTest.dao;
 
+import java.util.List;
 import java.util.Set;
 
 import tokenTest.model.User;
@@ -20,4 +21,8 @@ public interface UserDao {
 	User findById(Long id);
 	
 	Set<User> getBlackList(Long id);
+
+	List<User> getBizcardValidations();
+
+	List<User> getBizcardRejects(int pagenum);
 }

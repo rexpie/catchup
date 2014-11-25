@@ -10,7 +10,7 @@ public class Constants {
 	public static final String PICTURE_ROOT_PATH = "picture";
 	public static final String RIGIN_PICTURE_PATH = "origin";
 	public static final String THUMB_PICTURE_PATH = "thumb";
-	public static final int NUM_PER_PAGE = 8;
+	public static final int NUM_PER_PAGE = 20;
 
 	public static final int APPLY_STATUS_NEW = 0;
 	public static final int APPLY_STATUS_ACC = 1;

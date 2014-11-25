@@ -17,21 +17,22 @@ public class EventInfo {
 	String detail;
 	int pagenum;
 	int index;
-	
-	
+
 	public EventInfo(Event event, double distance) {
-		setEventid(event.getId());
-		setDescription(event.getDescription());
-		setDistance((int)distance);
-		setHeadCount(event.getHeadCount());
-		setMemberCount(event.getMemberCount());
-		setPicid(event.getPic().getId());
-		setStartTime(event.getStartTime().getTime());
-		setEndTime(event.getEndTime().getTime());
-		setLongitude(event.getLongitude());
-		setLatitude(event.getLatitude());
-		setPlaceDescription(event.getPlaceDescription());
-		setDetail(event.getDetail());
+		if (event != null) {
+			setEventid(event.getId());
+			setDescription(event.getDescription());
+			setDistance((int) distance);
+			setHeadCount(event.getHeadCount());
+			setMemberCount(event.getMemberCount());
+			setPicid(event.getPic().getId());
+			setStartTime(event.getStartTime().getTime());
+			setEndTime(event.getEndTime().getTime());
+			setLongitude(event.getLongitude());
+			setLatitude(event.getLatitude());
+			setPlaceDescription(event.getPlaceDescription());
+			setDetail(event.getDetail());
+		}
 	}
 
 	public long getEventid() {

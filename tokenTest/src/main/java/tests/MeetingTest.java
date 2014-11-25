@@ -75,10 +75,6 @@ public class MeetingTest {
 			user[i] = userBo.findByNickOrPhone(nickName[i]);
 		}
 
-		notok(service.newMeeting(user[1].getId(), user[1].getToken(),
-				10349478L, "F", "new meeting"),
-				Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
-
 		MultipartFile file1;
 		try {
 			file1 = new MockMultipartFile("file", "file", "image/png",
@@ -91,10 +87,6 @@ public class MeetingTest {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		notok(service.newMeeting(user[1].getId(), user[1].getToken(),
-				10349478L, "N", "new meeting"),
-				Status.ERR_NEW_MEETING_MUST_HAVE_GENDER);
 
 		String building = "buil";
 		String birthday = "20000101";
@@ -134,7 +126,15 @@ public class MeetingTest {
 					user[i].getToken(), user[i].getNickname(), building, null,
 					"F", job, null, industry, null));
 			ok(service.newMeeting(user[i].getId(), user[i].getToken(),
-					10349478L, "F", "new meeting"));
+					6685147L, "F", "new meeting"));
+			ok(service.newMeeting(user[i].getId(), user[i].getToken(),
+					3259723L, "N", "new meeting"));
+			ok(service.newMeeting(user[i].getId(), user[i].getToken(),
+					4553859L, "N", "new meeting"));
+			ok(service.newMeeting(user[i].getId(), user[i].getToken(),
+					17894206L, "M", "new meeting"));
+			ok(service.newMeeting(user[i].getId(), user[i].getToken(),
+					17680182L, "F", "new meeting"));
 		}
 		Shop shop = shopBo.findByDianpingId(10349478L);
 		MeetingListResponse meetingListResponse = service.getMeetingList(
@@ -225,6 +225,6 @@ public class MeetingTest {
 	}
 
 	private void notok(StatusResponse s, Status exp) {
-		Assert.assertEquals(s.getStatus(), exp);
+		Assert.assertEquals(exp,s.getStatus());
 	}
 }

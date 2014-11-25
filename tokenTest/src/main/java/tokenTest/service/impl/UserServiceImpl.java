@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -365,7 +366,7 @@ public class UserServiceImpl implements IUserService {
 	 */
 	@Override
 	@RequestMapping(value = { "/updateUserProfile**" }, method = RequestMethod.GET)
-	public StatusResponse updateUserProfile(
+	public UserDetailResponse updateUserProfile(
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) String nickname,
@@ -380,14 +381,14 @@ public class UserServiceImpl implements IUserService {
 
 		/* 查找用户 */
 		try {
-			user = userBo.validateUser(id, token);
+			user = userBo.validateUserWithDetail(id, token, Constants.USER_LOAD_LIKES|Constants.USER_LOAD_TAGS|Constants.USER_LOAD_VIEWERS);
 		} catch (UserNotFoundException e) {
-			return new StatusResponse(Status.ERR_USER_NOT_FOUND);
+			return new UserDetailResponse(Status.ERR_USER_NOT_FOUND);
 		} catch (WrongTokenException e) {
-			return new StatusResponse(Status.ERR_WRONG_TOKEN);
+			return new UserDetailResponse(Status.ERR_WRONG_TOKEN);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new StatusResponse(Status.SERVICE_NOT_AVAILABLE);
+			return new UserDetailResponse(Status.SERVICE_NOT_AVAILABLE);
 		}
 
 		/* 设置新的 用户信息 */
@@ -400,14 +401,14 @@ public class UserServiceImpl implements IUserService {
 				user.setBirthday(birthdayFormat.parse(birthday));
 			} catch (ParseException e) {
 				e.printStackTrace();
-				return new StatusResponse(Status.ERR_INVALID_DATE_FORMAT);
+				return new UserDetailResponse(Status.ERR_INVALID_DATE_FORMAT);
 			}
 		}
 		if (sex != null) {
 			if (isValidSex(sex))
 				user.setSex(sex);
 			else
-				return new StatusResponse(Status.ERR_INVALID_GENDER);
+				return new UserDetailResponse(Status.ERR_INVALID_GENDER);
 
 		}
 		if (job != null)
@@ -424,9 +425,9 @@ public class UserServiceImpl implements IUserService {
 			userBo.update(user);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new StatusResponse(Status.ERR_GENERIC);
+			return new UserDetailResponse(Status.ERR_GENERIC);
 		}
-		return new StatusResponse(Status.OK);
+		return new UserDetailResponse(user, true);
 	}
 
 	private boolean isValidSex(String sex) {
@@ -858,6 +859,7 @@ public class UserServiceImpl implements IUserService {
 	public void getBizcard(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false) Long target,
+			@RequestParam(required = false) Long isThumb,
 			HttpServletResponse response) {
 		String path = getPicPath() + File.separator
 				+ Constants.PICTURE_ROOT_PATH;
@@ -886,11 +888,14 @@ public class UserServiceImpl implements IUserService {
 			return;
 			// return Status.SERVICE_NOT_AVAILABLE;
 		}
-		
-		
+
 		if (user != null) {
 			/* 返回原图或者小图 */
-			path += File.separator + Constants.RIGIN_PICTURE_PATH;
+			if (isThumb == null || isThumb != 1) {
+				path += File.separator + Constants.RIGIN_PICTURE_PATH;
+			} else {
+				path += File.separator + Constants.THUMB_PICTURE_PATH;
+			}
 			if (user.getBizCard() == null) {
 				return;
 			}
@@ -1381,10 +1386,39 @@ public class UserServiceImpl implements IUserService {
 		}
 		return response;
 	}
-	
-	
+
+	@RequestMapping(value = { "/adminBizcard**" }, method = RequestMethod.GET)
+	public ModelAndView adminBizcard() {
+		ModelAndView model = new ModelAndView();
+		List<User> users = userBo.getBizcardValidations();
+		if (users != null && users.size() > 0)
+			model.addObject("users", users);
+		model.setViewName("adminBizcard");
+		return model;
+	}
+
 	@RequestMapping(value = { "/validateBizcard**" }, method = RequestMethod.GET)
-	public ModelAndView validateBizcard() {
-		return new ModelAndView("validateBizcard");
+	public StatusResponse validateBizcard(
+			@RequestParam(required = true) Long id,
+			@RequestParam(required = true) String token,
+			@RequestParam(required = true) Boolean validated) {
+		User user = null;
+		/* 验证用户 */
+		try {
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_LIKES);
+		} catch (UserNotFoundException e) {
+			return new LikeUsersResponse(Status.ERR_USER_NOT_FOUND);
+		} catch (WrongTokenException e) {
+			return new LikeUsersResponse(Status.ERR_WRONG_TOKEN);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new LikeUsersResponse(Status.SERVICE_NOT_AVAILABLE);
+		}
+
+		user.setBizCardValidated(validated);
+		userBo.update(user);
+
+		return new StatusResponse(Status.OK);
 	}
 }

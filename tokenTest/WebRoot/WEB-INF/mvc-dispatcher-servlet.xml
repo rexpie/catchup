@@ -21,6 +21,9 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 	</bean>
 	<mvc:annotation-driven
 		content-negotiation-manager="contentNegotiationManager" />
+	
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
 	<bean id="contentNegotiationManager"
 		class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
 		<property name="favorPathExtension" value="false" />
@@ -36,12 +39,12 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 		</property>
 	</bean>
 
-	<!--涓娄紶缁勪欢-->
+	<!--涓娄紶缁勪欢 -->
 	<bean id="multipartResolver"
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<!-- 链€澶т笂浼犲浘鐗囧ぇ灏?M -->
 		<property name="maxUploadSize">
-				<value>1048576</value>
+			<value>1048576</value>
 		</property>
 	</bean>
 
@@ -55,12 +58,12 @@ http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
 		</property>
 	</bean>
 
-	<!-- 鍚姩Spring MVC镄勬敞瑙ｅ姛鑳斤紝瀹屾垚璇锋眰鍜屾敞瑙OJO镄勬椠灏?-->
+	<!-- 鍚姩Spring MVC镄勬敞瑙ｅ姛鑳斤紝瀹屾垚璇锋眰鍜屾敞瑙OJO镄勬椠灏? -->
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
 		<property name="messageConverters">
 			<list>
-				<ref bean="mappingJacksonHttpMessageConverter" /><!-- json杞崲鍣?-->
+				<ref bean="mappingJacksonHttpMessageConverter" /><!-- json杞崲鍣? -->
 			</list>
 		</property>
 	</bean>

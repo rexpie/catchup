@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import tokenTest.Util.Constants;
 import tokenTest.dao.UserDao;
 import tokenTest.model.User;
 
@@ -79,5 +80,27 @@ public class UserDaoImpl implements UserDao {
 		return blackList;
 	}
 
+	@Override
+	public List<User> getBizcardValidations(){
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session
+				.createQuery("from User as u inner join fetch u.bizCard "
+						+ "where u.bizCardValidated is NULL "
+						+ "order by u.bizCard.create_time");
+		query.setMaxResults(Constants.NUM_PER_PAGE);
+		return query.list();
+	}
+
+	@Override
+	public List<User> getBizcardRejects(int pagenum){
+		Session session = sessionFactory.getCurrentSession();
+		Query query = session
+				.createQuery("from User as u inner join fetch u.bizCard "
+						+ "where u.bizCardValidated is 0 "
+						+ "order by u.bizCard.create_time");
+		query.setFirstResult(pagenum * Constants.NUM_PER_PAGE);
+		query.setMaxResults(Constants.NUM_PER_PAGE);
+		return query.list();
+	}
 
 }
