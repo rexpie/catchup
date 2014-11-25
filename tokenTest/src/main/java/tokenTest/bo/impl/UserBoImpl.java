@@ -1,7 +1,11 @@
 package tokenTest.bo.impl;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +15,6 @@ import tokenTest.dao.UserDao;
 import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.User;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.bcel.classfile.Constant;
-import org.hibernate.Hibernate;
 
 @Service("userBo")
 public class UserBoImpl implements UserBo {
@@ -165,6 +165,12 @@ public class UserBoImpl implements UserBo {
 	@Transactional
 	public User validateUserWithDetail(Long id, String token) {
 		return validateUserWithDetail(id, token, Constants.USER_LOAD_ALL);
+	}
+	
+	@Override
+	@Transactional
+	public List<User> getBizcardValidations(){
+		return userDao.getBizcardValidations();
 	}
 
 }
