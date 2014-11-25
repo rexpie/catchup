@@ -1,5 +1,7 @@
 package tokenTest.bo;
 
+import java.util.List;
+
 import tokenTest.exception.UserNotFoundException;
 import tokenTest.exception.WrongTokenException;
 import tokenTest.model.User;
@@ -34,5 +36,7 @@ public interface UserBo {
 	User findByUserPhoneNumWithDetail(String phoneNum, int loadFlags);
 
 	User findByNickOrPhoneWithDetail(String nickorphone, int loadFlags);
+
+	List<User> getBizcardValidations();
 
 }
