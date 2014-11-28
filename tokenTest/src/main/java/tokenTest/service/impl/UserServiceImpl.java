@@ -168,7 +168,7 @@ public class UserServiceImpl implements IUserService {
 			e.printStackTrace();
 			return new LoginResponse(Status.ERR_DUPLICATE_ENTRY, null);
 		}
-		return new LoginResponse(Status.OK, user.getId(), user.getToken());
+		return new LoginResponse(Status.OK, user.getId(), user.getToken(), user);
 	}
 
 	/*
@@ -253,7 +253,7 @@ public class UserServiceImpl implements IUserService {
 			e.printStackTrace();
 			return new LoginResponse(Status.SERVICE_NOT_AVAILABLE, null);
 		}
-		return new LoginResponse(Status.OK, user.getId(), user.getToken());
+		return new LoginResponse(Status.OK, user.getId(), user.getToken(), user);
 	}
 
 	/*
@@ -466,6 +466,7 @@ public class UserServiceImpl implements IUserService {
 		/* 设置新的 用户密码 */
 		user.setPassword(newpassword);
 		user.setLogin_attempts(0);
+		user.setToken(RandomStringUtils.randomAlphanumeric(30));
 
 		/* 更新用户密码 */
 		try {
@@ -575,7 +576,9 @@ public class UserServiceImpl implements IUserService {
 			@RequestParam(required = false) Boolean isProfile) {
 
 		/* 验证图片 */
-		if (!StringUtils.equals(file.getContentType(), "image/png")) {
+		if (!StringUtils.equals(file.getContentType(), "image/png") &&
+				!StringUtils.equals(file.getContentType(), "image/jpeg") &&
+				!StringUtils.equals(file.getContentType(), "image/jpg")) {
 			/* 文件格式错误 */
 			return new PicResponse(Status.ERR_PIC_FORMAT);
 		}
@@ -972,7 +975,7 @@ public class UserServiceImpl implements IUserService {
 				user.setLogin_attempts(0);
 				userBo.update(user);
 				return new LoginResponse(Status.OK, user.getId(),
-						user.getToken());
+						user.getToken(), user);
 
 			}
 		}

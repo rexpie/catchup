@@ -24,7 +24,7 @@ public class UserDetailResponse extends StatusResponse {
 
 	public UserDetailResponse(User _user, boolean isSelf) {
 		super(Status.OK);
-		user = new UserDetailInnerResponse(_user, isSelf);
+		user = new UserDetailInnerResponse(_user, isSelf, true);
 	}
 
 	public UserDetailResponse(Enum<Status> status) {

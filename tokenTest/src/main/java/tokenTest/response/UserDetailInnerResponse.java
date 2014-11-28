@@ -29,7 +29,7 @@ public class UserDetailInnerResponse {
 
 	private boolean hasPic;
 	private boolean bizcardValidated;
-	
+
 	public synchronized int getNumOfViews() {
 		return numOfViews;
 	}
@@ -78,35 +78,42 @@ public class UserDetailInnerResponse {
 		this.alreadyLiked = alreadyLiked;
 	}
 
-	public UserDetailInnerResponse(User user, boolean isSelf) {
+	public UserDetailInnerResponse(User user, boolean isSelf, boolean hasDetail) {
 		this.nickname = user.getNickname();
 		this.gender = user.getSex();
 		this.building = user.getBuilding();
 		this.company = user.getCompany();
 		this.birthday = user.getBirthday();
-		this.numOfLikes = user.getLikes().size();
-		this.numOfViews = user.getViewers().size();
-		this.tags = convertTags(user.getTags());
+		if (hasDetail) {
+			this.numOfLikes = user.getLikes().size();
+			this.numOfViews = user.getViewers().size();
+			this.tags = convertTags(user.getTags());
+		} else {
+			this.numOfLikes = -1;
+			this.numOfViews = -1;
+		}
 		this.age = Utils.getAge(birthday);
 		this.industry = user.getIndustry();
 		this.job = user.getJob();
 		this.city = user.getCity();
-		this.hasPic = user.getPic() == null ? false : user.getPic().getId() != null;
-		this.bizcardValidated = user.getBizCardValidated() == null ? false : user.getBizCardValidated();
-		
+		this.hasPic = user.getPic() == null ? false
+				: user.getPic().getId() != null;
+		this.bizcardValidated = user.getBizCardValidated() == null ? false
+				: user.getBizCardValidated();
+
 		if (isSelf) {
 			this.phonenum = user.getPhone_number();
 		}
-		
+
 	}
 
 	private Set<String> convertTags(Set<Tag> tags) {
 		Set<String> tagNames = Sets.newTreeSet();
-		
-		for (Tag tag : tags){
+
+		for (Tag tag : tags) {
 			tagNames.add(tag.getName());
 		}
-		
+
 		return tagNames;
 	}
 
@@ -153,7 +160,7 @@ public class UserDetailInnerResponse {
 	public synchronized String getIndustry() {
 		return industry;
 	}
-	
+
 	public synchronized void setIndustry(String industry) {
 		this.industry = industry;
 	}
