@@ -372,7 +372,7 @@ public class UserServiceImpl implements IUserService {
 			@RequestParam(required = false) String nickname,
 			@RequestParam(required = false) String building,
 			@RequestParam(required = false) String birthday,
-			@RequestParam(required = false) String sex,
+			@RequestParam(required = false) String gender,
 			@RequestParam(required = false) String job,
 			@RequestParam(required = false) String city,
 			@RequestParam(required = false) String industry,
@@ -404,9 +404,9 @@ public class UserServiceImpl implements IUserService {
 				return new UserDetailResponse(Status.ERR_INVALID_DATE_FORMAT);
 			}
 		}
-		if (sex != null) {
-			if (isValidSex(sex))
-				user.setSex(sex);
+		if (gender != null) {
+			if (isValidSex(gender))
+				user.setSex(gender);
 			else
 				return new UserDetailResponse(Status.ERR_INVALID_GENDER);
 
