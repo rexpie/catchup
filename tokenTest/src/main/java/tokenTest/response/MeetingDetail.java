@@ -1,5 +1,6 @@
 package tokenTest.response;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import tokenTest.Util.Utils;
@@ -26,6 +27,24 @@ public class MeetingDetail {
 	private Integer pageNum;
 	private Integer index;
 	private Boolean joined;
+	public ArrayList<ApplyInfo> getApplicants() {
+		return applicants;
+	}
+
+	public void setApplicants(ArrayList<ApplyInfo> applicants) {
+		this.applicants = applicants;
+	}
+
+	public ArrayList<UserInfo> getParticipants() {
+		return participants;
+	}
+
+	public void setParticipants(ArrayList<UserInfo> participants) {
+		this.participants = participants;
+	}
+
+	private ArrayList<ApplyInfo> applicants = new ArrayList<ApplyInfo>();
+	private ArrayList<UserInfo> participants = new ArrayList<UserInfo>();
 
 	public MeetingDetail() {
 		super();

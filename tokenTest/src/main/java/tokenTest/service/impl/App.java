@@ -54,7 +54,7 @@ public class App {
 
 		MeetingDetailResponse meetingDetail = meetingService.getMeetingDetail(user1.getId(), user1.getToken(), meetings.getMeetingList().get(0).getMeetingid());
 		
-		meetingService.processMeetingApply(user1.getId(), user1.getToken(), meetingDetail.getApplicants().get(0).getApplyId(), true);
+//		meetingService.processMeetingApply(user1.getId(), user1.getToken(), meetingDetail.getApplicants().get(0).getApplyId(), true);
 	}
 
 	private static void genUsers(UserBo userBo, ValidationCodeBo validationCodeBo, IUserService service) {

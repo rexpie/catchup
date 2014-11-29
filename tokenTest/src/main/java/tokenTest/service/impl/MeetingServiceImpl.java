@@ -67,14 +67,14 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = true) String description,
 			@RequestParam(required = false) String job,
 			@RequestParam(required = false) String building,
-			@RequestParam(required = false) String company
-			) {
+			@RequestParam(required = false) String company) {
 		StatusResponse response = new StatusResponse(Status.OK);
 
 		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
 		try {
-			user = userBo.validateUserWithDetail(id, token, Constants.USER_LOAD_PHOTO);
+			user = userBo.validateUserWithDetail(id, token,
+					Constants.USER_LOAD_PHOTO);
 		} catch (UserNotFoundException e) {
 			response.setStatus(Status.ERR_USER_NOT_FOUND);
 			return response;
@@ -87,15 +87,15 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 		boolean updateFlag = false;
-		if (!StringUtils.isEmpty(job)){
+		if (!StringUtils.isEmpty(job)) {
 			user.setJob(job);
 			updateFlag = true;
 		}
-		if (!StringUtils.isEmpty(company)){
+		if (!StringUtils.isEmpty(company)) {
 			user.setCompany(company);
 			updateFlag = true;
 		}
-		if (!StringUtils.isEmpty(building)){
+		if (!StringUtils.isEmpty(building)) {
 			user.setBuilding(building);
 			updateFlag = true;
 		}
@@ -109,7 +109,7 @@ public class MeetingServiceImpl implements IMeetingService {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_BUILDING);
 			return response;
 		}
-		
+
 		if (user.getPic() == null) {
 			response.setStatus(Status.ERR_NEW_MEETING_MUST_HAVE_PIC);
 			return response;
@@ -151,8 +151,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
-		//TODO async
-		if (updateFlag){
+		// TODO async
+		if (updateFlag) {
 			userBo.update(user);
 		}
 		return response;
@@ -170,7 +170,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = false, defaultValue = "") String shopName,
 			@RequestParam(required = false, defaultValue = "") Long id,
 			@RequestParam(required = false, defaultValue = "") String token) {
-		MeetingListResponse meetingListResponse = new MeetingListResponse(Status.OK);
+		MeetingListResponse meetingListResponse = new MeetingListResponse(
+				Status.OK);
 
 		User user = null;
 		if (id != null && token != null) {
@@ -214,8 +215,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			while (iterator.hasNext()) {
 				objects = (Object[]) iterator.next();
 				Meeting meeting = (Meeting) objects[0];
-				MeetingDetail meetingDetail = new MeetingDetail(
-						meeting, (Double) objects[1]);
+				MeetingDetail meetingDetail = new MeetingDetail(meeting,
+						(Double) objects[1]);
 				meetingDetail.setIndex(index++);
 				meetingDetail.setPageNum(pagenum);
 				meetingDetail.setJoined(meetingBo.testIfApplied(meeting, user));
@@ -230,7 +231,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false, defaultValue = "0") Integer pagenum) {
-		MeetingListResponse meetingListResponse = new MeetingListResponse(Status.OK);
+		MeetingListResponse meetingListResponse = new MeetingListResponse(
+				Status.OK);
 
 		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
@@ -261,11 +263,28 @@ public class MeetingServiceImpl implements IMeetingService {
 		int index = 0;
 		Object[] objects = null;
 		while (iterator.hasNext()) {
-			MeetingDetail meetingDetail = new MeetingDetail(
-					(Meeting) iterator.next());
+			Meeting meeting = (Meeting) iterator.next();
+			MeetingDetail meetingDetail = new MeetingDetail(meeting);
 			meetingDetail.setIndex(index);
 			meetingDetail.setPageNum(pagenum);
 			meetingListResponse.getMeetingList().add(meetingDetail);
+			Iterator<User> userIterator = meeting.getParticipator().iterator();
+			while (userIterator.hasNext()) {
+				meetingDetail.getParticipants().add(
+						new UserInfo(userIterator.next()));
+			}
+			try {
+				Iterator<MeetingApply> applyIterator = meetingBo
+						.getApplyByMeeting(meeting).iterator();
+				while (applyIterator.hasNext()) {
+					meetingDetail.getApplicants().add(
+							new ApplyInfo(applyIterator.next()));
+				}
+			} catch (Exception e) {
+				/* 娌℃湁鍙備笌鑰�涓嶅仛澶勭悊 */
+				// response.setStatus(Status.SERVICE_NOT_AVAILABLE);
+				// return response;
+			}
 			index++;
 		}
 		return meetingListResponse;
@@ -277,7 +296,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = false, defaultValue = "0") Integer pagenum) {
-		MeetingListResponse meetingListResponse = new MeetingListResponse(Status.OK);
+		MeetingListResponse meetingListResponse = new MeetingListResponse(
+				Status.OK);
 
 		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
@@ -306,7 +326,8 @@ public class MeetingServiceImpl implements IMeetingService {
 		Object[] objects = null;
 		int index = 0;
 		while (iterator.hasNext()) {
-			MeetingDetail meetingDetail = new MeetingDetail((Meeting)iterator.next());
+			Meeting meeting = (Meeting) iterator.next();
+			MeetingDetail meetingDetail = new MeetingDetail(meeting);
 			meetingDetail.setPageNum(pagenum);
 			meetingDetail.setIndex(index);
 			meetingListResponse.getMeetingList().add(meetingDetail);
@@ -343,10 +364,11 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
-		response.setMeetingDetail(new MeetingDetail(meeting));
+		MeetingDetail meetingDetail = new MeetingDetail(meeting);
+		response.setMeetingDetail(meetingDetail);
 		Iterator<User> userIterator = meeting.getParticipator().iterator();
 		while (userIterator.hasNext()) {
-			response.getParticipates().add(
+			meetingDetail.getParticipants().add(
 					new UserInfo(userIterator.next()));
 		}
 		/* 鏄嫢鏈夎�锛岃兘鐪嬪埌鐢宠淇℃伅鍜屽弬涓庤�淇℃伅 */
@@ -359,15 +381,15 @@ public class MeetingServiceImpl implements IMeetingService {
 				Iterator<MeetingApply> iterator = meetingBo.getApplyByMeeting(
 						meeting).iterator();
 				while (iterator.hasNext()) {
-					response.getApplicants()
-							.add(new ApplyInfo(iterator.next()));
+					meetingDetail.getApplicants().add(
+							new ApplyInfo(iterator.next()));
 				}
 			} catch (Exception e) {
 				/* 娌℃湁鍙備笌鑰�涓嶅仛澶勭悊 */
 				// response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 				// return response;
 			}
-		}  
+		}
 		response.setStatus(Status.OK);
 		return response;
 	}
@@ -408,7 +430,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
-		User owner = userBo.findByUserIdWithDetail(meeting.getOwner().getId(), Constants.USER_LOAD_BLACKLIST);
+		User owner = userBo.findByUserIdWithDetail(meeting.getOwner().getId(),
+				Constants.USER_LOAD_BLACKLIST);
 		if (owner.getBlacklist().contains(user)) {
 			response.setStatus(Status.ERR_BLACKLISTED);
 			return response;
@@ -428,7 +451,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			response.setStatus(Status.ERR_TOO_MANY_APPLY);
 			return response;
 		}
-		IMUtil.startTextConversation(user.getId(), meeting.getOwner().getId(), Constants.MSG_APPLY_MEETING);
+		IMUtil.startTextConversation(user.getId(), meeting.getOwner().getId(),
+				Constants.MSG_APPLY_MEETING);
 		response.setStatus(Status.OK);
 		return response;
 	}
@@ -487,8 +511,9 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
-		if (approved){
-			IMUtil.startTextConversation(user.getId(), meeting.getOwner().getId(), Constants.MSG_APPLY_APPROVED);
+		if (approved) {
+			IMUtil.startTextConversation(user.getId(), meeting.getOwner()
+					.getId(), Constants.MSG_APPLY_APPROVED);
 		}
 		response.setStatus(Status.OK);
 		return response;
@@ -594,9 +619,10 @@ public class MeetingServiceImpl implements IMeetingService {
 			return response;
 		}
 
-		//TODO async
-		for (User target : meeting.getParticipator()){
-			IMUtil.startSystemDelegateConversation(user.getNickname(), target.getId(), Constants.MSG_MEETING_STOP);
+		// TODO async
+		for (User target : meeting.getParticipator()) {
+			IMUtil.startSystemDelegateConversation(user.getNickname(),
+					target.getId(), Constants.MSG_MEETING_STOP);
 		}
 		response.setStatus(Status.OK);
 		return response;
@@ -605,7 +631,8 @@ public class MeetingServiceImpl implements IMeetingService {
 	@Override
 	public StatusResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description) {
-		return newMeeting(id,token,shopid,genderConstraint,description,null,null,null);
+		return newMeeting(id, token, shopid, genderConstraint, description,
+				null, null, null);
 	}
 
 }
