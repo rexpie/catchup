@@ -59,7 +59,7 @@ public class MeetingServiceImpl implements IMeetingService {
 	private MeetingBo meetingBo;
 
 	@RequestMapping(value = { "/newMeeting**" }, method = RequestMethod.GET)
-	public StatusResponse newMeeting(@RequestParam(required = true) Long id,
+	public MeetingDetailResponse newMeeting(@RequestParam(required = true) Long id,
 			@RequestParam(required = true) String token,
 			@RequestParam(required = true) Long shopid,
 			@RequestParam(required = true) String genderConstraint,
@@ -67,7 +67,7 @@ public class MeetingServiceImpl implements IMeetingService {
 			@RequestParam(required = false) String job,
 			@RequestParam(required = false) String building,
 			@RequestParam(required = false) String company) {
-		StatusResponse response = new StatusResponse(Status.OK);
+		MeetingDetailResponse response = new MeetingDetailResponse(Status.OK);
 
 		/* 鏌ユ壘鐢ㄦ埛 */
 		User user = null;
@@ -149,6 +149,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			response.setStatus(Status.SERVICE_NOT_AVAILABLE);
 			return response;
 		}
+		
+		response.setMeetingDetail(new MeetingDetail(meeting));
 
 		// TODO async
 		if (updateFlag) {
@@ -628,7 +630,7 @@ public class MeetingServiceImpl implements IMeetingService {
 	}
 
 	@Override
-	public StatusResponse newMeeting(Long id, String token, Long shopid,
+	public MeetingDetailResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description) {
 		return newMeeting(id, token, shopid, genderConstraint, description,
 				null, null, null);

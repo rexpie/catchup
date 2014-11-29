@@ -23,10 +23,10 @@ public interface IMeetingService {
 	MeetingDetailResponse getMeetingDetail(Long id, String token, Long meetingid);
 
 	/* 发起饭约 */
-	StatusResponse newMeeting(Long id, String token, Long shopid,
+	MeetingDetailResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description, String job, String building, String company);
 	
-	StatusResponse newMeeting(Long id, String token, Long shopid,
+	MeetingDetailResponse newMeeting(Long id, String token, Long shopid,
 			String genderConstraint, String description);
 
 	/* 申请参加饭约 */

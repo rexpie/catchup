@@ -1,6 +1,7 @@
 package tokenTest.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -29,6 +32,8 @@ public class MeetingApply implements Serializable {
 	private String applyContent;
 	/* 0，新建，1，已批准，2已驳回 */
 	private Integer status;
+	private Date createTime;
+	private Date updateTime;
 
 	public MeetingApply(User fromUser, Meeting toMeeting, String applyContent) {
 		super();
@@ -91,5 +96,33 @@ public class MeetingApply implements Serializable {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	@Column
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	@Column
+	public Date getUpdateTime() {
+		return updateTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		createTime = new Date();
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		updateTime = new Date();
 	}
 }

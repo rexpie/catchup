@@ -31,7 +31,8 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 
 	public MeetingApply getApplyById(Long applyId) {
 		Query query = sessionFactory.getCurrentSession().createQuery(
-				"from MeetingApply as m where m.id= :id");
+				"from MeetingApply as m where m.id= :id "
+				+ "order by m.createTime desc");
 		query.setLong("id", applyId);
 		List list = query.list();
 		if (list.size() > 0)
@@ -44,7 +45,8 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 		Query query = sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"from MeetingApply as m where m.fromUser= :user and m.status=0");
+						"from MeetingApply as m where m.fromUser= :user and m.status=0 "
+						+ "order by m.createTime desc");
 		query.setEntity("user", user);
 		return query.list();
 	}
@@ -54,7 +56,8 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 		Query query = sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"from MeetingApply as m where m.toMeeting= :toMeeting and m.status=0");
+						"from MeetingApply as m where m.toMeeting= :toMeeting and m.status=0 "
+						+ "order by m.createTime desc");
 		query.setEntity("toMeeting", meeting);
 		List<MeetingApply> list = query.list();
 		return list;
@@ -66,7 +69,8 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 		Query query = sessionFactory
 				.getCurrentSession()
 				.createQuery(
-						"from MeetingApply as m where m.toMeeting= :toMeeting and m.fromUser=:fromUser and m.status=0");
+						"from MeetingApply as m where m.toMeeting= :toMeeting and m.fromUser=:fromUser and m.status=0 "
+						+ "order by m.createTime desc");
 		query.setEntity("fromUser", user);
 		query.setEntity("toMeeting", meeting);
 		List list = query.list();
