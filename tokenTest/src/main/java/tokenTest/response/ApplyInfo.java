@@ -1,18 +1,21 @@
 package tokenTest.response;
 
 import tokenTest.model.MeetingApply;
+import tokenTest.model.User;
 
 public class ApplyInfo {
 	private Long applyId;
 	private Long userId;
 	private String userName;
 	private String applyContent;
+	private Boolean approved;
 
 	public ApplyInfo(MeetingApply meetingApply) {
 		this.applyId = meetingApply.getId();
 		this.userId = meetingApply.getFromUser().getId();
 		this.userName = meetingApply.getFromUser().getNickname();
 		this.applyContent = meetingApply.getApplyContent();
+		this.approved = false;
 	}
 
 	public ApplyInfo(Long applyId, Long userId, String userName,
@@ -24,6 +27,13 @@ public class ApplyInfo {
 		this.applyContent = applyContent;
 	}
 
+	public ApplyInfo(User user){
+		super();
+		this.approved = true;
+		this.userId = user.getId();
+		this.userName = user.getNickname();
+	}
+	
 	public ApplyInfo() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -59,6 +69,14 @@ public class ApplyInfo {
 
 	public void setApplyContent(String applyContent) {
 		this.applyContent = applyContent;
+	}
+
+	public Boolean getApproved() {
+		return approved;
+	}
+
+	public void setApproved(Boolean approved) {
+		this.approved = approved;
 	}
 
 }

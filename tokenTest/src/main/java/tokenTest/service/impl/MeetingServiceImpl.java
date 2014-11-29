@@ -38,7 +38,6 @@ import tokenTest.response.MeetingDetailResponse;
 import tokenTest.response.MeetingListResponse;
 import tokenTest.response.NewApplyResponse;
 import tokenTest.response.StatusResponse;
-import tokenTest.response.UserInfo;
 import tokenTest.response.WithdrawApplyResponse;
 import tokenTest.service.IMeetingService;
 
@@ -270,8 +269,8 @@ public class MeetingServiceImpl implements IMeetingService {
 			meetingListResponse.getMeetingList().add(meetingDetail);
 			Iterator<User> userIterator = meeting.getParticipator().iterator();
 			while (userIterator.hasNext()) {
-				meetingDetail.getParticipants().add(
-						new UserInfo(userIterator.next()));
+				meetingDetail.getApplicants().add(
+						new ApplyInfo(userIterator.next()));
 			}
 			try {
 				Iterator<MeetingApply> applyIterator = meetingBo
@@ -368,8 +367,8 @@ public class MeetingServiceImpl implements IMeetingService {
 		response.setMeetingDetail(meetingDetail);
 		Iterator<User> userIterator = meeting.getParticipator().iterator();
 		while (userIterator.hasNext()) {
-			meetingDetail.getParticipants().add(
-					new UserInfo(userIterator.next()));
+			meetingDetail.getApplicants().add(
+					new ApplyInfo(userIterator.next()));
 		}
 		/* 鏄嫢鏈夎�锛岃兘鐪嬪埌鐢宠淇℃伅鍜屽弬涓庤�淇℃伅 */
 		if (meeting.getOwner().equals(user)) {
