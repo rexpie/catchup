@@ -19,7 +19,6 @@ public class MeetingDetail {
 	private String genderConstraint;
 	private Integer age;
 	private Long ownerid;
-	private String ownerPhotoid;
 	private Long shopid;
 	private Date startTime;
 	private Double longitude;
@@ -45,7 +44,6 @@ public class MeetingDetail {
 	public MeetingDetail(Meeting meeting) {
 		this.meetingid = meeting.getId();
 		this.ownerid = meeting.getOwner().getId();
-		this.ownerPhotoid = meeting.getOwner().getPic().getId();
 		this.shopid = meeting.getShop().getId();
 		this.startTime = meeting.getCreate_time();
 		this.genderConstraint = meeting.getGenderConstraint();
@@ -81,14 +79,6 @@ public class MeetingDetail {
 
 	public void setOwnerid(Long ownerid) {
 		this.ownerid = ownerid;
-	}
-
-	public String getOwnerPhotoid() {
-		return ownerPhotoid;
-	}
-
-	public void setOwnerPhotoid(String ownerPhotoid) {
-		this.ownerPhotoid = ownerPhotoid;
 	}
 
 	public Long getShopid() {

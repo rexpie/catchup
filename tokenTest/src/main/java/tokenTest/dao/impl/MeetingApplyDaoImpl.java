@@ -1,5 +1,6 @@
 package tokenTest.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -18,14 +19,18 @@ public class MeetingApplyDaoImpl implements MeetingApplyDao {
 	private SessionFactory sessionFactory;
 
 	public void save(MeetingApply meetingApply) {
+		meetingApply.setCreateTime(new Date());
+		meetingApply.setUpdateTime(new Date());
 		sessionFactory.getCurrentSession().save(meetingApply);
 	}
 
 	public void update(MeetingApply meetingApply) {
+		meetingApply.setUpdateTime(new Date());
 		sessionFactory.getCurrentSession().update(meetingApply);
 	}
 
 	public void delete(MeetingApply meetingApply) {
+		meetingApply.setUpdateTime(new Date());
 		sessionFactory.getCurrentSession().delete(meetingApply);
 	}
 
